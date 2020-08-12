@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  mar. 11 août 2020 à 14:49
+-- Généré le :  mer. 12 août 2020 à 17:59
 -- Version du serveur :  5.7.26
 -- Version de PHP :  7.2.18
 
@@ -156,6 +156,31 @@ CREATE TABLE IF NOT EXISTS `enchante` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `famillemonstre`
+--
+
+DROP TABLE IF EXISTS `famillemonstre`;
+CREATE TABLE IF NOT EXISTS `famillemonstre` (
+  `idFamilleMonstre` tinyint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `libelle` varchar(255) NOT NULL,
+  UNIQUE KEY `idFamilleMonstre` (`idFamilleMonstre`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `famillemonstre`
+--
+
+INSERT INTO `famillemonstre` (`idFamilleMonstre`, `libelle`) VALUES
+(1, 'Gobelins'),
+(2, 'Dragons'),
+(3, 'Bandits'),
+(4, 'Loups'),
+(5, 'Ogres'),
+(6, 'Trolls');
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `loot`
 --
 
@@ -219,20 +244,24 @@ CREATE TABLE IF NOT EXISTS `maudit` (
 DROP TABLE IF EXISTS `monstre`;
 CREATE TABLE IF NOT EXISTS `monstre` (
   `idMonstre` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idFamilleMonstre` tinyint(5) UNSIGNED DEFAULT NULL,
   `libelle` varchar(150) DEFAULT NULL,
   PRIMARY KEY (`idMonstre`),
-  UNIQUE KEY `id_monster` (`idMonstre`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+  UNIQUE KEY `id_monstre` (`idMonstre`) USING BTREE,
+  KEY `FK_monstre_idFamilleMonstre` (`idFamilleMonstre`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `monstre`
 --
 
-INSERT INTO `monstre` (`idMonstre`, `libelle`) VALUES
-(1, 'Gobelin'),
-(2, 'Loup'),
-(3, 'Troll'),
-(4, 'Ours');
+INSERT INTO `monstre` (`idMonstre`, `idFamilleMonstre`, `libelle`) VALUES
+(1, 1, 'Gobelin'),
+(2, NULL, 'Loup'),
+(3, NULL, 'Troll'),
+(4, NULL, 'Ours'),
+(5, 1, 'Gobelin Mage'),
+(6, 1, 'Gobelin Chef');
 
 -- --------------------------------------------------------
 
@@ -389,6 +418,12 @@ ALTER TABLE `enchante`
 ALTER TABLE `maudit`
   ADD CONSTRAINT `FK_maudit_idMalediction` FOREIGN KEY (`idMalediction`) REFERENCES `malediction` (`idMalediction`),
   ADD CONSTRAINT `FK_maudit_idObjet` FOREIGN KEY (`idObjet`) REFERENCES `objet` (`idObjet`);
+
+--
+-- Contraintes pour la table `monstre`
+--
+ALTER TABLE `monstre`
+  ADD CONSTRAINT `FK_monstre_idFamilleMonstre` FOREIGN KEY (`idFamilleMonstre`) REFERENCES `famillemonstre` (`idFamilleMonstre`);
 
 --
 -- Contraintes pour la table `monte`
