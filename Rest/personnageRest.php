@@ -11,41 +11,41 @@ switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
-        if (!empty($_GET['idEffetMagique'])) {
-            $effetMagiqueQuery = $bdd->query('SELECT *
-					from effetmagique 
-                    where idEffetMagique='.$_GET['idEffetMagique']);
+        if (!empty($_GET['idPersonnage'])) {
+            $personnageQuery = $bdd->query('SELECT *
+					from personnage 
+                    where idPersonnage ='.$_GET['idPersonnage']);
 
-            $effetMagique =  $effetMagiqueQuery->fetch(PDO::FETCH_ASSOC);
-            $matchingData = $effetMagique;
+            $personnage =  $personnageQuery->fetch(PDO::FETCH_ASSOC);
+            $matchingData = $personnage;
+            http_response_code(200);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Bien le bonjour, voyageur. Je vous envoie un de mes meilleurs soldats !", $matchingData);
         }
-        http_response_code(200);
-        /// Envoi de la réponse au Client
-        deliver_responseRest(200, "Un effet magique pour la une, un !", $matchingData);
         break;
 
     case "POST":
-        if (!(empty($_POST['idEffetMagique']))) {
+        if (!(empty($_POST['idPersonnage']))) {
             try {
-                $sql = "UPDATE effetmagique 
-                SET libelle = '" . $_POST['libelle'] . "', 
-                description = '" . $_POST['description'] . "', 
-                WHERE idEffetMagique = " . $_POST['idEffetMagique'];
+                $sql = "UPDATE personnage 
+                SET nom = '" . $_POST['nom'] . "', 
+                niveau = '" . $_POST['niveau'] . "', 
+                WHERE idPersonnage = " . $_POST['idPersonnage'];
 
 
                 $bdd->exec($sql);
                 $result = $bdd->query('SELECT *
-					from effetmagique 
-                    where idEffetMagique='.$_GET['idEffetMagique']);
+					from personnage
+                    where idPersonnage='.$_GET['idPersonnage']);
                 $result->closeCursor();
                 $bdd = null;
                 http_response_code(201);
-                deliver_responseRest(201, "effetMagique modified", $fetchedResult);
+                deliver_responseRest(201, "personnage modified", $fetchedResult);
             } catch (PDOException $e) {
-                deliver_responseRest(400, "effetMagique modification error in SQL", $sql . "<br>" . $e->getMessage());
+                deliver_responseRest(400, "personnage modification error in SQL", $sql . "<br>" . $e->getMessage());
             }
         }
-        deliver_responseRest(400, "effetMagique modification error, missing idEffetMagique", $sql . "<br>" . $e->getMessage());
+        deliver_responseRest(400, "personnage modification error, missing idPersonnage", $sql . "<br>" . $e->getMessage());
         break;
 }
 /// Envoi de la réponse au Client

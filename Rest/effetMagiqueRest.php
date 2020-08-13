@@ -18,10 +18,10 @@ switch ($http_method){
 
             $effetMagique =  $effetMagiqueQuery->fetch(PDO::FETCH_ASSOC);
             $matchingData = $effetMagique;
+            http_response_code(200);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Un effet magique pour la une, un !", $matchingData);
         }
-        http_response_code(200);
-        /// Envoi de la réponse au Client
-        deliver_responseRest(200, "Un effet magique pour la une, un !", $matchingData);
         break;
 
     case "POST":
