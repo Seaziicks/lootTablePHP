@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  mer. 12 août 2020 à 17:59
+-- Généré le :  jeu. 13 août 2020 à 17:58
 -- Version du serveur :  5.7.26
 -- Version de PHP :  7.2.18
 
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `dropchance` (
 
 INSERT INTO `dropchance` (`idMonstre`, `idLoot`, `minRoll`, `maxRoll`, `niveauMonstre`, `multiplier`, `dicePower`) VALUES
 (1, 1, 5, 12, NULL, 10, 20),
-(1, 2, 13, 17, NULL, 5, 20),
+(1, 2, 13, 17, NULL, 3, 10),
 (1, 3, 18, 19, NULL, 1, 3),
 (1, 4, 20, 20, NULL, 1, 100),
 (1, 5, 1, 1, NULL, 1, 100);
@@ -135,7 +135,14 @@ CREATE TABLE IF NOT EXISTS `effetmagique` (
   `libelle` text NOT NULL,
   `description` text NOT NULL,
   UNIQUE KEY `idEffectMagique` (`idEffetMagique`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `effetmagique`
+--
+
+INSERT INTO `effetmagique` (`idEffetMagique`, `libelle`, `description`) VALUES
+(1, 'Feu (faible)', 'Permet d\'allumer une flamme de faible puissance, 3 fois par jour max.');
 
 -- --------------------------------------------------------
 
