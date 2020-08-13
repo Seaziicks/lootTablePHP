@@ -13,9 +13,10 @@ switch ($http_method){
         /// Récupération des critères de recherche envoyés par le Client
         if (!empty($_GET['idMonstre'])) {
             $lootsQuery = $bdd->query('SELECT l.libelle, d.minRoll, d.maxRoll, d.niveauMonstre, d.multiplier, d.dicePower, l.poids
-					from dropchance as d, loot as l
-                    where idMonstre='.$_GET['idMonstre'].'
-                    order by minRoll');
+					FROM dropchance AS d, loot AS l
+                    WHERE idMonstre = 1
+                    AND l.idLoot = d.idLoot
+                    ORDER BY minRoll');
 
 
 
@@ -24,10 +25,10 @@ switch ($http_method){
                 array_push($loot, $lootsFetched);
             }
             $matchingData = $loot;
+            http_response_code(200);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Veillez à vérifier que les chances de drop soient consécutives et disjointes.", $matchingData);
         }
-        http_response_code(200);
-        /// Envoi de la réponse au Client
-        deliver_responseRest(200, "Veillez à vérifier que les chances de drop soient consécutives et disjointes.", $matchingData);
         break;
 
     case "POST":
