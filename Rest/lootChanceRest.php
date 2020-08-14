@@ -14,7 +14,7 @@ switch ($http_method){
         if (!empty($_GET['idMonstre'])) {
             $lootsQuery = $bdd->query('SELECT l.libelle, d.minRoll, d.maxRoll, d.niveauMonstre, d.multiplier, d.dicePower, l.poids
 					FROM dropchance AS d, loot AS l
-                    WHERE idMonstre = 1
+                    WHERE idMonstre = '. $_GET['idMonstre'] .'
                     AND l.idLoot = d.idLoot
                     ORDER BY minRoll');
 
