@@ -12,7 +12,7 @@ switch ($http_method){
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
         if (!empty($_GET['idMonstre'])) {
-            $lootsQuery = $bdd->query('SELECT l.libelle, d.minRoll, d.maxRoll, d.niveauMonstre, d.multiplier, d.dicePower, l.poids
+            $lootsQuery = $bdd->query('SELECT d.idLoot, l.libelle, d.minRoll, d.maxRoll, d.niveauMonstre, d.multiplier, d.dicePower, l.poids
 					FROM dropchance AS d, loot AS l
                     WHERE idMonstre = '. $_GET['idMonstre'] .'
                     AND l.idLoot = d.idLoot
@@ -55,8 +55,39 @@ switch ($http_method){
             } catch (PDOException $e) {
                 deliver_responseRest(400, "dropChance modification error in SQL", $sql . "<br>" . $e->getMessage());
             }
+        } else {
+            $data = (array) json_decode($_GET['Loot']);
+            printf($data['idMonstre'] . "\n");
+            print_r($data);
+            $matchingData = '';
+            if ($data['idMonstre']) {
+                $matchingData .= "Le message a bien été reçu, avec le paramètre idMonstre : " . $data['idMonstre'] . "<br/>\n";
+            } else {
+                $matchingData .= "Le message a bien été reçu, sans le paramètre idMonstre.";
+            }
+            foreach($data['Loot'] as $loot) {
+                $matchingData .= json_encode($loot);
+            }
+            http_response_code(200);
+            deliver_responseRest(200, "dropChance modified", $matchingData);
         }
-        deliver_responseRest(400, "dropChance modification error, missing idMonstre or idLoot", $sql . "<br>" . $e->getMessage());
+        deliver_responseRest(400, "dropChance modification error, missing idMonstre or idLoot", '');
+        break;
+    case "PUT":
+        $data = (array) json_decode($_GET['Loot']);
+        printf($data['idMonstre'] . "\n");
+        print_r($data);
+        $matchingData = '';
+        if ($data['idMonstre']) {
+            $matchingData .= "Le message a bien été reçu, avec le paramètre idMonstre : " . $data['idMonstre'] . "<br/>\n";
+        } else {
+            $matchingData .= "Le message a bien été reçu, sans le paramètre idMonstre.";
+        }
+        foreach($data['Loot'] as $loot) {
+            $matchingData .= json_encode($loot);
+        }
+        http_response_code(200);
+        deliver_responseRest(200, "dropChance modified", $matchingData);
         break;
 }
 /// Envoi de la réponse au Client
