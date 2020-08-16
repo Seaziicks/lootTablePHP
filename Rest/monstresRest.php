@@ -12,7 +12,8 @@ switch ($http_method) {
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
         if (isset($_GET['withFamille']) && filter_var($_GET['withFamille'], FILTER_VALIDATE_BOOLEAN)) {
-            $famillesQuery = $bdd->query('SELECT DISTINCT fm.* FROM famillemonstre as fm, monstre as m 
+            $famillesQuery = $bdd->query('SELECT DISTINCT fm.* 
+                                                    FROM famillemonstre as fm, monstre as m 
                                                     WHERE fm.idFamilleMonstre IN (Select DISTINCT idFamilleMonstre from monstre) 
                                                     ORDER BY fm.libelle');
             $familles = [];
@@ -23,7 +24,7 @@ switch ($http_method) {
             // On ajoute un array vide pour tous les monstres non repertoriés dans une famille
             array_push($familles, ['Famille' => '', 'Membres' => []]);
 
-            $monstresQuery = $bdd->query('SELECT idMonstre, monstre.libelle, famillemonstre.libelle as famille
+            $monstresQuery = $bdd->query('SELECT idMonstre, monstre.libelle, monstre.idFamilleMonstre, famillemonstre.libelle as famille
                                                     FROM monstre
                                                     LEFT JOIN famillemonstre -- Here!
                                                         ON famillemonstre.idFamilleMonstre = monstre.idFamilleMonstre');
@@ -31,7 +32,8 @@ switch ($http_method) {
             // Pour chaque monstre, si il a une famille, on l'ajoute dans le tableau de sa famille, sinon dans le tableau des non repertoriés
             while ($monstreFetched = $monstresQuery->fetch(PDO::FETCH_ASSOC)) {
                 if (!empty($monstreFetched['famille'])) {
-                    $newMembre = ['idMonstre' => intval($monstreFetched['idMonstre']), 'libelle' => $monstreFetched['libelle']];
+                    // On choisit les données à envoyer.
+                    $newMembre = ['idMonstre' => intval($monstreFetched['idMonstre']), 'libelle' => $monstreFetched['libelle'], 'idFamilleMonstre' => intval($monstreFetched['idFamilleMonstre'])];
                     array_push($familles[array_search($monstreFetched['famille'], array_column($familles, 'Famille'))]['Membres'], $newMembre);
                 } else {
                     array_push($familles[count($familles) - 1]['Membres'], ['idMonstre' => intval($monstreFetched['idMonstre']), 'libelle' => $monstreFetched['libelle']]);
@@ -42,7 +44,7 @@ switch ($http_method) {
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Il est beau mon tableau, mieux qu'un Vincent van Gogh !", $matchingData);
         } else {
-            $monstresQuery = $bdd->query('SELECT idMonstre, monstre.libelle, famillemonstre.libelle as famille
+            $monstresQuery = $bdd->query('SELECT idMonstre, monstre.libelle, monstre.idFamilleMonstre, famillemonstre.libelle as famille
                                                     FROM monstre
                                                     LEFT JOIN famillemonstre -- Here!
                                                         ON famillemonstre.idFamilleMonstre = monstre.idFamilleMonstre');

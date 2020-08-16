@@ -38,9 +38,13 @@ switch ($http_method) {
 
     case "POST":
         try {
-            $params = json_decode($_GET['Monstre']);
-            $monstre = $params->Monstre;
-            $sql = "INSERT INTO `monstre` (`libelle`) VALUES (" . $monstre->libelle . ")";
+            print_r($_GET['Monstre']);
+            print_r(json_decode($_GET['Monstre']));
+            $monstre = json_decode($_GET['Monstre']);
+
+            print_r($monstre);
+            print_r($monstre->libelle);
+            $sql = "INSERT INTO `monstre` (`idFamilleMonstre`,`libelle`) VALUES (".$monstre->idFamilleMonstre.", '" . $monstre->libelle . "')";
 
             $bdd->exec($sql);
             $result = $bdd->query('SELECT *
@@ -60,11 +64,13 @@ switch ($http_method) {
     case "PUT":
         if (!empty($_GET['idMonstre'])) {
             try {
-                $params = json_decode($_GET['Monstre']);
-                $monstre = $params->Monstre;
+                $monstre = json_decode($_GET['Monstre']);
+                print_r($_GET['Monstre']);
+                print_r($monstre);
                 $sql = "UPDATE monstre 
-                SET libelle = " . $monstre->libelle . ",
-                WHERE idMonstre = " . $monstre->idMonstre;
+                SET idFamilleMonstre = ".$monstre->idFamilleMonstre.", libelle = '" . $monstre->libelle . "'
+                WHERE idMonstre = " . $monstre->idMonstre .";";
+                print_r($sql);
 
 
                 $bdd->exec($sql);
