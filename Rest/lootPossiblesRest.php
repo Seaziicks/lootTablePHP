@@ -12,8 +12,8 @@ switch ($http_method){
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
         $lootsQuery = $bdd->query('SELECT libelle
-                FROM loot
-                ');
+                                             FROM loot
+                                             ');
         $loot = [];
         while($lootsFetched=$lootsQuery->fetch(PDO::FETCH_ASSOC)){
             array_push($loot, $lootsFetched['libelle']);
