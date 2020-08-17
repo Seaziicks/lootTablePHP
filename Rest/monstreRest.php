@@ -38,15 +38,12 @@ switch ($http_method) {
 
     case "POST":
         try {
-            print_r($_GET['Monstre']);
-            print_r(json_decode($_GET['Monstre']));
             $monstre = json_decode($_GET['Monstre']);
+            $sql = "INSERT INTO `monstre` (`idFamilleMonstre`,`libelle`) VALUES (".$monstre->idFamilleMonstre.", :libelle)";
 
-            print_r($monstre);
-            print_r($monstre->libelle);
-            $sql = "INSERT INTO `monstre` (`idFamilleMonstre`,`libelle`) VALUES (".$monstre->idFamilleMonstre.", '" . $monstre->libelle . "')";
-
-            $bdd->exec($sql);
+            $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+            $commit->bindParam(':libelle',$monstre->libelle, PDO::PARAM_STR);
+            $commit->execute();
             $result = $bdd->query('SELECT *
 					from monstre 
                     where idMonstre=' . $bdd->lastInsertId() . '
@@ -65,15 +62,15 @@ switch ($http_method) {
         if (!empty($_GET['idMonstre'])) {
             try {
                 $monstre = json_decode($_GET['Monstre']);
-                print_r($_GET['Monstre']);
-                print_r($monstre);
                 $sql = "UPDATE monstre 
-                SET idFamilleMonstre = ".$monstre->idFamilleMonstre.", libelle = '" . $monstre->libelle . "'
-                WHERE idMonstre = " . $monstre->idMonstre .";";
-                print_r($sql);
+                SET idFamilleMonstre = ".$monstre->idFamilleMonstre.", libelle = :libelle
+                WHERE idMonstre = :idMonstre;";
 
+                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit->bindParam(':idMonstre',$monstre->idMonstre, PDO::PARAM_INT);
+                $commit->bindParam(':libelle',$monstre->libelle, PDO::PARAM_STR);
+                $commit->execute();
 
-                $bdd->exec($sql);
                 $result = $bdd->query('SELECT *
 					from monstre
                     where idMonstre=' . $monstre->idMonstre . '

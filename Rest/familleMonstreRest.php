@@ -40,9 +40,8 @@ switch ($http_method) {
 
     case "POST":
         try {
-            $params = json_decode($_GET['Famille']);
-            $famille = $params->Famille;
-            $sql = "INSERT INTO `famillemonstre` (`libelle`) VALUES (" . $famille->libelle . ")";
+            $famille = json_decode($_GET['Famille']);
+            $sql = "INSERT INTO `famillemonstre` (`libelle`) VALUES ('" . $famille->libelle . "')";
 
             $bdd->exec($sql);
             $result = $bdd->query('SELECT *
@@ -60,19 +59,19 @@ switch ($http_method) {
         }
         break;
     case "PUT":
-        if (!empty($_GET['idFamille'])) {
+        if (!empty($_GET['idFamilleMonstre'])) {
             try {
-                $params = json_decode($_GET['Famille']);
-                $famille = $params->Famille;
+                $famille = json_decode($_GET['Famille']);
+                print_r($famille);
                 $sql = "UPDATE famillemonstre 
-                SET libelle = " . $famille->libelle . ",
-                WHERE idFamilleMonstre = " . $famille->idFamille;
-
+                SET libelle = '" . $famille->libelle . "'
+                WHERE idFamilleMonstre = " . $famille->idFamilleMonstre .";";
+                print_r($sql);
 
                 $bdd->exec($sql);
                 $result = $bdd->query('SELECT *
 					from famillemonstre
-                    where idFamilleMonstre=' . $famille->libelle . '
+                    where idFamilleMonstre=' . $famille->idFamilleMonstre . '
                     ');
                 $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
                 $result->closeCursor();
