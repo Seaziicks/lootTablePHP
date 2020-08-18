@@ -62,11 +62,9 @@ switch ($http_method) {
         if (!empty($_GET['idFamilleMonstre'])) {
             try {
                 $famille = json_decode($_GET['Famille']);
-                print_r($famille);
                 $sql = "UPDATE famillemonstre 
                 SET libelle = '" . $famille->libelle . "'
                 WHERE idFamilleMonstre = " . $famille->idFamilleMonstre .";";
-                print_r($sql);
 
                 $bdd->exec($sql);
                 $result = $bdd->query('SELECT *
