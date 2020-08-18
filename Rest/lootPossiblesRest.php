@@ -11,12 +11,12 @@ switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
-        $lootsQuery = $bdd->query('SELECT libelle
+        $lootsQuery = $bdd->query('SELECT idLoot, libelle
                                              FROM loot
                                              ');
         $loot = [];
         while($lootsFetched=$lootsQuery->fetch(PDO::FETCH_ASSOC)){
-            array_push($loot, $lootsFetched['libelle']);
+            array_push($loot, ['idLoot' => $lootsFetched['idLoot'], 'libelle' => $lootsFetched['libelle']]);
         }
         $matchingData = $loot;
         http_response_code(200);
