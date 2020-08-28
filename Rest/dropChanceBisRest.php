@@ -21,6 +21,13 @@ switch ($http_method) {
                     ORDER BY roll');
                 $loot = [];
                 while ($lootsFetched = $lootsQuery->fetch(PDO::FETCH_ASSOC)) {
+                    $lootsFetched['roll'] =$lootsFetched['roll'] == null ? null : intval($lootsFetched['roll']);
+                    $lootsFetched['idLoot'] = $lootsFetched['idLoot'] == null ? null : intval($lootsFetched['idLoot']);
+                    $lootsFetched['niveauMonstre'] = $lootsFetched['niveauMonstre'] == null ? null : intval($lootsFetched['niveauMonstre']);
+                    $lootsFetched['multiplier'] = $lootsFetched['multiplier'] == null ? null : intval($lootsFetched['multiplier']);
+                    $lootsFetched['diceNumber'] = $lootsFetched['diceNumber'] == null ? null : intval($lootsFetched['diceNumber']);
+                    $lootsFetched['dicePower'] = $lootsFetched['dicePower'] == null ? null : intval($lootsFetched['dicePower']);
+                    $lootsFetched['poids'] = $lootsFetched['poids'] == null ? null : intval($lootsFetched['poids']);
                     array_push($loot, $lootsFetched);
                 }
 

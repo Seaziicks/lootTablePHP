@@ -16,6 +16,7 @@ switch ($http_method){
                                              ');
         $loot = [];
         while($lootsFetched=$lootsQuery->fetch(PDO::FETCH_ASSOC)){
+            $lootsFetched['idLoot'] = $lootsFetched['idLoot'] == null ? null : intval($lootsFetched['idLoot']);
             array_push($loot, ['idLoot' => $lootsFetched['idLoot'], 'libelle' => $lootsFetched['libelle']]);
         }
         $matchingData = $loot;
