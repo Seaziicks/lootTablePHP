@@ -88,7 +88,7 @@ switch ($http_method) {
                     AND d.roll in (' . $rolls . ')
                     AND d.idLoot = l.idLoot
                     order by roll');
-            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+            $fetchedResult = $result->fetchAll(PDO::FETCH_ASSOC);
             $result->closeCursor();
             $bdd = null;
 
@@ -155,7 +155,7 @@ switch ($http_method) {
                     AND d.roll in (' . $rolls . ')
                     AND d.idLoot = l.idLoot
                     order by roll');
-                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                $fetchedResult = $result->fetchAll(PDO::FETCH_ASSOC);
                 $result->closeCursor();
                 $bdd = null;
 

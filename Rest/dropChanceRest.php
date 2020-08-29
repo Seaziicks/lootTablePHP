@@ -80,7 +80,7 @@ switch ($http_method) {
                     AND d.idLoot in (' . $idLoots . ')
                     AND d.idLoot = l.idLoot
                     order by minRoll');
-            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+            $fetchedResult = $result->fetchAll(PDO::FETCH_ASSOC);
             $result->closeCursor();
             $bdd = null;
 
@@ -147,7 +147,7 @@ switch ($http_method) {
                     AND d.idLoot in (' . $idLoots . ')
                     AND d.idLoot = l.idLoot
                     order by minRoll');
-            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+            $fetchedResult = $result->fetchAll(PDO::FETCH_ASSOC);
             $result->closeCursor();
             $bdd = null;
 

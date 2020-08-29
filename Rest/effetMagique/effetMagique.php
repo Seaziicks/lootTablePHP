@@ -1,6 +1,6 @@
 <?php
 /// Librairies éventuelles (pour la connexion à la BDD, etc.)
-include('../db.php');
+include('../../db.php');
 
 /// Paramétrage de l'entête HTTP (pour la réponse au Client)
 header("Content-Type:application/json");
@@ -25,18 +25,44 @@ switch ($http_method){
         break;
 
     case "POST":
+        try {
+            $effetMagique = json_decode($_GET['EffetMagique']);
+            $sql = "INSERT INTO `effetmagique` (`idObjet`,`nom`,`description`) 
+                                        VALUES (:idObjet, :nom, :description)";
+
+            $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+            $commit->bindParam(':idObjet',$effetMagique->idObjet, PDO::PARAM_INT);
+            $commit->bindParam(':nom',$effetMagique->nom, PDO::PARAM_STR);
+            $commit->bindParam(':description',$effetMagique->description, PDO::PARAM_STR);
+            $commit->execute();
+            $result = $bdd->query('SELECT *
+					from effetmagique 
+                    where idEffetMagique=' . $bdd->lastInsertId() . '
+                    ');
+            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+            $result->closeCursor();
+            $bdd = null;
+
+            http_response_code(201);
+            deliver_responseRest(201, "effetMagique added", $fetchedResult);
+        } catch (PDOException $e) {
+            deliver_responseRest(400, "effetMagique add error in SQL", $sql . "<br>" . $e->getMessage());
+        }
+        break;
+    case "PUT":
         if (!(empty($_POST['idEffetMagique']))) {
             try {
+                $effetMagique = json_decode($_GET['EffetMagique']);
                 $sql = "UPDATE effetmagique 
-                SET libelle = '" . $_POST['libelle'] . "', 
-                description = '" . $_POST['description'] . "', 
-                WHERE idEffetMagique = " . $_POST['idEffetMagique'];
+                SET nom = '" . $effetMagique->nom . "', 
+                description = '" . $effetMagique->description . "', 
+                WHERE idEffetMagique = " . $effetMagique->idEffetMagique;
 
 
                 $bdd->exec($sql);
                 $result = $bdd->query('SELECT *
 					from effetmagique 
-                    where idEffetMagique='.$_GET['idEffetMagique']);
+                    where idEffetMagique='.$effetMagique->idEffetMagique);
                 $result->closeCursor();
                 $bdd = null;
                 http_response_code(201);

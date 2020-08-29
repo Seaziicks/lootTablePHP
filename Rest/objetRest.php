@@ -39,22 +39,21 @@ switch ($http_method) {
     case "POST":
         try {
             $objet = json_decode($_GET['Objet']);
-            $sql = "INSERT INTO `objet` (`nom`,`bonus`,`type`,`effetMagique`,`prix`,`prixNonHumanoide`,`devise`,`malediction`,`categorie`,`materiau`,
+            $sql = "INSERT INTO `objet` (`nom`,`bonus`,`type`,`prix`,`prixNonHumanoide`,`devise`,`idMalediction`,`categorie`,`idMateriaux`,
                                         `taille`,`degats`,`critique`,`facteurPortee`,`armure`,`bonusDexteriteMax`,`malusArmureTests`,`risqueEchecSorts`) 
-                                        VALUES (:nom, :bonus, :type, :effetMagique, :prix, :prixNonHumanoide, :devise, :malediction, :categorie, :materiau,
+                                        VALUES (:nom, :bonus, :type, :prix, :prixNonHumanoide, :devise, :idMalediction, :categorie, :idMateriaux,
                                                 :taille, :degats, :critique, :facteurPortee, :armure, :bonusDexteriteMax, :malusArmureTests, :risqueEchecSorts)";
 
             $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
             $commit->bindParam(':nom',$objet->nom, PDO::PARAM_STR);
             $commit->bindParam(':bonus',$objet->bonus, PDO::PARAM_INT);
             $commit->bindParam(':type',$objet->type, PDO::PARAM_STR);
-            $commit->bindParam(':effetMagique',$objet->effetMagique, PDO::PARAM_INT);
             $commit->bindParam(':prix',$objet->prix, PDO::PARAM_INT);
             $commit->bindParam(':prixNonHumanoide',$objet->prixNonHumanoide, PDO::PARAM_INT);
             $commit->bindParam(':devise',$objet->devise, PDO::PARAM_INT);
-            $commit->bindParam(':malediction',$objet->malediction, PDO::PARAM_INT);
+            $commit->bindParam(':idMalediction',$objet->idMalediction, PDO::PARAM_INT);
             $commit->bindParam(':categorie',$objet->categorie, PDO::PARAM_STR);
-            $commit->bindParam(':materiau',$objet->materiau, PDO::PARAM_INT);
+            $commit->bindParam(':idMateriaux',$objet->idMateriaux, PDO::PARAM_INT);
             $commit->bindParam(':taille',$objet->taille, PDO::PARAM_STR);
             $commit->bindParam(':degats',$objet->degats, PDO::PARAM_INT);
             $commit->bindParam(':critique',$objet->critique, PDO::PARAM_STR);
@@ -79,13 +78,50 @@ switch ($http_method) {
         }
         break;
     case "PUT":
-        if (!empty($_GET['idMateriaux'])) {
+        if (!empty($_GET['idObjet']) && !empty($_GET['idMalediction'])) {
+            $sql = "UPDATE objet 
+                SET idMalediction = :idMalediction
+                WHERE idObjet = :idObjet;";
+
+            $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+            $commit->bindParam(':idMalediction',$_GET['idMalediction'], PDO::PARAM_INT);
+            $commit->execute();
+
+            $result = $bdd->query('SELECT *
+					from objet
+                    where idObjet=' . $_GET['idObjet'] . '
+                    ');
+            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+            $result->closeCursor();
+            $bdd = null;
+            http_response_code(201);
+            deliver_responseRest(201, "objet malediction modified", $fetchedResult);
+        } elseif (!empty($_GET['idObjet']) && !empty($_GET['idMateriaux'])) {
+            $sql = "UPDATE objet 
+                SET idMateriaux = :idMateriaux
+                WHERE idObjet = :idObjet;";
+
+            $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+            $commit->bindParam(':idMateriaux',$_GET['idMateriaux'], PDO::PARAM_INT);
+            $commit->execute();
+
+            $result = $bdd->query('SELECT *
+					from objet
+                    where idObjet=' . $_GET['idObjet'] . '
+                    ');
+            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+            $result->closeCursor();
+            $bdd = null;
+            http_response_code(201);
+            deliver_responseRest(201, "objet materiau modified", $fetchedResult);
+        }
+        elseif (!empty($_GET['idObjet'])) {
             try {
                 $objet = json_decode($_GET['Objet']);
                 $sql = "UPDATE objet 
-                SET nom = :nom, bonus = :bonus, type = :type, effetMagique = :effetMagique, prix = :prix,
-                prixNonHumanoide = :prixNonHumanoide, devise = :devise, malediction = :malediction, categorie = :categorie,
-                materiau = :materiau, taille = :taille, degats = :degats, critique = :critique, facteurPortee = :facteurPortee,
+                SET nom = :nom, bonus = :bonus, type = :type, prix = :prix,
+                prixNonHumanoide = :prixNonHumanoide, devise = :devise, idMalediction = :idMalediction, categorie = :categorie,
+                idMateriaux = :idMateriaux, taille = :taille, degats = :degats, critique = :critique, facteurPortee = :facteurPortee,
                 armure = :armure, bonusDexteriteMax = :bonusDexteriteMax, malusArmureTests = :malusArmureTests, risqueEchecSorts = :risqueEchecSorts
                 WHERE idObjet = :idObjet;";
 
@@ -98,9 +134,9 @@ switch ($http_method) {
                 $commit->bindParam(':prix',$objet->prix, PDO::PARAM_INT);
                 $commit->bindParam(':prixNonHumanoide',$objet->prixNonHumanoide, PDO::PARAM_INT);
                 $commit->bindParam(':devise',$objet->devise, PDO::PARAM_INT);
-                $commit->bindParam(':malediction',$objet->malediction, PDO::PARAM_INT);
+                $commit->bindParam(':idMalediction',$objet->idMalediction, PDO::PARAM_INT);
                 $commit->bindParam(':categorie',$objet->categorie, PDO::PARAM_STR);
-                $commit->bindParam(':materiau',$objet->materiau, PDO::PARAM_INT);
+                $commit->bindParam(':idMateriaux',$objet->idMateriaux, PDO::PARAM_INT);
                 $commit->bindParam(':taille',$objet->taille, PDO::PARAM_STR);
                 $commit->bindParam(':degats',$objet->degats, PDO::PARAM_INT);
                 $commit->bindParam(':critique',$objet->critique, PDO::PARAM_STR);
@@ -123,8 +159,8 @@ switch ($http_method) {
             } catch (PDOException $e) {
                 deliver_responseRest(400, "$objet modification error in SQL", $sql . "<br>" . $e->getMessage());
             }
-            break;
         }
+        break;
 }
 /// Envoi de la réponse au Client
 function deliver_responseRest($status, $status_message, $data)
