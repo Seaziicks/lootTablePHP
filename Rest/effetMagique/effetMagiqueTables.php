@@ -73,8 +73,8 @@ switch ($http_method){
 
     case "POST":
         try {
-            print_r(json_decode($_GET['EffetMagiqueTable'])->Table);
-            $effetMagiqueTable = json_decode($_GET['EffetMagiqueTable'])->Table;
+            print_r(json_decode($_GET['EffetMagiqueTableManager'])->Table);
+            $effetMagiqueTable = json_decode($_GET['EffetMagiqueTableManager'])->Table;
             $sql = "INSERT INTO `effetMagiqueTable` (`idEffetMagique`,`position`) 
                     VALUES (:idEffetMagique, :position)";
             $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));

@@ -26,8 +26,8 @@ switch ($http_method){
 
     case "POST":
         try {
-            $effetMagiqueInfosInfos = json_decode($_GET['EffetMagiqueInfos']);
-            $effetMagiqueInfos = json_decode($_GET['EffetMagiqueInfos'])->Infos;
+            $effetMagiqueInfosInfos = json_decode($_GET['EffetMagiqueInfosManager']);
+            $effetMagiqueInfos = json_decode($_GET['EffetMagiqueInfosManager'])->Infos;
 
             $idInfos = '';
             foreach ($effetMagiqueInfos as $info) {
@@ -61,7 +61,7 @@ switch ($http_method){
     case "PUT":
         if (!(empty($_POST['idEffetMagiqueInfos']))) {
             try {
-                $effetMagiqueInfos = json_decode($_GET['EffetMagiqueInfos']);
+                $effetMagiqueInfos = json_decode($_GET['EffetMagiqueInfosManager']);
                 $sql = "UPDATE effetMagiqueInfos 
                 SET contenu = '" . $effetMagiqueInfos->contenu . "'
                 WHERE idEffetMagiqueInfos = " . $effetMagiqueInfos->idEffetMagiqueInfos;

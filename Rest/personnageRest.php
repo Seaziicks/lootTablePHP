@@ -37,6 +37,7 @@ switch ($http_method){
                 $result = $bdd->query('SELECT *
 					from personnage
                     where idPersonnage='.$_GET['idPersonnage']);
+                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
                 $result->closeCursor();
                 $bdd = null;
                 http_response_code(201);

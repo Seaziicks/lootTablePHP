@@ -60,7 +60,7 @@ switch ($http_method){
     case "PUT":
         if (!(empty($_POST['idEffetMagiqueDescription']))) {
             try {
-                $effetMagiqueDescription = json_decode($_GET['EffetMagiqueDescription']);
+                $effetMagiqueDescription = json_decode($_GET['EffetMagiqueDescriptionManager']);
                 $sql = "UPDATE effetMagiqueDescription 
                 SET contenu = '" . $effetMagiqueDescription->contenu . "'
                 WHERE idEffetMagiqueDescription = " . $effetMagiqueDescription->idEffetMagiqueDescription;

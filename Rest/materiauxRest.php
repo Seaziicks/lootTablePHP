@@ -38,7 +38,7 @@ switch ($http_method) {
 
     case "POST":
         try {
-            $materiau = json_decode($_GET['Materiau']);
+            $materiau = json_decode($_GET['Materiaux']);
             $sql = "INSERT INTO `materiaux` (`nom`,`effet`) VALUES (:nom, :effet)";
 
             $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
@@ -62,7 +62,7 @@ switch ($http_method) {
     case "PUT":
         if (!empty($_GET['idMateriaux'])) {
             try {
-                $materiau = json_decode($_GET['Materiau']);
+                $materiau = json_decode($_GET['Materiaux']);
                 $sql = "UPDATE materiaux 
                 SET nom = :nom, effet = :effet
                 WHERE idMateriaux = :idMateriaux;";
