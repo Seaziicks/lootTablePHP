@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.5
+-- version 4.9.2
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  mar. 01 sep. 2020 à 15:24
--- Version du serveur :  5.7.26
--- Version de PHP :  7.2.18
+-- Généré le :  mar. 01 sep. 2020 à 21:06
+-- Version du serveur :  10.4.10-MariaDB
+-- Version de PHP :  7.3.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `dropchance` (
   `minRoll` tinyint(4) NOT NULL,
   `maxRoll` tinyint(4) NOT NULL,
   `niveauMonstre` tinyint(4) DEFAULT NULL,
-  `multiplier` tinyint(4) NOT NULL DEFAULT '1',
+  `multiplier` tinyint(4) NOT NULL DEFAULT 1,
   `dicePower` int(11) NOT NULL,
   PRIMARY KEY (`idMonstre`,`idLoot`),
   KEY `FK_dropchance_idLoot` (`idLoot`)
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `dropchancebis` (
   `roll` tinyint(4) NOT NULL,
   `idLoot` smallint(5) UNSIGNED DEFAULT NULL,
   `niveauMonstre` tinyint(4) DEFAULT NULL,
-  `diceNumber` tinyint(4) NOT NULL DEFAULT '1',
+  `diceNumber` tinyint(4) NOT NULL DEFAULT 1,
   `dicePower` tinyint(4) NOT NULL,
   `multiplier` smallint(6) NOT NULL,
   PRIMARY KEY (`idMonstre`,`roll`),
@@ -128,14 +128,27 @@ CREATE TABLE IF NOT EXISTS `effetmagique` (
   PRIMARY KEY (`idEffetMagique`),
   UNIQUE KEY `idEffectMagique` (`idEffetMagique`),
   KEY `FK_effetmagique_idObjet` (`idObjet`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagique`
 --
 
 INSERT INTO `effetmagique` (`idEffetMagique`, `idObjet`, `title`) VALUES
-(2, 2, 'EffetMagiqueTest');
+(2, 2, 'EffetMagiqueTest'),
+(3, 6, 'Alliances bénies'),
+(4, 7, 'Alliances bénies'),
+(5, 8, 'Contact d’adamantium'),
+(6, 9, 'Contact d’adamantium'),
+(7, 10, 'Contact d’adamantium'),
+(8, 11, 'Contact d’adamantium'),
+(9, 12, 'Contact d’adamantium'),
+(10, 13, 'Contact d’adamantium'),
+(11, 14, 'Contact d’adamantium'),
+(12, 15, 'Contact d’adamantium'),
+(13, 16, 'Contact d’adamantium'),
+(14, 17, 'Contact d’adamantium'),
+(15, 18, 'Feu d’étoiles');
 
 -- --------------------------------------------------------
 
@@ -151,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiquedescription` (
   PRIMARY KEY (`idEffetMagiqueDescription`),
   UNIQUE KEY `idObjetDescription` (`idEffetMagiqueDescription`),
   KEY `FK_effetmagiquedescription_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiquedescription`
@@ -161,7 +174,31 @@ INSERT INTO `effetmagiquedescription` (`idEffetMagiqueDescription`, `idEffetMagi
 (1, 2, 'Ce casque d’aspect normal révèle sa puissance quand son utilisateur l’enfile et prononce le mot de commande. Fait d’argent rutilant et d’acier poli, un casque de mille feux nouvellement créé est serti de 10 diamants, 20 rubis, 30 opales de feu et 40 opales, chacune de ces pierres étant magiques. À ce moment, les aspérités qu’il arbore donnent l’impression que le personnage porte une couronne enchâssée de pierres précieuses. Au moindre rai de lumière, le casque brille de mille feux, d’où son nom. Les fonctions des pierres sont les suivantes :'),
 (2, 2, 'Le casque peut être utilisé une fois par round, mais chaque pierre perd son éclat après avoir utilisé son pouvoir. Tant que toutes ses pierres ne sont pas ternes, le casque de mille feux a les propriétés suivantes :'),
 (3, 2, 'Une fois que toutes les pierres ont été utilisées, elles tombent en poussière et le casque perd tous ses pouvoirs. Toute pierre que l’on essaye d’extraire se brise automatiquement.'),
-(4, 2, 'Si le porteur du casque est brûlé par un feu d’origine magique (malgré l’importante protection dont il bénéficie) et s’il rate un jet de Volonté (DD 15), une surcharge se produit et toutes les pierres restantes saturent et explosent instantanément. Les diamants deviennent des rayons prismatiques visant chacun une créature choisie au hasard parmi celles à portée (éventuellement le porteur lui-même), les rubis deviennent des murs de feu en ligne droite partant du porteur dans une direction aléatoire et les opales de feu deviennent des boules de feu centrées sur le porteur. Les opales et le casque lui-même sont détruits.');
+(4, 2, 'Si le porteur du casque est brûlé par un feu d’origine magique (malgré l’importante protection dont il bénéficie) et s’il rate un jet de Volonté (DD 15), une surcharge se produit et toutes les pierres restantes saturent et explosent instantanément. Les diamants deviennent des rayons prismatiques visant chacun une créature choisie au hasard parmi celles à portée (éventuellement le porteur lui-même), les rubis deviennent des murs de feu en ligne droite partant du porteur dans une direction aléatoire et les opales de feu deviennent des boules de feu centrées sur le porteur. Les opales et le casque lui-même sont détruits.'),
+(5, 3, 'Ces anneaux peuvent prendre des apparences très variées et vont toujours par paire. Ils sont créés pour deux personnes précises, et n\'ont aucun effet portés par une autre personne. Les deux anneaux doivent être portées par la bonne personne pour que leurs effets soient actifs.'),
+(6, 3, 'Un porteur d\'une alliance bénie connait l\'état de santé de l\'autre porteur comme par un effet de Rapport, si ce n\'est que les barrières planaires ne bloquent pas cet effet. De plus, chaque porteur peut communiquer avec l\'autre comme apr un sort de Message.'),
+(7, 3, 'Le prix indiqué est le prix de base de l\'objet, mais les alliances bénies sont souvent décorés de pierres précieuses qui en augmente le prix.'),
+(8, 4, 'Ces anneaux peuvent prendre des apparences très variées et vont toujours par paire. Ils sont créés pour deux personnes précises, et n\'ont aucun effet portés par une autre personne. Les deux anneaux doivent être portées par la bonne personne pour que leurs effets soient actifs.'),
+(9, 4, 'Un porteur d\'une alliance bénie connait l\'état de santé de l\'autre porteur comme par un effet de Rapport, si ce n\'est que les barrières planaires ne bloquent pas cet effet. De plus, chaque porteur peut communiquer avec l\'autre comme apr un sort de Message.'),
+(10, 4, 'Le prix indiqué est le prix de base de l\'objet, mais les alliances bénies sont souvent décorés de pierres précieuses qui en augmente le prix.'),
+(11, 5, 'Cet anneau en adamantium permet à son porteur de réaliser des attaques naturelles et des attaques de corps à corps comme s’il maniait une arme en adamantium.'),
+(12, 6, 'Cet anneau en adamantium permet à son porteur de réaliser des attaques naturelles et des attaques de corps à corps comme s’il maniait une arme en adamantium.'),
+(13, 7, 'Cet anneau en adamantium permet à son porteur de réaliser des attaques naturelles et des attaques de corps à corps comme s’il maniait une arme en adamantium.'),
+(14, 8, 'Cet anneau en adamantium permet à son porteur de réaliser des attaques naturelles et des attaques de corps à corps comme s’il maniait une arme en adamantium.'),
+(15, 9, 'Cet anneau en adamantium permet à son porteur de réaliser des attaques naturelles et des attaques de corps à corps comme s’il maniait une arme en adamantium.'),
+(16, 10, 'Cet anneau en adamantium permet à son porteur de réaliser des attaques naturelles et des attaques de corps à corps comme s’il maniait une arme en adamantium.'),
+(17, 11, 'Cet anneau en adamantium permet à son porteur de réaliser des attaques naturelles et des attaques de corps à corps comme s’il maniait une arme en adamantium.'),
+(18, 12, 'Cet anneau en adamantium permet à son porteur de réaliser des attaques naturelles et des attaques de corps à corps comme s’il maniait une arme en adamantium.'),
+(19, 13, 'Cet anneau en adamantium permet à son porteur de réaliser des attaques naturelles et des attaques de corps à corps comme s’il maniait une arme en adamantium.'),
+(20, 14, 'Cet anneau en adamantium permet à son porteur de réaliser des attaques naturelles et des attaques de corps à corps comme s’il maniait une arme en adamantium.'),
+(21, 15, 'Cet anneau possède deux modes d’opération, l’un quand le porteur est dans une pièce sombre ou la nuit à l’extérieur et l’autre quand il est en sous-sol ou à l’intérieur de nuit.'),
+(22, 15, 'De nuit sous un ciel dégagé ou dans une zone d’ombre ou de ténèbres, l’anneau de feu d’étoiles peut produire les effets suivants, sur ordre de son porteur.'),
+(23, 15, 'La première fonction spéciale, boules de foudre, libère 1 à 4 sphères d’électricité, au choix du porteur. Ces globes luisants ressemblent à ceux générés par le sort lumières dansantes, et le personnage les contrôle de la même façon. Les boules de foudre ont une portée de 36 mètres et une durée d’existence de 4 rounds. Le porteur peut les déplacer de 36 mètres par round. Elles font environ un mètre de diamètre et se dissipent dès qu’elles arrivent à 1,50 mètre d’une créature, cette dernière encaissant une décharge d’électricité dont la violence est inversement proportionnelle au nombre de sphères créées.'),
+(24, 15, 'Une fois la fonction activée, les boules de foudre peuvent être libérées au gré du porteur, et ce jusqu’au lever du soleil (à condition de ne pas dépasser la limite choisie). Plusieurs boules peuvent être libérées au cours d’un même round.'),
+(25, 15, 'La seconde fonction spéciale, étoiles filantes, fait apparaître des comètes miniatures dotées d’une longue queue étincelante. Chaque semaine, l’anneau peut libérer 3 étoiles filantes, simultanément ou une par une. Chacun de ces projectiles inflige 12 points de dégâts au moment de l’impact puis explose comme une boule de feu, infligeant 24 points de dégâts de feu supplémentaires sur une étendue de 1,50 mètre de rayon.'),
+(26, 15, 'Toute créature frappée de plein fouet par une étoile filante encaisse la totalité des dégâts dus à l’impact et à l’explosion. Quant à celles qui sont seulement prises dans la zone dangereuse, elles ne sont pas affectées par l’impact et ont droit à un jet de Réflexes (DD 13) pour n’essuyer que la moitié des dégâts dus à l’explosion. La portée maximale des étoiles filantes est de 21 mètres. Après avoir parcouru cette distance, elles explosent automatiquement, à moins d’avoir heurté un obstacle ou une créature au préalable. Elles se déplacent en ligne droite, et quiconque se trouve sur leur trajectoire doit réussir un jet de Réflexes (DD 13) sous peine d’être touché et de provoquer l’explosion.'),
+(27, 15, 'La nuit en intérieur, ou en sous-sol à tout moment de la journée, l’anneau de feu d’étoiles a les pouvoirs suivants.'),
+(28, 15, 'La pluie d’étincelles prend la forme d’un nuage d’étincelles violettes jaillissant de l’anneau et parcourant une distance de 6 mètres dans un arc de 3 mètres de large à sa base. Les créatures prises dans la zone d’effet subissent 2d8 points de dégâts d’électricité chacune si elles ne portent ni armes ni armures en métal. Une cible qui porte une armure métallique ou une arme en métal subit 4d8 points de dégâts d’électricité.');
 
 -- --------------------------------------------------------
 
@@ -177,7 +214,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiqueinfos` (
   PRIMARY KEY (`idEffetMagiqueInfos`),
   UNIQUE KEY `idObjetInfos` (`idEffetMagiqueInfos`),
   KEY `FK_effetmagiqueinfos_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiqueinfos`
@@ -188,7 +225,69 @@ INSERT INTO `effetmagiqueinfos` (`idEffetMagiqueInfos`, `idEffetMagique`, `conte
 (2, 2, ' <span class=\"compobj\">NLS</span> 13 '),
 (3, 2, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-objets-merveilleux-23.htm#23\">Création d’objets merveilleux</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-boule-de-feu.htm\">boule de feu</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-detection-des-morts-vivants.htm\">détection des morts-vivants</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-lame-de-feu.htm\">lame de feu</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-lumiere.htm\">lumière</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-mur-de-feu.htm\">mur de feu</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-protection-contre-les-energies-destructives.htm\">protection contre les énergies destructives</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-rayons-prismatiques.htm\">rayons prismatiques</a> '),
 (4, 2, ' <span class=\"compobj\">Prix</span> 125 000 po '),
-(5, 2, ' <span class=\"compobj\">Poids</span> 1,5 kg.');
+(5, 2, ' <span class=\"compobj\">Poids</span> 1,5 kg.'),
+(6, 3, '<span class=\"divi\">Divination</span> faible '),
+(7, 3, ' <span class=\"compobj\">NLS</span> 3 '),
+(8, 3, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-message.htm\">message</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-rapport.htm\">rapport</a> '),
+(9, 3, ' <span class=\"compobj\">Prix</span> 7 600 po (la paire).'),
+(10, 4, '<span class=\"divi\">Divination</span> faible '),
+(11, 4, ' <span class=\"compobj\">NLS</span> 3 '),
+(12, 4, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-message.htm\">message</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-rapport.htm\">rapport</a> '),
+(13, 4, ' <span class=\"compobj\">Prix</span> 7 600 po (la paire).'),
+(14, 5, '<span class=\"transmu\">Transmutation</span> puissante '),
+(15, 5, ' <span class=\"compobj\">NLS</span> 12 '),
+(16, 5, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-contact-d-adamantium.htm\">contact d’adamantium</a> '),
+(17, 5, ' <span class=\"compobj\">Prix</span> 120 000 po '),
+(18, 5, ' <span class=\"compobj\">Coût</span> 60 000 po   4 800 PX.'),
+(19, 6, '<span class=\"transmu\">Transmutation</span> puissante '),
+(20, 6, ' <span class=\"compobj\">NLS</span> 12 '),
+(21, 6, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-contact-d-adamantium.htm\">contact d’adamantium</a> '),
+(22, 6, ' <span class=\"compobj\">Prix</span> 120 000 po '),
+(23, 6, ' <span class=\"compobj\">Coût</span> 60 000 po   4 800 PX.'),
+(24, 7, '<span class=\"transmu\">Transmutation</span> puissante '),
+(25, 7, ' <span class=\"compobj\">NLS</span> 12 '),
+(26, 7, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-contact-d-adamantium.htm\">contact d’adamantium</a> '),
+(27, 7, ' <span class=\"compobj\">Prix</span> 120 000 po '),
+(28, 7, ' <span class=\"compobj\">Coût</span> 60 000 po   4 800 PX.'),
+(29, 8, '<span class=\"transmu\">Transmutation</span> puissante '),
+(30, 8, ' <span class=\"compobj\">NLS</span> 12 '),
+(31, 8, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-contact-d-adamantium.htm\">contact d’adamantium</a> '),
+(32, 8, ' <span class=\"compobj\">Prix</span> 120 000 po '),
+(33, 8, ' <span class=\"compobj\">Coût</span> 60 000 po   4 800 PX.'),
+(34, 9, '<span class=\"transmu\">Transmutation</span> puissante '),
+(35, 9, ' <span class=\"compobj\">NLS</span> 12 '),
+(36, 9, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-contact-d-adamantium.htm\">contact d’adamantium</a> '),
+(37, 9, ' <span class=\"compobj\">Prix</span> 120 000 po '),
+(38, 9, ' <span class=\"compobj\">Coût</span> 60 000 po   4 800 PX.'),
+(39, 10, '<span class=\"transmu\">Transmutation</span> puissante '),
+(40, 10, ' <span class=\"compobj\">NLS</span> 12 '),
+(41, 10, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-contact-d-adamantium.htm\">contact d’adamantium</a> '),
+(42, 10, ' <span class=\"compobj\">Prix</span> 120 000 po '),
+(43, 10, ' <span class=\"compobj\">Coût</span> 60 000 po   4 800 PX.'),
+(44, 11, '<span class=\"transmu\">Transmutation</span> puissante '),
+(45, 11, ' <span class=\"compobj\">NLS</span> 12 '),
+(46, 11, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-contact-d-adamantium.htm\">contact d’adamantium</a> '),
+(47, 11, ' <span class=\"compobj\">Prix</span> 120 000 po '),
+(48, 11, ' <span class=\"compobj\">Coût</span> 60 000 po   4 800 PX.'),
+(49, 12, '<span class=\"transmu\">Transmutation</span> puissante '),
+(50, 12, ' <span class=\"compobj\">NLS</span> 12 '),
+(51, 12, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-contact-d-adamantium.htm\">contact d’adamantium</a> '),
+(52, 12, ' <span class=\"compobj\">Prix</span> 120 000 po '),
+(53, 12, ' <span class=\"compobj\">Coût</span> 60 000 po   4 800 PX.'),
+(54, 13, '<span class=\"transmu\">Transmutation</span> puissante '),
+(55, 13, ' <span class=\"compobj\">NLS</span> 12 '),
+(56, 13, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-contact-d-adamantium.htm\">contact d’adamantium</a> '),
+(57, 13, ' <span class=\"compobj\">Prix</span> 120 000 po '),
+(58, 13, ' <span class=\"compobj\">Coût</span> 60 000 po   4 800 PX.'),
+(59, 14, '<span class=\"transmu\">Transmutation</span> puissante '),
+(60, 14, ' <span class=\"compobj\">NLS</span> 12 '),
+(61, 14, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-contact-d-adamantium.htm\">contact d’adamantium</a> '),
+(62, 14, ' <span class=\"compobj\">Prix</span> 120 000 po '),
+(63, 14, ' <span class=\"compobj\">Coût</span> 60 000 po   4 800 PX.'),
+(64, 15, '<span class=\"evoca\">Évocation</span> puissante '),
+(65, 15, ' <span class=\"compobj\">NLS</span> 12 '),
+(66, 15, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-boule-de-feu.htm\">boule de feu</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-eclair.htm\">éclair</a>, lueur féerique et lumière '),
+(67, 15, ' <span class=\"compobj\">Prix</span> 50 000 po.');
 
 -- --------------------------------------------------------
 
@@ -204,14 +303,15 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetable` (
   PRIMARY KEY (`idEffetMagiqueTable`),
   UNIQUE KEY `idTable` (`idEffetMagiqueTable`),
   KEY `FK_effetmagiquetable_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiquetable`
 --
 
 INSERT INTO `effetmagiquetable` (`idEffetMagiqueTable`, `idEffetMagique`, `position`) VALUES
-(1, 2, 1);
+(1, 2, 1),
+(2, 15, 3);
 
 -- --------------------------------------------------------
 
@@ -226,7 +326,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetabletitle` (
   PRIMARY KEY (`idEffetMagiqueTableTitle`),
   UNIQUE KEY `idTableObjetTitle` (`idEffetMagiqueTableTitle`),
   KEY `FK_effetmagiquetabletitle_idEffetMagiqueTable` (`idEffetMagiqueTable`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiquetabletitle`
@@ -234,7 +334,8 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetabletitle` (
 
 INSERT INTO `effetmagiquetabletitle` (`idEffetMagiqueTableTitle`, `idEffetMagiqueTable`) VALUES
 (1, 1),
-(2, 1);
+(2, 1),
+(3, 2);
 
 -- --------------------------------------------------------
 
@@ -250,7 +351,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetabletitlecontent` (
   PRIMARY KEY (`idEffetMagiqueTableTitleContent`),
   UNIQUE KEY `idTableObjetTitleContent` (`idEffetMagiqueTableTitleContent`),
   KEY `FK_effetmagiquetabletitlecontent_idEffetMagiqueTableTitle` (`idEffetMagiqueTableTitle`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiquetabletitlecontent`
@@ -265,7 +366,9 @@ INSERT INTO `effetmagiquetabletitlecontent` (`idEffetMagiqueTableTitleContent`, 
 (6, 2, '1d100'),
 (7, 2, 'Animal'),
 (8, 2, '1d100'),
-(9, 2, 'Animal');
+(9, 2, 'Animal'),
+(10, 3, 'Nombre de boules de foudre'),
+(11, 3, 'Dégâts');
 
 -- --------------------------------------------------------
 
@@ -280,7 +383,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetabletr` (
   PRIMARY KEY (`idEffetMagiqueTableTr`),
   UNIQUE KEY `idTableObjetTr` (`idEffetMagiqueTableTr`),
   KEY `FK_effetmagiquetabletr_idEffetMagiqueTable` (`idEffetMagiqueTable`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiquetabletr`
@@ -291,7 +394,11 @@ INSERT INTO `effetmagiquetabletr` (`idEffetMagiqueTableTr`, `idEffetMagiqueTable
 (2, 1),
 (3, 1),
 (4, 1),
-(5, 1);
+(5, 1),
+(6, 2),
+(7, 2),
+(8, 2),
+(9, 2);
 
 -- --------------------------------------------------------
 
@@ -307,7 +414,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetabletrcontent` (
   PRIMARY KEY (`idEffetMagiqueTableTrContent`),
   UNIQUE KEY `idTableObjetTrContent` (`idEffetMagiqueTableTrContent`),
   KEY `FK_effetmagiquetabletrcontent_idEffetMagiqueTableTr` (`idEffetMagiqueTableTr`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiquetabletrcontent`
@@ -343,7 +450,15 @@ INSERT INTO `effetmagiquetabletrcontent` (`idEffetMagiqueTableTrContent`, `idEff
 (27, 5, ' '),
 (28, 5, ' '),
 (29, 5, '91–100'),
-(30, 5, 'Tigre ');
+(30, 5, 'Tigre '),
+(31, 6, '4'),
+(32, 6, '1d6 points de dégâts d’électricité chacune'),
+(33, 7, '3'),
+(34, 7, '2d6 points de dégâts d’électricité chacune'),
+(35, 8, '2'),
+(36, 8, '3d6 points de dégâts d’électricité chacune'),
+(37, 9, '1'),
+(38, 9, '4d6 points de dégâts d’électricité');
 
 -- --------------------------------------------------------
 
@@ -359,14 +474,16 @@ CREATE TABLE IF NOT EXISTS `effetmagiqueul` (
   PRIMARY KEY (`idEffetMagiqueUl`),
   UNIQUE KEY `idUlObjet` (`idEffetMagiqueUl`),
   KEY `FK_effetmagiqueul_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiqueul`
 --
 
 INSERT INTO `effetmagiqueul` (`idEffetMagiqueUl`, `idEffetMagique`, `position`) VALUES
-(1, 2, 1);
+(1, 2, 1),
+(2, 15, 2),
+(3, 15, 7);
 
 -- --------------------------------------------------------
 
@@ -382,7 +499,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiqueulcontent` (
   PRIMARY KEY (`idEffetMagiqueUlContent`),
   UNIQUE KEY `idUlObjetContent` (`idEffetMagiqueUlContent`),
   KEY `FK_effetmagiqueulcontent_idEffetMagiqueUl` (`idEffetMagiqueUl`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiqueulcontent`
@@ -392,7 +509,13 @@ INSERT INTO `effetmagiqueulcontent` (`idEffetMagiqueUlContent`, `idEffetMagiqueU
 (1, 1, 'Diamant : rayons prismatiques (jet de sauvegarde DD 20)'),
 (2, 1, 'Rubis : mur de feu'),
 (3, 1, 'Opale de feu : boule de feu (10d6, jet de Réflexes DD 20 pour demi-dégâts)'),
-(4, 1, 'Opale : lumière');
+(4, 1, 'Opale : lumière'),
+(5, 2, 'Boules de foudre (spécial, 1 fois par nuit)'),
+(6, 2, 'Étoiles filantes (spécial, 3 par semaine)'),
+(7, 2, 'Lumière (2 fois par nuit)'),
+(8, 2, 'Lumières dansantes (1 fois par heure)'),
+(9, 3, 'Lueur féerique (2 fois par jour)'),
+(10, 3, 'Pluie d’étincelles (spécial, 1 fois par jour)');
 
 -- --------------------------------------------------------
 
@@ -585,14 +708,27 @@ CREATE TABLE IF NOT EXISTS `objet` (
   KEY `FK_objet_idMalediction` (`idMalediction`),
   KEY `FK_objet_idMateriaux` (`idMateriaux`),
   KEY `FK_objet_idPersonnage` (`idPersonnage`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `objet`
 --
 
 INSERT INTO `objet` (`idObjet`, `idPersonnage`, `nom`, `bonus`, `type`, `prix`, `prixNonHumanoide`, `devise`, `idMalediction`, `categorie`, `idMateriaux`, `taille`, `degats`, `critique`, `facteurPortee`, `armure`, `bonusDexteriteMax`, `malusArmureTests`, `risqueEchecSorts`) VALUES
-(2, NULL, 'objetTest', NULL, 'Test', 1000, NULL, 'po', 1, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+(2, 1, 'objetTest', NULL, 'Test', 1000, NULL, 'po', 1, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(6, NULL, 'Alliances bénies', NULL, 'Anneau', 7600, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(7, 1, 'Alliances bénies', NULL, 'Anneau', 7600, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(8, 1, 'Contact d’adamantium', NULL, 'Anneau', 120000, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(9, 1, 'Contact d’adamantium', NULL, 'Anneau', 120000, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(10, 1, 'Contact d’adamantium', NULL, 'Anneau', 120000, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(11, 1, 'Contact d’adamantium', NULL, 'Anneau', 120000, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(12, 1, 'Contact d’adamantium', NULL, 'Anneau', 120000, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(13, 1, 'Contact d’adamantium', NULL, 'Anneau', 120000, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(14, 1, 'Contact d’adamantium', NULL, 'Anneau', 120000, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(15, 1, 'Contact d’adamantium', NULL, 'Anneau', 120000, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(16, 1, 'Contact d’adamantium', NULL, 'Anneau', 120000, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(17, 1, 'Contact d’adamantium', NULL, 'Anneau', 120000, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(18, 1, 'Feu d’étoiles', NULL, 'Anneau', 50000, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 

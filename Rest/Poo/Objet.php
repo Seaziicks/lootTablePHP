@@ -30,21 +30,23 @@ class Objet implements JsonSerializable
     }
 	public function setIdObjet($idObjet)
     {
-        $idObjet = (int) $idObjet;
+        if($idObjet) {
+            $idObjet = (int)$idObjet;
 
-        if ($idObjet > 0)
-        {
-            $this->_idObjet = $idObjet;
+            if ($idObjet > 0) {
+                $this->_idObjet = $idObjet;
+            }
         }
     }
 
 	public function setIdPersonnage($idPersonnage)
     {
-        $idPersonnage = (int) $idPersonnage;
+        if($idPersonnage) {
+            $idPersonnage = (int)$idPersonnage;
 
-        if ($idPersonnage > 0)
-        {
-            $this->_idPersonnage = $idPersonnage;
+            if ($idPersonnage > 0) {
+                $this->_idPersonnage = $idPersonnage;
+            }
         }
     }
 
@@ -57,7 +59,9 @@ class Objet implements JsonSerializable
     }
 	public function setBonus($bonus)
     {
-        $this->_bonus = (int)$bonus;
+        if($bonus) {
+            $this->_bonus = (int)$bonus;
+        }
     }
 
 	public function setType($type)
@@ -69,20 +73,22 @@ class Objet implements JsonSerializable
     }
 	public function setPrix($prix)
     {
-        $prix = (float) $prix;
+        if($prix) {
+            $prix = (float)$prix;
 
-        if ($prix > 0)
-        {
-            $this->_prix = $prix;
+            if ($prix > 0) {
+                $this->_prix = $prix;
+            }
         }
     }
 	public function setPrixNonHumanoide($prixNonHumanoide)
     {
-        $prixNonHumanoide = (float) $prixNonHumanoide;
+        if($prixNonHumanoide) {
+            $prixNonHumanoide = (float)$prixNonHumanoide;
 
-        if ($prixNonHumanoide > 0)
-        {
-            $this->_prixNonHumanoide = $prixNonHumanoide;
+            if ($prixNonHumanoide > 0) {
+                $this->_prixNonHumanoide = $prixNonHumanoide;
+            }
         }
     }
 
@@ -96,11 +102,12 @@ class Objet implements JsonSerializable
 
 	public function setIdMalediction($idMalediction)
     {
-        $idMalediction = (int) $idMalediction;
+        if($idMalediction) {
+            $idMalediction = (int)$idMalediction;
 
-        if ($idMalediction > 0)
-        {
-            $this->_idMalediction = $idMalediction;
+            if ($idMalediction > 0) {
+                $this->_idMalediction = $idMalediction;
+            }
         }
     }
 
@@ -114,11 +121,12 @@ class Objet implements JsonSerializable
 
 	public function setIdMateriaux($idMateriaux)
     {
-        $idMateriaux = (int) $idMateriaux;
+        if($idMateriaux) {
+            $idMateriaux = (int)$idMateriaux;
 
-        if ($idMateriaux > 0)
-        {
-            $this->_idMateriaux = $idMateriaux;
+            if ($idMateriaux > 0) {
+                $this->_idMateriaux = $idMateriaux;
+            }
         }
     }
 
@@ -155,15 +163,21 @@ class Objet implements JsonSerializable
     }
 	public function setArmure($armure)
     {
-        $this->_armure = (int)$armure;
+        if ($armure) {
+            $this->_armure = (int)$armure;
+        }
     }
 	public function setBonusDexteriteMax($bonusDexteriteMax)
     {
-        $this->_bonusDexteriteMax = (int)$bonusDexteriteMax;
+        if ($bonusDexteriteMax) {
+            $this->_bonusDexteriteMax = (int)$bonusDexteriteMax;
+        }
     }
 	public function setMalusArmureTests($malusArmureTests)
     {
-        $this->_malusArmureTests = (int)$malusArmureTests;
+        if ($malusArmureTests) {
+            $this->_malusArmureTests = (int)$malusArmureTests;
+        }
     }
 
 	public function setRisqueEchecSorts($risqueEchecSorts)

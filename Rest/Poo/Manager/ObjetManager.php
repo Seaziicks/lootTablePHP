@@ -40,23 +40,24 @@ class ObjetManager
     {
         $objet = json_decode($objetData);
 
-        $sql = "INSERT INTO `objet` (`nom`,`bonus`,`type`,`prix`,`prixNonHumanoide`,`devise`,`idMalediction`,`categorie`,`idMateriaux`,
+        $sql = "INSERT INTO `objet` (`idPersonnage`,`nom`,`bonus`,`type`,`prix`,`prixNonHumanoide`,`devise`,`idMalediction`,`categorie`,`idMateriaux`,
                                         `taille`,`degats`,`critique`,`facteurPortee`,`armure`,`bonusDexteriteMax`,`malusArmureTests`,`risqueEchecSorts`) 
-                                        VALUES (:nom, :bonus, :type, :prix, :prixNonHumanoide, :devise, :idMalediction, :categorie, :idMateriaux,
+                                        VALUES (:idPersonnage, :nom, :bonus, :type, :prix, :prixNonHumanoide, :devise, :idMalediction, :categorie, :idMateriaux,
                                                 :taille, :degats, :critique, :facteurPortee, :armure, :bonusDexteriteMax, :malusArmureTests, :risqueEchecSorts)";
 
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $commit->bindParam(':idPersonnage',$objet->idPersonnage, PDO::PARAM_INT);
         $commit->bindParam(':nom',$objet->nom, PDO::PARAM_STR);
         $commit->bindParam(':bonus',$objet->bonus, PDO::PARAM_INT);
         $commit->bindParam(':type',$objet->type, PDO::PARAM_STR);
         $commit->bindParam(':prix',$objet->prix, PDO::PARAM_INT);
         $commit->bindParam(':prixNonHumanoide',$objet->prixNonHumanoide, PDO::PARAM_INT);
-        $commit->bindParam(':devise',$objet->devise, PDO::PARAM_INT);
+        $commit->bindParam(':devise',$objet->devise, PDO::PARAM_STR);
         $commit->bindParam(':idMalediction',$objet->idMalediction, PDO::PARAM_INT);
         $commit->bindParam(':categorie',$objet->categorie, PDO::PARAM_STR);
         $commit->bindParam(':idMateriaux',$objet->idMateriaux, PDO::PARAM_INT);
         $commit->bindParam(':taille',$objet->taille, PDO::PARAM_STR);
-        $commit->bindParam(':degats',$objet->degats, PDO::PARAM_INT);
+        $commit->bindParam(':degats',$objet->degats, PDO::PARAM_STR);
         $commit->bindParam(':critique',$objet->critique, PDO::PARAM_STR);
         $commit->bindParam(':facteurPortee',$objet->facteurPortee, PDO::PARAM_STR);
         $commit->bindParam(':armure',$objet->armure, PDO::PARAM_INT);
@@ -126,18 +127,20 @@ class ObjetManager
     public function getObjetAsNonJSon($idObjet) {
         $unmodifiedObjet = $this->getObjet($idObjet);
         $Objet = json_decode(json_encode($unmodifiedObjet));
-        unset($Objet->idMateriaux);
-        unset($Objet->idMalediction);
 
-        if ($Objet->proprieteMagique) {
-            $EffetMagiqueManager = new EffetMagiqueManager($this->_db);
-            $Objet->proprieteMagique = $EffetMagiqueManager->getAllEffetMagiqueTableAsNotJSon($idObjet);
-        }
-        if ($Objet->malediction) {
+
+
+
+        $EffetMagiqueManager = new EffetMagiqueManager($this->_db);
+        $Objet->proprieteMagique = $EffetMagiqueManager->getAllEffetMagiqueTableAsNotJSon($idObjet);
+
+        if (isset($Objet->idMalediction)) {
+            unset($Objet->idMateriaux);
             $MaledictionManager = new Maledictionmanager($this->_db);
             $Objet->malediction = $MaledictionManager->getMaledictionAsNonJSon($unmodifiedObjet->_idMalediction);
         }
-        if ($Objet->materiau) {
+        if (isset($Objet->idMateriaux)) {
+            unset($Objet->idMalediction);
             $MateriauxManager = new MateriauxManager($this->_db);
             $Objet->materiau = $MateriauxManager->getMateriauxAsNonJSon($unmodifiedObjet->_idMateriaux);
         }
@@ -151,21 +154,29 @@ class ObjetManager
         unset($objetData->proprieteMagique);
         unset($objetData->malediction);
         unset($objetData->materiau);
-        $MaledictionManager = new MaledictionManager($this->_db);
-        $malediction = $MaledictionManager->addMalediction(json_encode($objet->malediction));
+        if (isset($objet->malediction)) {
+            $MaledictionManager = new MaledictionManager($this->_db);
+            $malediction = $MaledictionManager->addMalediction(json_encode($objet->malediction));
+            $objetData->idMalediction = $malediction->_idMalediction;
+        } else
+            $objetData->idMalediction = null;
 
-        $MateriauxManager = new MateriauxManager($this->_db);
-        $materiaux = $MateriauxManager->addMateriaux(json_encode($objet->materiau));
+        if (isset($objet->materiau)) {
+            $MateriauxManager = new MateriauxManager($this->_db);
+            $materiaux = $MateriauxManager->addMateriaux(json_encode($objet->materiau));
+            $objetData->idMateriaux = $materiaux->_idMateriaux;
+        } else
+            $objetData->idMateriaux = null;
 
-        $objetData->idMalediction = $malediction->_idMalediction;
-        $objetData->idMateriaux = $materiaux->_idMateriaux;
 
         $createdObjet = $this->addObjet(json_encode($objetData));
 
-        $EffetMagiqueManager = new EffetMagiqueManager($this->_db);
+        if (isset($objet->proprieteMagique)) {
+            $EffetMagiqueManager = new EffetMagiqueManager($this->_db);
 
-        foreach($objet->proprieteMagique as $propriete) {
-            $EffetMagiqueManager->addCompleteEffetMagique($propriete, $createdObjet->_idObjet);
+            foreach ($objet->proprieteMagique as $propriete) {
+                $EffetMagiqueManager->addCompleteEffetMagique($propriete, $createdObjet->_idObjet);
+            }
         }
 
         return $this->getObjetAsNonJSon($createdObjet->_idObjet);

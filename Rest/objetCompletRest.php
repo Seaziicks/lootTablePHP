@@ -36,6 +36,20 @@ switch ($http_method) {
             http_response_code(200);
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Je vous le fais à un prix d'ami !", $matchingData);
+        } elseif (isset($_GET['idPersonnage'])) {
+            /// Récupération des critères de recherche envoyés par le Client
+            $objetsQuery = $bdd->query('SELECT idObjet
+                                                FROM objet
+                                                WHERE idPersonnage = ' . $_GET['idPersonnage'] . '');
+            $ids = [];
+            while($objetFetched=$objetsQuery->fetch(PDO::FETCH_ASSOC)){
+                array_push($ids, intval($objetFetched['idObjet']));
+            }
+            $matchingData = $ids;
+            http_response_code(200);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Voici le catalogue de ce que vous pourrez trouver chez nous.", $matchingData);
+            break;
         }
         break;
 
