@@ -72,7 +72,7 @@ class ObjetManager
         $result->closeCursor();
         $bdd = null;
 
-        return new Objet($fetchedResult);;
+        return new Objet($fetchedResult);
     }
 
     public function updateObjet($objetData)
@@ -115,7 +115,7 @@ class ObjetManager
         $result->closeCursor();
         $bdd = null;
 
-        return new Objet($fetchedResult);;
+        return new Objet($fetchedResult);
     }
 
     public function deleteObjet($idObjet)
