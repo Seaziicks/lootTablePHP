@@ -1,11 +1,11 @@
 <?php
 
 
-class EffetMagique
+class EffetMagique implements JsonSerializable
 {
     public
         $_idEffetMagique,
-        $_Objet,
+        $_idObjet,
         $_nom;
 
 	public function __construct(array $donnees)
@@ -23,19 +23,13 @@ class EffetMagique
         }
     }
 
-	public function setObjet($ID_Objet)
+	public function setIdObjet($ID_Objet)
     {
         $ID_Objet = (int) $ID_Objet;
 
         if ($ID_Objet > 0)
         {
-            include('BDD.php');
-            $bdd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING); // On émet une alerte à chaque fois qu'une requête a échoué.
-
-            $manager = new ObjetManager($bdd);
-
-            $equipement = $manager->getObjet($ID_Objet);
-            $this->_Objet = $equipement;
+            $this->_idObjet = $ID_Objet;
         }
     }
 
@@ -61,6 +55,13 @@ class EffetMagique
                 $this->$method($value);
             }
         }
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'nom' => $this->_nom
+        ];
     }
 
 }

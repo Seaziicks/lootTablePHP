@@ -1,11 +1,11 @@
 <?php
 
 
-class Objet
+class Objet implements JsonSerializable
 {
     public
         $_idObjet,
-        $_Personnage,
+        $_idPersonnage,
         $_nom,
         $_bonus,
         $_type,
@@ -38,19 +38,13 @@ class Objet
         }
     }
 
-	public function setPersonnage($Personnage)
+	public function setIdPersonnage($idPersonnage)
     {
-        $Personnage = (int) $Personnage;
+        $idPersonnage = (int) $idPersonnage;
 
-        if ($Personnage > 0)
+        if ($idPersonnage > 0)
         {
-            include('BDD.php');
-            $bdd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING); // On émet une alerte à chaque fois qu'une requête a échoué.
-
-            $manager = new PersonnageManager($bdd);
-
-            $equipement = $manager->get($Personnage);
-            $this->_Personnage = $equipement;
+            $this->_idPersonnage = $idPersonnage;
         }
     }
 
@@ -106,13 +100,7 @@ class Objet
 
         if ($idMalediction > 0)
         {
-            include('BDD.php');
-            $bdd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING); // On émet une alerte à chaque fois qu'une requête a échoué.
-
-            $manager = new MaledictionManager($bdd);
-
-            $equipement = $manager->get($idMalediction);
-            $this->_idMalediction = $equipement;
+            $this->_idMalediction = $idMalediction;
         }
     }
 
@@ -130,13 +118,7 @@ class Objet
 
         if ($idMateriaux > 0)
         {
-            include('BDD.php');
-            $bdd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING); // On émet une alerte à chaque fois qu'une requête a échoué.
-
-            $manager = new MateriauxManager($bdd);
-
-            $equipement = $manager->get($idMateriaux);
-            $this->_idMateriaux = $equipement;
+            $this->_idMateriaux = $idMateriaux;
         }
     }
 
@@ -206,6 +188,31 @@ class Objet
                 $this->$method($value);
             }
         }
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'idObjet' => $this->_idObjet,
+            'idPersonnage' => $this->_idPersonnage,
+            'nom' => $this->_nom,
+            'bonus' => $this->_bonus,
+            'type' => $this->_type,
+            'prix' => $this->_prix,
+            'prixNonHumanoide' => $this->_prixNonHumanoide,
+            'devise' => $this->_devise,
+            'idMalediction' => $this->_idMalediction,
+            'categorie' => $this->_categorie,
+            'idMateriaux' => $this->_idMateriaux,
+            'taille' => $this->_taille,
+            'degats' => $this->_degats,
+            'critique' => $this->_critique,
+            'facteurPortee' => $this->_facteurPortee,
+            'armure' => $this->_armure,
+            'bonusDesteriteMax' => $this->_bonusDexteriteMax,
+            'malusArmureTests' => $this->_malusArmureTests,
+            'risqueEchecSorts' => $this->_risqueEchecSorts
+        ];
     }
 
 /*

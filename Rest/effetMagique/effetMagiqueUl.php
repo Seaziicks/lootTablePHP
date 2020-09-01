@@ -28,7 +28,7 @@ switch ($http_method){
 
                 $li= [];
                 while ($effetMagiqueUlContent = $effetMagiqueUlContentsQuery->fetch(PDO::FETCH_ASSOC)) {
-                        array_push($li, $effetMagiqueUlTrContent['contenu']);
+                        array_push($li, $effetMagiqueUlContent['contenu']);
                 }
                 $ul['li'] = $li;
 
@@ -44,7 +44,7 @@ switch ($http_method){
 
     case "POST":
         try {
-            print_r(json_decode($_GET['EffetMagiqueUlManager'])->Ul);
+
             $effetMagiqueUl = json_decode($_GET['EffetMagiqueUlManager'])->Ul;
             $sql = "INSERT INTO `effetmagiqueul` (`idEffetMagique`,`position`) 
                     VALUES (:idEffetMagique, :position)";

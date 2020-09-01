@@ -17,7 +17,7 @@ switch ($http_method) {
                                                     WHERE idObjet = ' . $_GET['idObjet']);
 
             $objetFetched = $objetQuery->fetch(PDO::FETCH_ASSOC);
-            $objetData = $objetFetched;
+            $matchingData = $objetFetched;
             http_response_code(200);
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Je vous le fais à un prix d'ami !", $matchingData);

@@ -26,8 +26,8 @@ switch ($http_method){
 
     case "POST":
         try {
-            $effetMagiqueInfosInfos = json_decode($_GET['EffetMagiqueInfosManager']);
-            $effetMagiqueInfos = json_decode($_GET['EffetMagiqueInfosManager'])->Infos;
+            $effetMagiqueInfosInfos = json_decode($_GET['EffetMagiqueInfos']);
+            $effetMagiqueInfos = json_decode($_GET['EffetMagiqueInfos'])->Infos;
 
             $idInfos = '';
             foreach ($effetMagiqueInfos as $info) {
@@ -43,7 +43,7 @@ switch ($http_method){
                     $idInfos .= ", ";
                 }
             }
-            print_r($idInfos);
+
             $result = $bdd->query('SELECT *
 					from effetMagiqueInfos 
                     where idEffetMagiqueInfos in (' . $idInfos . ')

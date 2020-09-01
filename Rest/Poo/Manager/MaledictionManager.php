@@ -82,6 +82,10 @@ class MaledictionManager
         $this->_db->exec('DELETE FROM malediction WHERE idMalediction = ' . $idMalediction);
     }
 
+    public function getMaledictionAsNonJSon($idMateriaux) {
+        return json_decode(json_encode($this->getMalediction($idMateriaux)));
+    }
+
     public function setDb(PDO $db)
     {
         $this->_db = $db;

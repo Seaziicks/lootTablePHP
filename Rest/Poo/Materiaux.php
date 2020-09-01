@@ -1,7 +1,7 @@
 <?php
 
 
-class Materiaux
+class Materiaux implements JsonSerializable
 {
     public
         $_idMateriaux,
@@ -55,4 +55,12 @@ class Materiaux
         }
     }
 
+    public function jsonSerialize()
+    {
+        return [
+            'idMateriaux' => $this->_idMateriaux,
+            'nom' => $this->_nom,
+            'effet' => $this->_effet
+        ];
+    }
 }

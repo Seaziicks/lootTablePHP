@@ -27,13 +27,12 @@ switch ($http_method){
     case "POST":
         try {
             $effetMagique = json_decode($_GET['EffetMagique']);
-            $sql = "INSERT INTO `effetmagique` (`idObjet`,`nom`,`description`) 
-                                        VALUES (:idObjet, :nom, :description)";
+            $sql = "INSERT INTO `effetmagique` (`idObjet`,`nom`) 
+                                        VALUES (:idObjet, :nom)";
 
             $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
             $commit->bindParam(':idObjet',$effetMagique->idObjet, PDO::PARAM_INT);
             $commit->bindParam(':nom',$effetMagique->nom, PDO::PARAM_STR);
-            $commit->bindParam(':description',$effetMagique->description, PDO::PARAM_STR);
             $commit->execute();
             $result = $bdd->query('SELECT *
 					from effetmagique 
@@ -50,12 +49,12 @@ switch ($http_method){
         }
         break;
     case "PUT":
-        if (!(empty($_POST['idEffetMagique']))) {
+        if (!(empty($_GET['idEffetMagique']))) {
             try {
                 $effetMagique = json_decode($_GET['EffetMagique']);
                 $sql = "UPDATE effetmagique 
-                SET nom = '" . $effetMagique->nom . "', 
-                description = '" . $effetMagique->description . "', 
+                SET idObjet = '" . $effetMagique->idObjet . "', 
+                nom = '" . $effetMagique->nom . "', 
                 WHERE idEffetMagique = " . $effetMagique->idEffetMagique;
 
 

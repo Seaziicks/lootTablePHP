@@ -73,13 +73,12 @@ switch ($http_method){
 
     case "POST":
         try {
-            print_r(json_decode($_GET['EffetMagiqueTableManager'])->Table);
-            $effetMagiqueTable = json_decode($_GET['EffetMagiqueTableManager'])->Table;
+
+            $effetMagiqueTable = json_decode($_GET['EffetMagiqueTable'])->Table;
             $sql = "INSERT INTO `effetMagiqueTable` (`idEffetMagique`,`position`) 
                     VALUES (:idEffetMagique, :position)";
             $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-            echo $_GET['idEffetMagique'];
-            echo $effetMagiqueTable->position;
+
             $commit->bindParam(':idEffetMagique',$_GET['idEffetMagique'], PDO::PARAM_INT);
             $commit->bindParam(':position',$effetMagiqueTable->position, PDO::PARAM_INT);
             $commit->execute();

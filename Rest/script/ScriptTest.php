@@ -6,10 +6,10 @@
 
 
 $array_expression = [
-    'idEffetMagique' => 0,
+    'idEffetMagiqueUl' => 0,
     'Objet' => 3,
-    'nom' => 1,
-    'niveau' => 5,
+    'idEffetMagique' => 0,
+    'position' => 0,
     'effet' => 1,
     'prix' => 2,
     'prixNonHumanoide' => 2,

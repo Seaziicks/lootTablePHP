@@ -39,8 +39,9 @@ class MateriauxManager
     public function addMateriaux($materiauxData)
     {
         $materiaux = json_decode($materiauxData);
+
         $sql = "INSERT INTO `materiaux` (`nom`,`effet`) 
-                                        VALUES (:nom, :description)";
+                                        VALUES (:nom, :effet)";
 
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $commit->bindParam(':nom',$materiaux->nom, PDO::PARAM_STR);
@@ -80,6 +81,10 @@ class MateriauxManager
     public function deleteMateriaux($idMateriaux)
     {
         $this->_db->exec('DELETE FROM materiaux WHERE idMateriaux = ' . $idMateriaux);
+    }
+
+    public function getMateriauxAsNonJSon($idMateriaux) {
+        return json_decode(json_encode($this->getMateriaux($idMateriaux)));
     }
 
     public function setDb(PDO $db)

@@ -1,7 +1,7 @@
 <?php
 
 
-class Malediction
+class Malediction implements JsonSerializable
 {
     public
         $_idMalediction,
@@ -55,4 +55,12 @@ class Malediction
         }
     }
 
+    public function jsonSerialize()
+    {
+        return [
+            'idMalediction' => $this->_idMalediction,
+            'nom' => $this->_nom,
+            'description' => $this->_description
+        ];
+    }
 }

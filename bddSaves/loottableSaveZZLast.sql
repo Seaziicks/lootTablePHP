@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.4
+-- version 4.8.5
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  Dim 30 août 2020 à 16:35
--- Version du serveur :  5.7.19
--- Version de PHP :  7.1.9
+-- Généré le :  mar. 01 sep. 2020 à 15:24
+-- Version du serveur :  5.7.26
+-- Version de PHP :  7.2.18
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -124,7 +124,7 @@ DROP TABLE IF EXISTS `effetmagique`;
 CREATE TABLE IF NOT EXISTS `effetmagique` (
   `idEffetMagique` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `idObjet` smallint(5) UNSIGNED NOT NULL,
-  `nom` text NOT NULL,
+  `title` text NOT NULL,
   PRIMARY KEY (`idEffetMagique`),
   UNIQUE KEY `idEffectMagique` (`idEffetMagique`),
   KEY `FK_effetmagique_idObjet` (`idObjet`)
@@ -134,8 +134,8 @@ CREATE TABLE IF NOT EXISTS `effetmagique` (
 -- Déchargement des données de la table `effetmagique`
 --
 
-INSERT INTO `effetmagique` (`idEffetMagique`, `idObjet`, `nom`) VALUES
-(2, 1, 'EffetMagiqueTest');
+INSERT INTO `effetmagique` (`idEffetMagique`, `idObjet`, `title`) VALUES
+(2, 2, 'EffetMagiqueTest');
 
 -- --------------------------------------------------------
 
@@ -151,7 +151,17 @@ CREATE TABLE IF NOT EXISTS `effetmagiquedescription` (
   PRIMARY KEY (`idEffetMagiqueDescription`),
   UNIQUE KEY `idObjetDescription` (`idEffetMagiqueDescription`),
   KEY `FK_effetmagiquedescription_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `effetmagiquedescription`
+--
+
+INSERT INTO `effetmagiquedescription` (`idEffetMagiqueDescription`, `idEffetMagique`, `contenu`) VALUES
+(1, 2, 'Ce casque d’aspect normal révèle sa puissance quand son utilisateur l’enfile et prononce le mot de commande. Fait d’argent rutilant et d’acier poli, un casque de mille feux nouvellement créé est serti de 10 diamants, 20 rubis, 30 opales de feu et 40 opales, chacune de ces pierres étant magiques. À ce moment, les aspérités qu’il arbore donnent l’impression que le personnage porte une couronne enchâssée de pierres précieuses. Au moindre rai de lumière, le casque brille de mille feux, d’où son nom. Les fonctions des pierres sont les suivantes :'),
+(2, 2, 'Le casque peut être utilisé une fois par round, mais chaque pierre perd son éclat après avoir utilisé son pouvoir. Tant que toutes ses pierres ne sont pas ternes, le casque de mille feux a les propriétés suivantes :'),
+(3, 2, 'Une fois que toutes les pierres ont été utilisées, elles tombent en poussière et le casque perd tous ses pouvoirs. Toute pierre que l’on essaye d’extraire se brise automatiquement.'),
+(4, 2, 'Si le porteur du casque est brûlé par un feu d’origine magique (malgré l’importante protection dont il bénéficie) et s’il rate un jet de Volonté (DD 15), une surcharge se produit et toutes les pierres restantes saturent et explosent instantanément. Les diamants deviennent des rayons prismatiques visant chacun une créature choisie au hasard parmi celles à portée (éventuellement le porteur lui-même), les rubis deviennent des murs de feu en ligne droite partant du porteur dans une direction aléatoire et les opales de feu deviennent des boules de feu centrées sur le porteur. Les opales et le casque lui-même sont détruits.');
 
 -- --------------------------------------------------------
 
@@ -167,7 +177,18 @@ CREATE TABLE IF NOT EXISTS `effetmagiqueinfos` (
   PRIMARY KEY (`idEffetMagiqueInfos`),
   UNIQUE KEY `idObjetInfos` (`idEffetMagiqueInfos`),
   KEY `FK_effetmagiqueinfos_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `effetmagiqueinfos`
+--
+
+INSERT INTO `effetmagiqueinfos` (`idEffetMagiqueInfos`, `idEffetMagique`, `contenu`) VALUES
+(1, 2, 'Multiples puissantes '),
+(2, 2, ' <span class=\"compobj\">NLS</span> 13 '),
+(3, 2, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-objets-merveilleux-23.htm#23\">Création d’objets merveilleux</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-boule-de-feu.htm\">boule de feu</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-detection-des-morts-vivants.htm\">détection des morts-vivants</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-lame-de-feu.htm\">lame de feu</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-lumiere.htm\">lumière</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-mur-de-feu.htm\">mur de feu</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-protection-contre-les-energies-destructives.htm\">protection contre les énergies destructives</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-rayons-prismatiques.htm\">rayons prismatiques</a> '),
+(4, 2, ' <span class=\"compobj\">Prix</span> 125 000 po '),
+(5, 2, ' <span class=\"compobj\">Poids</span> 1,5 kg.');
 
 -- --------------------------------------------------------
 
@@ -183,7 +204,14 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetable` (
   PRIMARY KEY (`idEffetMagiqueTable`),
   UNIQUE KEY `idTable` (`idEffetMagiqueTable`),
   KEY `FK_effetmagiquetable_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `effetmagiquetable`
+--
+
+INSERT INTO `effetmagiquetable` (`idEffetMagiqueTable`, `idEffetMagique`, `position`) VALUES
+(1, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -198,7 +226,15 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetabletitle` (
   PRIMARY KEY (`idEffetMagiqueTableTitle`),
   UNIQUE KEY `idTableObjetTitle` (`idEffetMagiqueTableTitle`),
   KEY `FK_effetmagiquetabletitle_idEffetMagiqueTable` (`idEffetMagiqueTable`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `effetmagiquetabletitle`
+--
+
+INSERT INTO `effetmagiquetabletitle` (`idEffetMagiqueTableTitle`, `idEffetMagiqueTable`) VALUES
+(1, 1),
+(2, 1);
 
 -- --------------------------------------------------------
 
@@ -214,7 +250,22 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetabletitlecontent` (
   PRIMARY KEY (`idEffetMagiqueTableTitleContent`),
   UNIQUE KEY `idTableObjetTitleContent` (`idEffetMagiqueTableTitleContent`),
   KEY `FK_effetmagiquetabletitlecontent_idEffetMagiqueTableTitle` (`idEffetMagiqueTableTitle`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `effetmagiquetabletitlecontent`
+--
+
+INSERT INTO `effetmagiquetabletitlecontent` (`idEffetMagiqueTableTitleContent`, `idEffetMagiqueTableTitle`, `contenu`) VALUES
+(1, 1, 'Gris'),
+(2, 1, 'Rouille'),
+(3, 1, 'Ocre'),
+(4, 2, '1d100'),
+(5, 2, 'Animal'),
+(6, 2, '1d100'),
+(7, 2, 'Animal'),
+(8, 2, '1d100'),
+(9, 2, 'Animal');
 
 -- --------------------------------------------------------
 
@@ -229,7 +280,18 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetabletr` (
   PRIMARY KEY (`idEffetMagiqueTableTr`),
   UNIQUE KEY `idTableObjetTr` (`idEffetMagiqueTableTr`),
   KEY `FK_effetmagiquetabletr_idEffetMagiqueTable` (`idEffetMagiqueTable`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `effetmagiquetabletr`
+--
+
+INSERT INTO `effetmagiquetabletr` (`idEffetMagiqueTableTr`, `idEffetMagiqueTable`) VALUES
+(1, 1),
+(2, 1),
+(3, 1),
+(4, 1),
+(5, 1);
 
 -- --------------------------------------------------------
 
@@ -245,7 +307,43 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetabletrcontent` (
   PRIMARY KEY (`idEffetMagiqueTableTrContent`),
   UNIQUE KEY `idTableObjetTrContent` (`idEffetMagiqueTableTrContent`),
   KEY `FK_effetmagiquetabletrcontent_idEffetMagiqueTableTr` (`idEffetMagiqueTableTr`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `effetmagiquetabletrcontent`
+--
+
+INSERT INTO `effetmagiquetabletrcontent` (`idEffetMagiqueTableTrContent`, `idEffetMagiqueTableTr`, `contenu`) VALUES
+(1, 1, '01–15'),
+(2, 1, 'Belette'),
+(3, 1, '01–30'),
+(4, 1, 'Glouton'),
+(5, 1, '01–20'),
+(6, 1, 'Destrier lourd'),
+(7, 2, '16–25'),
+(8, 2, 'Blaireau'),
+(9, 2, '31–60'),
+(10, 2, 'Loup'),
+(11, 2, '21–50'),
+(12, 2, 'Lion'),
+(13, 3, '26–40'),
+(14, 3, 'Chat'),
+(15, 3, '61–75'),
+(16, 3, 'Ours noir'),
+(17, 3, '51–80'),
+(18, 3, 'Ours brun'),
+(19, 4, '41–70'),
+(20, 4, 'Chauve-souris'),
+(21, 4, '76–100'),
+(22, 4, 'Sanglier'),
+(23, 4, '81–90'),
+(24, 4, 'Rhinocéros'),
+(25, 5, '71–100'),
+(26, 5, 'Rat'),
+(27, 5, ' '),
+(28, 5, ' '),
+(29, 5, '91–100'),
+(30, 5, 'Tigre ');
 
 -- --------------------------------------------------------
 
@@ -261,15 +359,14 @@ CREATE TABLE IF NOT EXISTS `effetmagiqueul` (
   PRIMARY KEY (`idEffetMagiqueUl`),
   UNIQUE KEY `idUlObjet` (`idEffetMagiqueUl`),
   KEY `FK_effetmagiqueul_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiqueul`
 --
 
 INSERT INTO `effetmagiqueul` (`idEffetMagiqueUl`, `idEffetMagique`, `position`) VALUES
-(1, 2, 1),
-(2, 2, 1);
+(1, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -285,7 +382,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiqueulcontent` (
   PRIMARY KEY (`idEffetMagiqueUlContent`),
   UNIQUE KEY `idUlObjetContent` (`idEffetMagiqueUlContent`),
   KEY `FK_effetmagiqueulcontent_idEffetMagiqueUl` (`idEffetMagiqueUl`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiqueulcontent`
@@ -295,11 +392,7 @@ INSERT INTO `effetmagiqueulcontent` (`idEffetMagiqueUlContent`, `idEffetMagiqueU
 (1, 1, 'Diamant : rayons prismatiques (jet de sauvegarde DD 20)'),
 (2, 1, 'Rubis : mur de feu'),
 (3, 1, 'Opale de feu : boule de feu (10d6, jet de Réflexes DD 20 pour demi-dégâts)'),
-(4, 1, 'Opale : lumière'),
-(5, 2, 'Diamant : rayons prismatiques (jet de sauvegarde DD 20)'),
-(6, 2, 'Rubis : mur de feu'),
-(7, 2, 'Opale de feu : boule de feu (10d6, jet de Réflexes DD 20 pour demi-dégâts)'),
-(8, 2, 'Opale : lumière');
+(4, 1, 'Opale : lumière');
 
 -- --------------------------------------------------------
 
@@ -470,11 +563,11 @@ DROP TABLE IF EXISTS `objet`;
 CREATE TABLE IF NOT EXISTS `objet` (
   `idObjet` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `idPersonnage` smallint(5) UNSIGNED DEFAULT NULL,
-  `nom` varchar(150) NOT NULL,
+  `nom` varchar(255) NOT NULL,
   `bonus` int(11) DEFAULT NULL,
   `type` varchar(255) NOT NULL,
-  `prix` int(11) NOT NULL,
-  `prixNonHumanoide` int(11) DEFAULT NULL,
+  `prix` float NOT NULL,
+  `prixNonHumanoide` float DEFAULT NULL,
   `devise` varchar(25) NOT NULL DEFAULT 'po',
   `idMalediction` smallint(5) UNSIGNED DEFAULT NULL,
   `categorie` varchar(255) DEFAULT NULL,
@@ -492,14 +585,14 @@ CREATE TABLE IF NOT EXISTS `objet` (
   KEY `FK_objet_idMalediction` (`idMalediction`),
   KEY `FK_objet_idMateriaux` (`idMateriaux`),
   KEY `FK_objet_idPersonnage` (`idPersonnage`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `objet`
 --
 
 INSERT INTO `objet` (`idObjet`, `idPersonnage`, `nom`, `bonus`, `type`, `prix`, `prixNonHumanoide`, `devise`, `idMalediction`, `categorie`, `idMateriaux`, `taille`, `degats`, `critique`, `facteurPortee`, `armure`, `bonusDexteriteMax`, `malusArmureTests`, `risqueEchecSorts`) VALUES
-(1, NULL, 'objetTest', NULL, 'Test', 1000, NULL, 'po', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+(2, NULL, 'objetTest', NULL, 'Test', 1000, NULL, 'po', 1, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -572,32 +665,32 @@ ALTER TABLE `dropchancebis`
 -- Contraintes pour la table `effetdecouvert`
 --
 ALTER TABLE `effetdecouvert`
-  ADD CONSTRAINT `FK_effetdecouvert_idObjet` FOREIGN KEY (`idObjet`) REFERENCES `objet` (`idObjet`),
-  ADD CONSTRAINT `FK_effetdecouvert_idPersonnage` FOREIGN KEY (`idPersonnage`) REFERENCES `personnage` (`idPersonnage`);
+  ADD CONSTRAINT `FK_effetdecouvert_idObjet` FOREIGN KEY (`idObjet`) REFERENCES `objet` (`idObjet`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_effetdecouvert_idPersonnage` FOREIGN KEY (`idPersonnage`) REFERENCES `personnage` (`idPersonnage`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `effetmagique`
 --
 ALTER TABLE `effetmagique`
-  ADD CONSTRAINT `FK_effetmagique_idObjet` FOREIGN KEY (`idObjet`) REFERENCES `objet` (`idObjet`);
+  ADD CONSTRAINT `FK_effetmagique_idObjet` FOREIGN KEY (`idObjet`) REFERENCES `objet` (`idObjet`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `effetmagiquedescription`
 --
 ALTER TABLE `effetmagiquedescription`
-  ADD CONSTRAINT `FK_effetmagiquedescription_idEffetMagique` FOREIGN KEY (`idEffetMagique`) REFERENCES `effetmagique` (`idEffetMagique`);
+  ADD CONSTRAINT `FK_effetmagiquedescription_idEffetMagique` FOREIGN KEY (`idEffetMagique`) REFERENCES `effetmagique` (`idEffetMagique`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `effetmagiqueinfos`
 --
 ALTER TABLE `effetmagiqueinfos`
-  ADD CONSTRAINT `FK_effetmagiqueinfos_idEffetMagique` FOREIGN KEY (`idEffetMagique`) REFERENCES `effetmagique` (`idEffetMagique`);
+  ADD CONSTRAINT `FK_effetmagiqueinfos_idEffetMagique` FOREIGN KEY (`idEffetMagique`) REFERENCES `effetmagique` (`idEffetMagique`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `effetmagiquetable`
 --
 ALTER TABLE `effetmagiquetable`
-  ADD CONSTRAINT `FK_effetmagiquetable_idEffetMagique` FOREIGN KEY (`idEffetMagique`) REFERENCES `effetmagique` (`idEffetMagique`);
+  ADD CONSTRAINT `FK_effetmagiquetable_idEffetMagique` FOREIGN KEY (`idEffetMagique`) REFERENCES `effetmagique` (`idEffetMagique`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `effetmagiquetabletitle`
@@ -652,9 +745,9 @@ ALTER TABLE `monte`
 -- Contraintes pour la table `objet`
 --
 ALTER TABLE `objet`
-  ADD CONSTRAINT `FK_objet_idMalediction` FOREIGN KEY (`idMalediction`) REFERENCES `malediction` (`idMalediction`),
-  ADD CONSTRAINT `FK_objet_idMateriaux` FOREIGN KEY (`idMateriaux`) REFERENCES `materiaux` (`idMateriaux`),
-  ADD CONSTRAINT `FK_objet_idPersonnage` FOREIGN KEY (`idPersonnage`) REFERENCES `personnage` (`idPersonnage`);
+  ADD CONSTRAINT `FK_objet_idMalediction` FOREIGN KEY (`idMalediction`) REFERENCES `malediction` (`idMalediction`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_objet_idMateriaux` FOREIGN KEY (`idMateriaux`) REFERENCES `materiaux` (`idMateriaux`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_objet_idPersonnage` FOREIGN KEY (`idPersonnage`) REFERENCES `personnage` (`idPersonnage`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -39,6 +39,7 @@ class ObjetManager
     public function addObjet($objetData)
     {
         $objet = json_decode($objetData);
+
         $sql = "INSERT INTO `objet` (`nom`,`bonus`,`type`,`prix`,`prixNonHumanoide`,`devise`,`idMalediction`,`categorie`,`idMateriaux`,
                                         `taille`,`degats`,`critique`,`facteurPortee`,`armure`,`bonusDexteriteMax`,`malusArmureTests`,`risqueEchecSorts`) 
                                         VALUES (:nom, :bonus, :type, :prix, :prixNonHumanoide, :devise, :idMalediction, :categorie, :idMateriaux,
@@ -71,7 +72,7 @@ class ObjetManager
         $result->closeCursor();
         $bdd = null;
 
-        return $fetchedResult;
+        return new Objet($fetchedResult);;
     }
 
     public function updateObjet($objetData)
@@ -114,12 +115,60 @@ class ObjetManager
         $result->closeCursor();
         $bdd = null;
 
-        return $fetchedResult;
+        return new Objet($fetchedResult);;
     }
 
     public function deleteObjet($idObjet)
     {
         $this->_db->exec('DELETE FROM objet WHERE idObjet = ' . $idObjet);
+    }
+
+    public function getObjetAsNonJSon($idObjet) {
+        $unmodifiedObjet = $this->getObjet($idObjet);
+        $Objet = json_decode(json_encode($unmodifiedObjet));
+        unset($Objet->idMateriaux);
+        unset($Objet->idMalediction);
+
+        if ($Objet->proprieteMagique) {
+            $EffetMagiqueManager = new EffetMagiqueManager($this->_db);
+            $Objet->proprieteMagique = $EffetMagiqueManager->getAllEffetMagiqueTableAsNotJSon($idObjet);
+        }
+        if ($Objet->malediction) {
+            $MaledictionManager = new Maledictionmanager($this->_db);
+            $Objet->malediction = $MaledictionManager->getMaledictionAsNonJSon($unmodifiedObjet->_idMalediction);
+        }
+        if ($Objet->materiau) {
+            $MateriauxManager = new MateriauxManager($this->_db);
+            $Objet->materiau = $MateriauxManager->getMateriauxAsNonJSon($unmodifiedObjet->_idMateriaux);
+        }
+
+        return $Objet;
+    }
+
+    public function addCompleteObjet($objetData) {
+        $objet = json_decode($objetData)->Objet;
+        $objetData = clone $objet;
+        unset($objetData->proprieteMagique);
+        unset($objetData->malediction);
+        unset($objetData->materiau);
+        $MaledictionManager = new MaledictionManager($this->_db);
+        $malediction = $MaledictionManager->addMalediction(json_encode($objet->malediction));
+
+        $MateriauxManager = new MateriauxManager($this->_db);
+        $materiaux = $MateriauxManager->addMateriaux(json_encode($objet->materiau));
+
+        $objetData->idMalediction = $malediction->_idMalediction;
+        $objetData->idMateriaux = $materiaux->_idMateriaux;
+
+        $createdObjet = $this->addObjet(json_encode($objetData));
+
+        $EffetMagiqueManager = new EffetMagiqueManager($this->_db);
+
+        foreach($objet->proprieteMagique as $propriete) {
+            $EffetMagiqueManager->addCompleteEffetMagique($propriete, $createdObjet->_idObjet);
+        }
+
+        return $this->getObjetAsNonJSon($createdObjet->_idObjet);
     }
 
     public function setDb(PDO $db)
