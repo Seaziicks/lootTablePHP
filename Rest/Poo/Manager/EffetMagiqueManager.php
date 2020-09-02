@@ -145,28 +145,18 @@ class EffetMagiqueManager
 
         // Gestion des Table
         if($effetMagiqueData->table) {
-            $EffetMagiqueTableManager = new EffetMagiqueTableManager($this->_db);
-            foreach ($effetMagiqueData->table as $tableToAdd) {
-                $table = new stdClass();
-                $table->Table = $tableToAdd;
-                $EffetMagiqueTableManager->addEffetMagiqueTable(json_encode($table), $createdEffet->_idEffetMagique);
-            }
+            $this->addTable($effetMagiqueData->table, $createdEffet->_idEffetMagique);
         }
 
         // Gestion des Ul
         if($effetMagiqueData->ul) {
-            $EffetMagiqueUlManager = new EffetMagiqueUlManager($this->_db);
-            foreach ($effetMagiqueData->ul as $ulToAdd) {
-                $ul = new stdClass();
-                $ul->Ul = $ulToAdd;
-                $EffetMagiqueUlManager->addEffetMagiqueUl(json_encode($ul), $createdEffet->_idEffetMagique);
-            }
+            $this->addUl($effetMagiqueData->ul, $createdEffet->_idEffetMagique);
         }
         $this->addDescription($effetMagiqueData->description, $createdEffet->_idEffetMagique);
         $this->addInfos($effetMagiqueData->infos->data, $createdEffet->_idEffetMagique);
     }
 
-    private function addDescription($descriptions, $idEffetMagique) {
+    public function addDescription($descriptions, $idEffetMagique) {
         $idDescriptions = '';
         foreach ($descriptions as $description) {
             $sql = "INSERT INTO `effetMagiqueDescription` (`idEffetMagique`,`contenu`) 
@@ -192,7 +182,7 @@ class EffetMagiqueManager
         return $fetchedResult;
     }
 
-    private function addInfos($infos, $idEffetMagique) {
+    public function addInfos($infos, $idEffetMagique) {
         $idInfos = '';
         foreach ($infos as $info) {
             $sql = "INSERT INTO `effetMagiqueInfos` (`idEffetMagique`,`contenu`) 
@@ -217,6 +207,24 @@ class EffetMagiqueManager
         $bdd = null;
 
         return $fetchedResult;
+    }
+
+    public function addTable($tables, $idEffetMagique) {
+        $EffetMagiqueTableManager = new EffetMagiqueTableManager($this->_db);
+        foreach ($tables as $tableToAdd) {
+            $table = new stdClass();
+            $table->Table = $tableToAdd;
+            $EffetMagiqueTableManager->addEffetMagiqueTable(json_encode($table), $idEffetMagique);
+        }
+    }
+
+    public function addUl($uls, $idEffetMagique) {
+        $EffetMagiqueUlManager = new EffetMagiqueUlManager($this->_db);
+        foreach ($uls as $ulToAdd) {
+            $ul = new stdClass();
+            $ul->Ul = $ulToAdd;
+            $EffetMagiqueUlManager->addEffetMagiqueUl(json_encode($ul), $idEffetMagique);
+        }
     }
 
     public function setDb(PDO $db)

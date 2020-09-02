@@ -24,7 +24,9 @@ header("Content-Type:application/json");
 
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
+
 $ObjetManager = new ObjetManager($bdd);
+
 switch ($http_method) {
     /// Cas de la méthode GET
     case "GET" :
@@ -49,7 +51,6 @@ switch ($http_method) {
             http_response_code(200);
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Voici le catalogue de ce que vous pourrez trouver chez nous.", $matchingData);
-            break;
         }
         break;
 

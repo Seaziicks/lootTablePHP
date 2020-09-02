@@ -43,6 +43,7 @@ class EffetMagiqueUlManager
 
     public function addEffetMagiqueUl($effetMagiqueUlData, $idEffetMagique)
     {
+
         $effetMagiqueUl = json_decode($effetMagiqueUlData)->Ul;
         $sql = "INSERT INTO `effetmagiqueul` (`idEffetMagique`,`position`) 
                     VALUES (:idEffetMagique, :position)";

@@ -6,7 +6,7 @@ class EffetMagique implements JsonSerializable
     public
         $_idEffetMagique,
         $_idObjet,
-        $_nom;
+        $_title;
 
 	public function __construct(array $donnees)
     {
@@ -33,11 +33,11 @@ class EffetMagique implements JsonSerializable
         }
     }
 
-	public function setNom($nom)
+	public function settitle($title)
     {
-        if (is_string($nom))
+        if (is_string($title))
         {
-            $this->_nom = $nom;
+            $this->_title = $title;
         }
     }
 
@@ -60,7 +60,9 @@ class EffetMagique implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'nom' => $this->_nom
+            'idEffetMagique' => $this->_idEffetMagique,
+            'idObjet' => $this->_idObjet,
+            'title' => $this->_title
         ];
     }
 
