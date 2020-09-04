@@ -39,13 +39,14 @@ switch ($http_method) {
     case "POST":
         try {
             $objet = json_decode($_GET['Objet']);
-            $sql = "INSERT INTO `objet` (`nom`,`bonus`,`type`,`prix`,`prixNonHumanoide`,`devise`,`idMalediction`,`categorie`,`idMateriaux`,
+            $sql = "INSERT INTO `objet` (`nom`, fauxNom,`bonus`,`type`,`prix`,`prixNonHumanoide`,`devise`,`idMalediction`,`categorie`,`idMateriaux`,
                                         `taille`,`degats`,`critique`,`facteurPortee`,`armure`,`bonusDexteriteMax`,`malusArmureTests`,`risqueEchecSorts`) 
-                                        VALUES (:nom, :bonus, :type, :prix, :prixNonHumanoide, :devise, :idMalediction, :categorie, :idMateriaux,
+                                        VALUES (:nom, fauxNom, :bonus, :type, :prix, :prixNonHumanoide, :devise, :idMalediction, :categorie, :idMateriaux,
                                                 :taille, :degats, :critique, :facteurPortee, :armure, :bonusDexteriteMax, :malusArmureTests, :risqueEchecSorts)";
 
             $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
             $commit->bindParam(':nom',$objet->nom, PDO::PARAM_STR);
+            $commit->bindParam(':fauxNom',$objet->fauxNom, PDO::PARAM_STR);
             $commit->bindParam(':bonus',$objet->bonus, PDO::PARAM_INT);
             $commit->bindParam(':type',$objet->type, PDO::PARAM_STR);
             $commit->bindParam(':prix',$objet->prix, PDO::PARAM_INT);
@@ -119,7 +120,7 @@ switch ($http_method) {
             try {
                 $objet = json_decode($_GET['Objet']);
                 $sql = "UPDATE objet 
-                SET nom = :nom, bonus = :bonus, type = :type, prix = :prix,
+                SET nom = :nom, fauxNom = :fauxNom, bonus = :bonus, type = :type, prix = :prix,
                 prixNonHumanoide = :prixNonHumanoide, devise = :devise, idMalediction = :idMalediction, categorie = :categorie,
                 idMateriaux = :idMateriaux, taille = :taille, degats = :degats, critique = :critique, facteurPortee = :facteurPortee,
                 armure = :armure, bonusDexteriteMax = :bonusDexteriteMax, malusArmureTests = :malusArmureTests, risqueEchecSorts = :risqueEchecSorts
@@ -128,6 +129,7 @@ switch ($http_method) {
                 $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
                 $commit->bindParam(':idObjet',$objet->idObjet, PDO::PARAM_INT);
                 $commit->bindParam(':nom',$objet->nom, PDO::PARAM_STR);
+                $commit->bindParam(':fauxNom',$objet->fauxNom, PDO::PARAM_STR);
                 $commit->bindParam(':bonus',$objet->bonus, PDO::PARAM_INT);
                 $commit->bindParam(':type',$objet->type, PDO::PARAM_STR);
                 $commit->bindParam(':effetMagique',$objet->effetMagique, PDO::PARAM_INT);

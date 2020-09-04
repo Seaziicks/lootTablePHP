@@ -40,14 +40,15 @@ class ObjetManager
     {
         $objet = json_decode($objetData);
 
-        $sql = "INSERT INTO `objet` (`idPersonnage`,`nom`,`bonus`,`type`,`prix`,`prixNonHumanoide`,`devise`,`idMalediction`,`categorie`,`idMateriaux`,
+        $sql = "INSERT INTO `objet` (`idPersonnage`,`nom`, `fauxNom`, `bonus`,`type`,`prix`,`prixNonHumanoide`,`devise`,`idMalediction`,`categorie`,`idMateriaux`,
                                         `taille`,`degats`,`critique`,`facteurPortee`,`armure`,`bonusDexteriteMax`,`malusArmureTests`,`risqueEchecSorts`) 
-                                        VALUES (:idPersonnage, :nom, :bonus, :type, :prix, :prixNonHumanoide, :devise, :idMalediction, :categorie, :idMateriaux,
+                                        VALUES (:idPersonnage, :nom, :fauxNom, :bonus, :type, :prix, :prixNonHumanoide, :devise, :idMalediction, :categorie, :idMateriaux,
                                                 :taille, :degats, :critique, :facteurPortee, :armure, :bonusDexteriteMax, :malusArmureTests, :risqueEchecSorts)";
 
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $commit->bindParam(':idPersonnage',$objet->idPersonnage, PDO::PARAM_INT);
         $commit->bindParam(':nom',$objet->nom, PDO::PARAM_STR);
+        $commit->bindParam(':fauxNom',$objet->fauxNom, PDO::PARAM_STR);
         $commit->bindParam(':bonus',$objet->bonus, PDO::PARAM_INT);
         $commit->bindParam(':type',$objet->type, PDO::PARAM_STR);
         $commit->bindParam(':prix',$objet->prix, PDO::PARAM_INT);
@@ -80,7 +81,7 @@ class ObjetManager
     {
         $objet = json_decode($objetData);
         $sql = "UPDATE objet 
-                SET nom = :nom, bonus = :bonus, type = :type, prix = :prix,
+                SET nom = :nom, fauxNom = :fauxNom, bonus = :bonus, type = :type, prix = :prix,
                 prixNonHumanoide = :prixNonHumanoide, devise = :devise, idMalediction = :idMalediction, categorie = :categorie,
                 idMateriaux = :idMateriaux, taille = :taille, degats = :degats, critique = :critique, facteurPortee = :facteurPortee,
                 armure = :armure, bonusDexteriteMax = :bonusDexteriteMax, malusArmureTests = :malusArmureTests, risqueEchecSorts = :risqueEchecSorts
@@ -89,6 +90,7 @@ class ObjetManager
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $commit->bindParam(':idObjet',$objet->idObjet, PDO::PARAM_INT);
         $commit->bindParam(':nom',$objet->nom, PDO::PARAM_STR);
+        $commit->bindParam(':fauxNom',$objet->fauxNom, PDO::PARAM_STR);
         $commit->bindParam(':bonus',$objet->bonus, PDO::PARAM_INT);
         $commit->bindParam(':type',$objet->type, PDO::PARAM_STR);
         $commit->bindParam(':effetMagique',$objet->effetMagique, PDO::PARAM_INT);

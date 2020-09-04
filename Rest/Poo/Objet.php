@@ -7,6 +7,7 @@ class Objet implements JsonSerializable
         $_idObjet,
         $_idPersonnage,
         $_nom,
+        $_fauxNom,
         $_bonus,
         $_type,
         $_prix,
@@ -57,6 +58,15 @@ class Objet implements JsonSerializable
             $this->_nom = $nom;
         }
     }
+
+    public function setFauxNom($fauxNom)
+    {
+        if (is_string($fauxNom))
+        {
+            $this->_fauxNom = $fauxNom;
+        }
+    }
+
 	public function setBonus($bonus)
     {
         if($bonus) {
@@ -210,6 +220,7 @@ class Objet implements JsonSerializable
             'idObjet' => $this->_idObjet,
             'idPersonnage' => $this->_idPersonnage,
             'nom' => $this->_nom,
+            'fauxNom' => $this->_fauxNom,
             'bonus' => $this->_bonus,
             'type' => $this->_type,
             'prix' => $this->_prix,
