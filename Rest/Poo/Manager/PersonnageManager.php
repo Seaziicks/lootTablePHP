@@ -23,6 +23,23 @@ class PersonnageManager
         return new Personnage($personnageFetched);
     }
 
+    public function getPersonnageAvecStatistiques($idPersonnage)
+    {
+        $idPersonnage = (int)$idPersonnage;
+        $personnage = $this->getPersonnage($idPersonnage);
+        $personnageQuery = $this->_db->query('SELECT s.libelle, m.valeur
+                                                        FROM personnage as p, monte as m, statistique as s
+                                                        WHERE m.idPersonnage = '. $idPersonnage .'
+                                                        AND m.idStatistique = s.idStatistique');
+
+        while($personnageFetched = $personnageQuery->fetch(PDO::FETCH_ASSOC)) {
+            $attribute = '_'.strtolower($personnageFetched['libelle']);
+            $personnage->$attribute += $personnageFetched['valeur'];
+        }
+
+        return $personnage;
+    }
+
     public function getAllPersonnage()
     {
         $personnageQuery = $this->_db->query('SELECT *
@@ -31,6 +48,19 @@ class PersonnageManager
         $allPersonnage = [];
         while($personnageFetched = $personnageQuery->fetch(PDO::FETCH_ASSOC)) {
             array_push($allPersonnage, new Personnage($personnageFetched));
+        };
+
+        return $allPersonnage;
+    }
+
+    public function getAllPersonnageAvecStatistiques()
+    {
+        $personnageQuery = $this->_db->query('SELECT idPersonnage
+                                                    FROM personnage');
+
+        $allPersonnage = [];
+        while($personnageFetched = $personnageQuery->fetch(PDO::FETCH_ASSOC)) {
+            array_push($allPersonnage, $this->getPersonnageAvecStatistiques($personnageFetched['idPersonnage']));
         };
 
         return $allPersonnage;

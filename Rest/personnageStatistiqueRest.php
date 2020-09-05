@@ -17,27 +17,38 @@ switch ($http_method){
                     where idPersonnage='.$_GET['idPersonnage']);
 
             // Prepare le tableau de statistique, en mettant toutes les valeurs à 0.
-            for($i = 1 ; $i <= $bdd->query('SELECT count(*) from statistique')->fetch()[0] ; $i++ ) {
-                $statistiques[$i] = 0;
+            $statistiquesNameQuery = $bdd->query('SELECT * from statistique');
+            $statistiquesNames = $statistiquesNameQuery->fetchAll(PDO::FETCH_ASSOC);
+            // $statistiquesTest[array_search($statistiqueFetched['idStatistique'], array_column($statistiquesTest, 'idStatistique'))]
+            $statistiques = [];
+            foreach($statistiquesNames as $statistiqueName) {
+                $statistiques[$statistiqueName['libelle']] = 0;
             }
             while($statistiqueFetched = $statistiqueQuery->fetch(PDO::FETCH_ASSOC)) {
-                $statistiques[$statistiqueFetched['idStatistique']] += $statistiqueFetched['valeur'];
+                $currentStatistiqueName = $statistiquesNames[array_search($statistiqueFetched['idStatistique'], array_column($statistiquesNames, 'idStatistique'))]['libelle'];
+                $statistiques[$currentStatistiqueName] += $statistiqueFetched['valeur'];
             }
 
             $matchingData = $statistiques;
             http_response_code(200);
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Vous désirez consulter votre compte en statistique ?", $matchingData);
-        } elseif (!empty($_GET['idPersonnage']) && !empty($_GET['details']) &&filter_var($_GET['details'],FILTER_VALIDATE_BOOLEAN)) {
+        } elseif (!empty($_GET['idPersonnage']) && !empty($_GET['details']) && filter_var($_GET['details'],FILTER_VALIDATE_BOOLEAN)) {
+
+            $statistiquesNameQuery = $bdd->query('SELECT * from statistique');
+            $statistiquesNames = $statistiquesNameQuery->fetchAll(PDO::FETCH_ASSOC);
+
             $statistiqueQuery = $bdd->query('SELECT *
 					from monte 
                     where idPersonnage='.$_GET['idPersonnage']);
             $statistiques = [];
             while($statistiqueFetched = $statistiqueQuery->fetch(PDO::FETCH_ASSOC)) {
                 if(empty($statistiques[$statistiqueFetched['niveau']]))
-                    for($i = 1 ; $i < 8 ; $i++)
-                        $statistiques[$statistiqueFetched['niveau']][$i] = 0;
-                $statistiques[$statistiqueFetched['niveau']][$statistiqueFetched['idStatistique']] = intval($statistiqueFetched['valeur']);
+                    foreach($statistiquesNames as $statistiqueName) {
+                        $statistiques[$statistiqueFetched['niveau']][$statistiqueName['libelle']] = 0;
+                    }
+                $currentStatistiqueName = $statistiquesNames[array_search($statistiqueFetched['idStatistique'], array_column($statistiquesNames, 'idStatistique'))]['libelle'];
+                $statistiques[$statistiqueFetched['niveau']][$currentStatistiqueName] = intval($statistiqueFetched['valeur']);
             }
 
             $matchingData = $statistiques;

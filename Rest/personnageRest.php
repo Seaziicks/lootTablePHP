@@ -1,4 +1,21 @@
 <?php
+declare(strict_types=1);
+spl_autoload_register('chargerClasse');
+session_start();
+header("Content-Type:application/json");
+
+/**
+ * @param $classname
+ */
+function chargerClasse($classname)
+{
+    if (is_file('Poo/' . $classname . '.php'))
+        require 'Poo/' . $classname . '.php';
+    elseif (is_file('Poo/Manager/' . $classname . '.php'))
+        require 'Poo/Manager/' . $classname . '.php';
+    elseif (is_file('Poo/Classes/' . $classname . '.php'))
+        require 'Poo/Classes/' . $classname . '.php';
+}
 /// Librairies éventuelles (pour la connexion à la BDD, etc.)
 include('../db.php');
 
@@ -11,7 +28,17 @@ switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
-        if (!empty($_GET['idPersonnage'])) {
+        if (!empty($_GET['idPersonnage']) && !empty($_GET['withStatistique']) && filter_var($_GET['withStatistique'],FILTER_VALIDATE_BOOLEAN)) {
+
+            $PersonnageManager = new PersonnageManager($bdd);
+            $personnage = $PersonnageManager->getPersonnageAvecStatistiques(1);
+
+            http_response_code(200);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Regardez moi ce monstre, ces muscles, cette intelligence, cette puissance !", $personnage);
+
+        } elseif (!empty($_GET['idPersonnage'])) {
+
             $personnageQuery = $bdd->query('SELECT *
 					from personnage 
                     where idPersonnage ='.$_GET['idPersonnage']);
@@ -21,6 +48,14 @@ switch ($http_method){
             http_response_code(200);
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Bien le bonjour, voyageur. Je vous envoie un de mes meilleurs soldats !", $matchingData);
+
+        } elseif (!empty($_GET['withStatistique']) && filter_var($_GET['withStatistique'],FILTER_VALIDATE_BOOLEAN)) {
+            $PersonnageManager = new PersonnageManager($bdd);
+            $personnages = $PersonnageManager->getAllPersonnageAvecStatistiques();
+
+            http_response_code(200);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Et voilà la fine équipe !", $personnages);
         }
         break;
 
