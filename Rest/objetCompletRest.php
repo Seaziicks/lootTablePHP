@@ -38,7 +38,7 @@ switch ($http_method) {
             http_response_code(200);
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Je vous le fais à un prix d'ami !", $matchingData);
-        } elseif (isset($_GET['idPersonnage'])) {
+        } elseif (isset($_GET['idPersonnage']) && isset($_GET['idsOnly']) && filter_var($_GET['idsOnly'], FILTER_VALIDATE_BOOLEAN)) {
             /// Récupération des critères de recherche envoyés par le Client
             $objetsQuery = $bdd->query('SELECT idObjet
                                                 FROM objet
@@ -50,7 +50,23 @@ switch ($http_method) {
             $matchingData = $ids;
             http_response_code(200);
             /// Envoi de la réponse au Client
-            deliver_responseRest(200, "Voici le catalogue de ce que vous pourrez trouver chez nous.", $matchingData);
+            deliver_responseRest(200, "Voici les identifiants de tous nos produits concernant cette référence.", $matchingData);
+
+        } elseif (isset($_GET['idPersonnage'])) {
+
+            /// Récupération des critères de recherche envoyés par le Client
+            $objetsQuery = $bdd->query('SELECT idObjet
+                                                FROM objet
+                                                WHERE idPersonnage = ' . $_GET['idPersonnage'] . '');
+            $objets = [];
+            while($objetFetched=$objetsQuery->fetch(PDO::FETCH_ASSOC)){
+                array_push($objets, $ObjetManager->getObjetAsNonJSon(intval($objetFetched['idObjet'])));
+            }
+            $matchingData = $objets;
+            http_response_code(200);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Voici le catalogue de ce que vous pourrez trouver chez nous pour cette référence.", $matchingData);
+
         }
         break;
 
