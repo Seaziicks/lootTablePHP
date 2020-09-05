@@ -64,38 +64,42 @@ switch ($http_method){
             }
         } elseif (isset($_GET['EffetMagiqueTable']) && isset($_GET['idEffetMagique'])) {
             try {
-                $EffetMagiqueTableManager = new EffetMagiqueTableManager($bdd);
-                $tables = json_decode($_GET['EffetMagiqueTable'])->EffetMagiqueTable;
-                foreach ($tables as $tableToAdd) {
-                    $table = new stdClass();
-                    $table->Table = $tableToAdd;
-                    $EffetMagiqueTableManager->addEffetMagiqueTable(json_encode($table), intval($_GET['idEffetMagique']));
-                }
-                // $EffetMagiqueManager->addTable(json_decode($_GET['EffetMagiqueTable']), $_GET['idEffetMagique']);
-                $effetsMagiquesTable = $EffetMagiqueTableManager->getAllEffetMagiqueTableAsNotJSon(intval($_GET['idEffetMagique']));
+                if (json_decode($_GET['EffetMagiqueTable'])->EffetMagiqueTable) {
+                    $EffetMagiqueTableManager = new EffetMagiqueTableManager($bdd);
+                    $tables = json_decode($_GET['EffetMagiqueTable'])->EffetMagiqueTable;
+                    foreach ($tables as $tableToAdd) {
+                        $table = new stdClass();
+                        $table->Table = $tableToAdd;
+                        $EffetMagiqueTableManager->addEffetMagiqueTable(json_encode($table), intval($_GET['idEffetMagique']));
+                    }
+                    // $EffetMagiqueManager->addTable(json_decode($_GET['EffetMagiqueTable']), $_GET['idEffetMagique']);
+                    $effetsMagiquesTable = $EffetMagiqueTableManager->getAllEffetMagiqueTableAsNotJSon(intval($_GET['idEffetMagique']));
 
-                http_response_code(201);
-                deliver_responseRest(201, "effetMagiqueTable added", $effetsMagiquesTable);
+                    http_response_code(201);
+                    deliver_responseRest(201, "effetMagiqueTable added", $effetsMagiquesTable);
+                }
             } catch (PDOException $e) {
                 deliver_responseRest(400, "effetMagiqueTable add error in SQL", $sql . "<br>" . $e->getMessage());
             }
         } elseif (isset($_GET['EffetMagiqueUl']) && isset($_GET['idEffetMagique'])) {
             try {
+                if (json_decode($_GET['EffetMagiqueUl'])->EffetMagiqueUl) {
 
-                $EffetMagiqueUlManager = new EffetMagiqueUlManager($bdd);
+                    $EffetMagiqueUlManager = new EffetMagiqueUlManager($bdd);
 
-                $uls = json_decode($_GET['EffetMagiqueUl'])->EffetMagiqueUl;
-                foreach ($uls as $ulToAdd) {
-                    $ul = new stdClass();
-                    $ul->Ul = $ulToAdd;
-                    $EffetMagiqueUlManager->addEffetMagiqueUl(json_encode($ul), intval($_GET['idEffetMagique']));
+                    $uls = json_decode($_GET['EffetMagiqueUl'])->EffetMagiqueUl;
+                    foreach ($uls as $ulToAdd) {
+                        $ul = new stdClass();
+                        $ul->Ul = $ulToAdd;
+                        $EffetMagiqueUlManager->addEffetMagiqueUl(json_encode($ul), intval($_GET['idEffetMagique']));
+                    }
+                    // $EffetMagiqueManager->addUl(json_decode($_GET['EffetMagiqueUl']), $_GET['idEffetMagique']);
+
+                    $effetsMagiquesUl = $EffetMagiqueUlManager->getAllEffetMagiqueUlAsNotJSon(intval($_GET['idEffetMagique']));
+
+                    http_response_code(201);
+                    deliver_responseRest(201, "effetMagiqueUl added", $effetsMagiquesUl);
                 }
-                // $EffetMagiqueManager->addUl(json_decode($_GET['EffetMagiqueUl']), $_GET['idEffetMagique']);
-
-                $effetsMagiquesUl = $EffetMagiqueUlManager->getAllEffetMagiqueUlAsNotJSon(intval($_GET['idEffetMagique']));
-
-                http_response_code(201);
-                deliver_responseRest(201, "effetMagiqueUl added", $effetsMagiquesUl);
             } catch (PDOException $e) {
                 deliver_responseRest(400, "effetMagiqueUl add error in SQL", $sql . "<br>" . $e->getMessage());
             }
