@@ -49,7 +49,7 @@ switch ($http_method){
         break;
 
     case "POST":
-        if (!(empty($_POST['idPersonnage']) || empty($_POST['idStatistique']) ||empty($_POST['niveau']))) {
+        if (!(empty($_POST['idPersonnage']) || empty($_POST['idStatistique']) || empty($_POST['niveau']))) {
             try {
                 $sql = "INSERT INTO monte (idPersonnage, idStatistique, niveau, valeur)
                 VALUES (" . $_POST['idPersonnage'] . ", " . $_POST['idStatistique'] . ",
@@ -73,7 +73,7 @@ switch ($http_method){
         break;
 
     case "PUT":
-        if (!(empty($_PUT['idPersonnage']) || empty($_PUT['idStatistique']) ||empty($_PUT['niveau']))) {
+        if (!(empty($_PUT['idPersonnage']) || empty($_PUT['idStatistique']) || empty($_PUT['niveau']))) {
             try {
                 $sql = "UPDATE monte 
                 SET valeur = '" . $_PUT['valeur'] . "', 
