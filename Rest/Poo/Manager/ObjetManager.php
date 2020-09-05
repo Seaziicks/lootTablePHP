@@ -137,12 +137,13 @@ class ObjetManager
         $Objet->proprieteMagique = $EffetMagiqueManager->getAllEffetMagiqueTableAsNotJSon($idObjet);
 
         if (isset($Objet->idMalediction)) {
-            unset($Objet->idMateriaux);
+            unset($Objet->idMalediction);
             $MaledictionManager = new Maledictionmanager($this->_db);
             $Objet->malediction = $MaledictionManager->getMaledictionAsNonJSon($unmodifiedObjet->_idMalediction);
         }
+
         if (isset($Objet->idMateriaux)) {
-            unset($Objet->idMalediction);
+            unset($Objet->idMateriaux);
             $MateriauxManager = new MateriauxManager($this->_db);
             $Objet->materiau = $MateriauxManager->getMateriauxAsNonJSon($unmodifiedObjet->_idMateriaux);
         }
