@@ -41,9 +41,11 @@ class ObjetManager
         $objet = json_decode($objetData);
 
         $sql = "INSERT INTO `objet` (`idPersonnage`,`nom`, `fauxNom`, `bonus`,`type`,`prix`,`prixNonHumanoide`,`devise`,`idMalediction`,`categorie`,`idMateriaux`,
-                                        `taille`,`degats`,`critique`,`facteurPortee`,`armure`,`bonusDexteriteMax`,`malusArmureTests`,`risqueEchecSorts`) 
+                                        `taille`,`degats`,`critique`,`facteurPortee`,`armure`,`bonusDexteriteMax`,`malusArmureTests`,`risqueEchecSorts`,
+                                        `afficherNom`, `afficherEffetMagique`, `afficherMalediction`, `afficherMateriau`, `afficherInfos`) 
                                         VALUES (:idPersonnage, :nom, :fauxNom, :bonus, :type, :prix, :prixNonHumanoide, :devise, :idMalediction, :categorie, :idMateriaux,
-                                                :taille, :degats, :critique, :facteurPortee, :armure, :bonusDexteriteMax, :malusArmureTests, :risqueEchecSorts)";
+                                                :taille, :degats, :critique, :facteurPortee, :armure, :bonusDexteriteMax, :malusArmureTests, :risqueEchecSorts,
+                                                :afficherNom, :afficherEffetMagique, :afficherMalediction, :afficherMateriau, :afficherInfos)";
 
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $commit->bindParam(':idPersonnage',$objet->idPersonnage, PDO::PARAM_INT);
@@ -65,6 +67,11 @@ class ObjetManager
         $commit->bindParam(':bonusDexteriteMax',$objet->bonusDexteriteMax, PDO::PARAM_INT);
         $commit->bindParam(':malusArmureTests',$objet->malusArmureTests, PDO::PARAM_INT);
         $commit->bindParam(':risqueEchecSorts',$objet->risqueEchecSorts, PDO::PARAM_STR);
+        $commit->bindParam(':afficherNom',$objet->afficherNom, PDO::PARAM_BOOL);
+        $commit->bindParam(':afficherEffetMagique',$objet->afficherEffetMagique, PDO::PARAM_BOOL);
+        $commit->bindParam(':afficherMalediction',$objet->afficherMalediction, PDO::PARAM_BOOL);
+        $commit->bindParam(':afficherMateriau',$objet->afficherMateriau, PDO::PARAM_BOOL);
+        $commit->bindParam(':afficherInfos',$objet->afficherInfos, PDO::PARAM_BOOL);
         $commit->execute();
         $result = $this->_db->query('SELECT *
 					from objet 
@@ -84,7 +91,9 @@ class ObjetManager
                 SET nom = :nom, fauxNom = :fauxNom, bonus = :bonus, type = :type, prix = :prix,
                 prixNonHumanoide = :prixNonHumanoide, devise = :devise, idMalediction = :idMalediction, categorie = :categorie,
                 idMateriaux = :idMateriaux, taille = :taille, degats = :degats, critique = :critique, facteurPortee = :facteurPortee,
-                armure = :armure, bonusDexteriteMax = :bonusDexteriteMax, malusArmureTests = :malusArmureTests, risqueEchecSorts = :risqueEchecSorts
+                armure = :armure, bonusDexteriteMax = :bonusDexteriteMax, malusArmureTests = :malusArmureTests, risqueEchecSorts = :risqueEchecSorts,
+                afficherNom = :afficherNom, afficherEffetMagique = :afficherEffetMagique, afficherMalediction = :afficherMalediction,
+                afficherMateriau = :afficherMateriau, afficherInfos = :afficherInfos
                 WHERE idObjet = :idObjet;";
 
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
@@ -108,6 +117,16 @@ class ObjetManager
         $commit->bindParam(':bonusDexteriteMax',$objet->bonusDexteriteMax, PDO::PARAM_INT);
         $commit->bindParam(':malusArmureTests',$objet->malusArmureTests, PDO::PARAM_INT);
         $commit->bindParam(':risqueEchecSorts',$objet->risqueEchecSorts, PDO::PARAM_STR);
+        $commit->bindParam(':afficherNom',$objet->afficherNom, PDO::PARAM_BOOL);
+        $commit->bindParam(':afficherEffetMagique',$objet->afficherEffetMagique, PDO::PARAM_BOOL);
+        $commit->bindParam(':afficherMalediction',$objet->afficherMalediction, PDO::PARAM_BOOL);
+        $commit->bindParam(':afficherMateriau',$objet->afficherMateriau, PDO::PARAM_BOOL);
+        $commit->bindParam(':afficherInfos',$objet->afficherInfos, PDO::PARAM_BOOL);
+        $commit->bindParam(':afficherNom',$objet->afficherNom, PDO::PARAM_BOOL);
+        $commit->bindParam(':afficherEffetMagique',$objet->afficherEffetMagique, PDO::PARAM_BOOL);
+        $commit->bindParam(':afficherMalediction',$objet->afficherMalediction, PDO::PARAM_BOOL);
+        $commit->bindParam(':afficherMateriau',$objet->afficherMateriau, PDO::PARAM_BOOL);
+        $commit->bindParam(':afficherInfos',$objet->afficherInfos, PDO::PARAM_BOOL);
         $commit->execute();
 
         $result = $this->_db->query('SELECT *
