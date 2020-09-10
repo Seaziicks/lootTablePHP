@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.2
+-- version 4.8.5
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  Dim 06 sep. 2020 à 10:03
--- Version du serveur :  10.4.10-MariaDB
--- Version de PHP :  7.3.12
+-- Généré le :  jeu. 10 sep. 2020 à 15:20
+-- Version du serveur :  5.7.26
+-- Version de PHP :  7.2.18
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `dropchance` (
   `minRoll` tinyint(4) NOT NULL,
   `maxRoll` tinyint(4) NOT NULL,
   `niveauMonstre` tinyint(4) DEFAULT NULL,
-  `multiplier` tinyint(4) NOT NULL DEFAULT 1,
+  `multiplier` tinyint(4) NOT NULL DEFAULT '1',
   `dicePower` int(11) NOT NULL,
   PRIMARY KEY (`idMonstre`,`idLoot`),
   KEY `FK_dropchance_idLoot` (`idLoot`)
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `dropchancebis` (
   `roll` tinyint(4) NOT NULL,
   `idLoot` smallint(5) UNSIGNED DEFAULT NULL,
   `niveauMonstre` tinyint(4) DEFAULT NULL,
-  `diceNumber` tinyint(4) NOT NULL DEFAULT 1,
+  `diceNumber` tinyint(4) NOT NULL DEFAULT '1',
   `dicePower` tinyint(4) NOT NULL,
   `multiplier` smallint(6) NOT NULL,
   PRIMARY KEY (`idMonstre`,`roll`),
@@ -581,11 +581,11 @@ CREATE TABLE IF NOT EXISTS `objet` (
   `bonusDexteriteMax` int(11) DEFAULT NULL,
   `malusArmureTests` int(11) DEFAULT NULL,
   `risqueEchecSorts` varchar(9) DEFAULT NULL,
-  `afficherNom` tinyint(1) NOT NULL DEFAULT 0,
-  `afficherEffetMagique` tinyint(1) NOT NULL DEFAULT 0,
-  `afficherMalediction` tinyint(1) NOT NULL DEFAULT 0,
-  `afficherMateriau` tinyint(1) NOT NULL DEFAULT 0,
-  `afficherInfos` tinyint(1) NOT NULL DEFAULT 0,
+  `afficherNom` tinyint(1) NOT NULL DEFAULT '0',
+  `afficherEffetMagique` tinyint(1) NOT NULL DEFAULT '0',
+  `afficherMalediction` tinyint(1) NOT NULL DEFAULT '0',
+  `afficherMateriau` tinyint(1) NOT NULL DEFAULT '0',
+  `afficherInfos` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`idObjet`),
   UNIQUE KEY `id_objet_magique` (`idObjet`),
   KEY `FK_objet_idMalediction` (`idMalediction`),
