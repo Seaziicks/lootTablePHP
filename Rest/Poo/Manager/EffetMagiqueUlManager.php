@@ -91,6 +91,27 @@ class EffetMagiqueUlManager
         return json_decode(json_encode($this->getAllEffetMagiqueUl($idEffetMagique)));
     }
 
+    public function getAllEffetMagiqueUlAsNotJSonBis(int $idEffetMagique)
+    {
+        return json_decode(json_encode($this->getAllEffetMagiqueUlBis($idEffetMagique)));
+    }
+
+    public function getAllEffetMagiqueUlBis(int $idEffetMagique)
+    {
+        $effetMagiqueUlQuery = $this->_db->query('SELECT *
+                                                    FROM effetMagiqueUl
+                                                    WHERE idEffetMagique =' . $idEffetMagique);
+
+        $allEffetMagiqueUl = [];
+        while($effetMagiqueUlFetched = $effetMagiqueUlQuery->fetch(PDO::FETCH_ASSOC)) {
+            $Ul = new EffetMagiqueUl($effetMagiqueUlFetched);
+            $Ul->updateLisBis($this->_db);
+            array_push($allEffetMagiqueUl, $Ul);
+        };
+
+        return $allEffetMagiqueUl;
+    }
+
     public function setDb(PDO $db)
     {
         $this->_db = $db;

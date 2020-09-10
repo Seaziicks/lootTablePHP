@@ -170,6 +170,31 @@ class ObjetManager
         return $Objet;
     }
 
+    public function getObjetAsNonJSonBis($idObjet) {
+        $unmodifiedObjet = $this->getObjet($idObjet);
+        $Objet = json_decode(json_encode($unmodifiedObjet));
+
+
+
+
+        $EffetMagiqueManager = new EffetMagiqueManager($this->_db);
+        $Objet->effetMagique = $EffetMagiqueManager->getAllEffetMagiqueTableAsNotJSonBis($idObjet);
+
+        if (isset($Objet->idMalediction)) {
+            unset($Objet->idMalediction);
+            $MaledictionManager = new Maledictionmanager($this->_db);
+            $Objet->malediction = $MaledictionManager->getMaledictionAsNonJSon($unmodifiedObjet->_idMalediction);
+        }
+
+        if (isset($Objet->idMateriaux)) {
+            unset($Objet->idMateriaux);
+            $MateriauxManager = new MateriauxManager($this->_db);
+            $Objet->materiau = $MateriauxManager->getMateriauxAsNonJSon($unmodifiedObjet->_idMateriaux);
+        }
+
+        return $Objet;
+    }
+
     public function addCompleteObjet($objetData) {
         $objet = json_decode($objetData)->Objet;
         $objetData = clone $objet;

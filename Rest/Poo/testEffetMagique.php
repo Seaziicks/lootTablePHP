@@ -20,7 +20,7 @@ function chargerClasse($classname)
 include('../../db.php');
 $EffetMagiqueManager = new EffetMagiqueManager($bdd);
 
-$data = $EffetMagiqueManager->getCompleteEffetMagiqueAsNotJson(2);
+$data = $EffetMagiqueManager->getCompleteEffetMagiqueAsNotJsonBis(2);
 
 http_response_code(200);
 deliver_responseRest(200, "Je vous fais de l'effet ? Vous trouvez ça magique ?", $data);

@@ -69,6 +69,12 @@ class EffetMagiqueTable implements JsonSerializable
         $this->_titles = $titles;
     }
 
+    public function updateTitlesBis(PDO $bdd) {
+        /* Récupération des titres de la table */
+        $EffetMagiqueTableTitle = new EffetMagiqueTableTitleManager($bdd);
+        $this->_titles = $EffetMagiqueTableTitle->getAllEffetMagiqueTableTitle($this->_idEffetMagiqueTable);
+    }
+
     public function setTrs()
     {
 
@@ -96,6 +102,12 @@ class EffetMagiqueTable implements JsonSerializable
         $this->_trs = $trs;
     }
 
+    public function updateTrsBis(PDO $bdd) {
+        /* Récupération des lignes de la table */
+        $EffetMagiqueTableTr = new EffetMagiqueTableTrManager($bdd);
+        $this->_trs = $EffetMagiqueTableTr->getAllEffetMagiqueTableTr($this->_idEffetMagiqueTable);
+    }
+
 	public function hydrate(array $donnees)
     {
         foreach ($donnees as $key => $value)
@@ -115,9 +127,11 @@ class EffetMagiqueTable implements JsonSerializable
     public function jsonSerialize()
     {
         return [
+            'idEffetMagiqueTable' => $this->_idEffetMagiqueTable,
+            'idEffetMagique' => $this->_idEffetMagique,
             'position' => $this->_position,
-            'title' => $this->_titles,
-            'tr' => $this->_trs
+            'effetMagiqueTableTitle' => $this->_titles,
+            'effetMagiqueTableTr' => $this->_trs
         ];
     }
 }

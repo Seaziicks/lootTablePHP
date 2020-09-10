@@ -43,6 +43,23 @@ class EffetMagiqueTableManager
         return $allEffetMagiqueTable;
     }
 
+    public function getAllEffetMagiqueTableBis(int $idEffetMagique)
+    {
+        $effetMagiqueTableQuery = $this->_db->query('SELECT *
+                                                    FROM effetMagiqueTable
+                                                    WHERE idEffetMagique =' . $idEffetMagique);
+
+        $allEffetMagiqueTable = [];
+        while($effetMagiqueTableFetched = $effetMagiqueTableQuery->fetch(PDO::FETCH_ASSOC)) {
+            $Table = new EffetMagiqueTable($effetMagiqueTableFetched);
+            $Table->updateTitlesBis($this->_db);
+            $Table->updateTrsBis($this->_db);
+            array_push($allEffetMagiqueTable, $Table);
+        };
+
+        return $allEffetMagiqueTable;
+    }
+
     public function addEffetMagiqueTable($effetMagiqueTableData, $idEffetMagique)
     {
         $effetMagiqueTable = json_decode($effetMagiqueTableData)->Table;
@@ -116,6 +133,10 @@ class EffetMagiqueTableManager
 
     public function getAllEffetMagiqueTableAsNotJSon($idEffetMagique) {
         return json_decode(json_encode($this->getAllEffetMagiqueTable($idEffetMagique)));
+    }
+
+    public function getAllEffetMagiqueTableAsNotJSonBis($idEffetMagique) {
+        return json_decode(json_encode($this->getAllEffetMagiqueTableBis($idEffetMagique)));
     }
 
     public function setDb(PDO $db)

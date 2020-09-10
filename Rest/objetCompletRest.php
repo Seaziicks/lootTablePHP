@@ -32,7 +32,7 @@ switch ($http_method) {
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
         if (isset($_GET['idObjet'])) {
-            $objet = $ObjetManager->getObjetAsNonJSon($_GET['idObjet']);
+            $objet = $ObjetManager->getObjetAsNonJSonBis($_GET['idObjet']);
 
             $matchingData = $objet;
             http_response_code(200);

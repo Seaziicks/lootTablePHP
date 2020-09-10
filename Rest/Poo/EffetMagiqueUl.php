@@ -64,6 +64,15 @@ class EffetMagiqueUl implements JsonSerializable
             $this->_lis = $li;
     }
 
+    public function updateLisBis(PDO $bdd) {
+        /* Récupération des lignes de la table */
+
+        $EffetMagiqueUlContentManager = new EffetMagiqueUlContentManager($bdd);
+        /* Récupération des lignes de la table */
+
+        $this->_lis = $EffetMagiqueUlContentManager->getAllEffetMagiqueUlContent($this->_idEffetMagiqueUl);
+    }
+
 	public function hydrate(array $donnees)
     {
         foreach ($donnees as $key => $value)
@@ -83,8 +92,10 @@ class EffetMagiqueUl implements JsonSerializable
     public function jsonSerialize()
     {
         return [
+            'idEffetMagiqueUl' => $this->_idEffetMagiqueUl,
+            'idEffetMagique' => $this->_idEffetMagique,
             'position' => $this->_position,
-            'li' => $this->_lis
+            'effetMagiqueUlContent' => $this->_lis
         ];
     }
 

@@ -98,6 +98,24 @@ class EffetMagiqueManager
         return $Effet;
     }
 
+    public function getCompleteEffetMagiqueAsNotJsonBis($idEffetMagique) {
+        $EffetMagique = $this->getEffetMagique($idEffetMagique);
+        $Effet = json_decode(json_encode($EffetMagique));
+
+        $TableManager = new EffetMagiqueTableManager($this->_db);
+        $UlManager = new EffetMagiqueUlManager($this->_db);
+        $DescriptionManager = new EffetMagiqueDescriptionManager($this->_db);
+        $InfosManager = new EffetMagiqueInfosManager($this->_db);
+
+        $Effet->effetMagiqueDescription = $DescriptionManager->getAllEffetMagiqueDescription($idEffetMagique);
+        $infos=new stdClass();
+        $infos->data = $this->getInfos($idEffetMagique);
+        $Effet->effetMagiqueDBInfos = $InfosManager->getAllEffetMagiqueInfos($idEffetMagique);
+        $Effet->effetMagiqueUl = $UlManager->getAllEffetMagiqueUlAsNotJSonBis($idEffetMagique);
+        $Effet->effetMagiqueTable = $TableManager->getAllEffetMagiqueTableAsNotJSonBis($idEffetMagique);
+        return $Effet;
+    }
+
     public function getAllEffetMagiqueTableAsNotJSon($idObjet) {
         $EffetsMagiques = [];
         $effetMagiqueQuery = $this->_db->query('SELECT *
@@ -106,6 +124,18 @@ class EffetMagiqueManager
 
         while($effetMagiqueFetched = $effetMagiqueQuery->fetch(PDO::FETCH_ASSOC)) {
             array_push($EffetsMagiques, $this->getCompleteEffetMagiqueAsNotJson($effetMagiqueFetched['idEffetMagique']));
+        }
+        return $EffetsMagiques;
+    }
+
+    public function getAllEffetMagiqueTableAsNotJSonBis($idObjet) {
+        $EffetsMagiques = [];
+        $effetMagiqueQuery = $this->_db->query('SELECT *
+                                                    FROM effetMagique
+                                                    WHERE idObjet = ' . $idObjet);
+
+        while($effetMagiqueFetched = $effetMagiqueQuery->fetch(PDO::FETCH_ASSOC)) {
+            array_push($EffetsMagiques, $this->getCompleteEffetMagiqueAsNotJsonBis($effetMagiqueFetched['idEffetMagique']));
         }
         return $EffetsMagiques;
     }
