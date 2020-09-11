@@ -91,7 +91,7 @@ switch ($http_method){
                     foreach ($uls as $ulToAdd) {
                         $ul = new stdClass();
                         $ul->Ul = $ulToAdd;
-                        $EffetMagiqueUlManager->addEffetMagiqueUl(json_encode($ul), intval($_GET['idEffetMagique']));
+                        $EffetMagiqueUlManager->addCompleteEffetMagiqueUl(json_encode($ul), intval($_GET['idEffetMagique']));
                     }
                     // $EffetMagiqueManager->addUl(json_decode($_GET['EffetMagiqueUl']), $_GET['idEffetMagique']);
 

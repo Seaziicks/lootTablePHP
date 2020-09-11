@@ -123,7 +123,22 @@ class EffetMagiqueTableManager
 
     public function updateEffetMagiqueTable($effetMagiqueTableData)
     {
-        // TODO
+        $effetMagiqueTable = json_decode($effetMagiqueTableData);
+        $sql = "UPDATE effetMagiqueTable 
+                SET idEffetMagique = '" . $effetMagiqueTable->idEffetMagique . "', 
+                position = '" . $effetMagiqueTable->position . "'
+                WHERE idEffetMagiqueTable = " . $effetMagiqueTable->idEffetMagiqueTable;
+
+
+        $this->_db->exec($sql);
+        $result = $this->_db->query('SELECT *
+					from effetMagiqueTable
+                    where idEffetMagiqueTable='.$effetMagiqueTable->idEffetMagiqueTable);
+        $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+        $result->closeCursor();
+        $bdd = null;
+
+        return new EffetMagiqueTable($fetchedResult);
     }
 
     public function deleteEffetMagiqueTable($idEffetMagiqueTable)

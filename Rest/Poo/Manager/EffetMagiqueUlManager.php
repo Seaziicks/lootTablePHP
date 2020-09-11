@@ -41,7 +41,7 @@ class EffetMagiqueUlManager
         return $allEffetMagiqueUl;
     }
 
-    public function addEffetMagiqueUl($effetMagiqueUlData, $idEffetMagique)
+    public function addCompleteEffetMagiqueUl($effetMagiqueUlData, $idEffetMagique)
     {
 
         $effetMagiqueUl = json_decode($effetMagiqueUlData)->Ul;
@@ -78,7 +78,22 @@ class EffetMagiqueUlManager
 
     public function updateEffetMagiqueUl($effetMagiqueUlData)
     {
-        // TODO
+        $effetMagiqueUl = json_decode($effetMagiqueUlData);
+        $sql = "UPDATE effetMagiqueUl 
+                SET idEffetMagique = '" . $effetMagiqueUl->idEffetMagique . "', 
+                position = '" . $effetMagiqueUl->position . "'
+                WHERE idEffetMagiqueUl = " . $effetMagiqueUl->idEffetMagiqueUl;
+
+
+        $this->_db->exec($sql);
+        $result = $this->_db->query('SELECT *
+					from effetMagiqueUl
+                    where idEffetMagiqueUl='.$effetMagiqueUl->idEffetMagiqueUl);
+        $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+        $result->closeCursor();
+        $bdd = null;
+
+        return new EffetMagiqueUl($fetchedResult);
     }
 
     public function deleteEffetMagiqueUl($idEffetMagiqueUl)

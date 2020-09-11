@@ -253,7 +253,7 @@ class EffetMagiqueManager
         foreach ($uls as $ulToAdd) {
             $ul = new stdClass();
             $ul->Ul = $ulToAdd;
-            $EffetMagiqueUlManager->addEffetMagiqueUl(json_encode($ul), $idEffetMagique);
+            $EffetMagiqueUlManager->addCompleteEffetMagiqueUl(json_encode($ul), $idEffetMagique);
         }
     }
 
