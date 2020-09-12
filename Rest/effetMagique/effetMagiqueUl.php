@@ -1,4 +1,21 @@
 <?php
+declare(strict_types=1);
+spl_autoload_register('chargerClasse');
+session_start();
+header("Content-Type:application/json");
+
+/**
+ * @param $classname
+ */
+function chargerClasse($classname)
+{
+    if (is_file('../Poo/' . $classname . '.php'))
+        require '../Poo/' . $classname . '.php';
+    elseif (is_file('../Poo/Manager/' . $classname . '.php'))
+        require '../Poo/Manager/' . $classname . '.php';
+    elseif (is_file('../Poo/Classes/' . $classname . '.php'))
+        require '../Poo/Classes/' . $classname . '.php';
+}
 /// Librairies éventuelles (pour la connexion à la BDD, etc.)
 include('../../db.php');
 
@@ -7,68 +24,67 @@ header("Content-Type:application/json");
 
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
+
+$EffetMagiqueUlManager = new EffetMagiqueUlManager($bdd);
+
 switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
-        if (!empty($_GET['idEffetMagiqueUl'])) {
-            $effetMagiqueUlsQuery = $bdd->query('SELECT *
-					from effetmagiqueul 
-                    where idEffetMagique='.$_GET['idEffetMagique']);
+        if (isset($_GET['idEffetMagiqueUl'])) {
+            $effetMagiqueUl = $EffetMagiqueUlManager->getEffetMagiqueUl($_GET['idEffetMagiqueUl']);
 
-            $allUl = [];
-            while ($effetMagiqueUl = $effetMagiqueUlsQuery->fetch(PDO::FETCH_ASSOC)) {
-                $effetMagiqueUl['position'] = $effetMagiqueUl['position'] == null ? null : intval($effetMagiqueUl['position']);
-                $ul['position'] = $effetMagiqueUl['position'];
-
-                /* Récupération des lignes de la table */
-                $effetMagiqueUlContentsQuery = $bdd->query('SELECT *
-					from effetmagiqueulcontent
-                    where idEffetMagiqueUl='.$effetMagiqueUl['idEffetMagiqueUl']);
-
-                $li= [];
-                while ($effetMagiqueUlContent = $effetMagiqueUlContentsQuery->fetch(PDO::FETCH_ASSOC)) {
-                        array_push($li, $effetMagiqueUlContent['contenu']);
-                }
-                $ul['li'] = $li;
-
-                array_push($allUl, $ul);
-            }
-
-            $matchingData = $allUl;
+            $matchingData = $effetMagiqueUl;
             http_response_code(200);
             /// Envoi de la réponse au Client
-            deliver_responseRest(200, "Vous savez ce que fait Ul ? Il tire des choses vers le haut avec effort. Eh bien oui, Ul hisse !", $matchingData);
+            deliver_responseRest(200, "effetMagiqueUl", $matchingData);
+        } elseif (isset($_GET['idEffetMagique'])) {
+            /// Récupération des critères de recherche envoyés par le Client
+            $effetsMagiquesUl = $EffetMagiqueUlManager->getAllEffetMagiqueUlAsNotJSonBis($_GET['idEffetMagique']);
+            $matchingData = $effetsMagiquesUl;
+            http_response_code(200);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Multiple effetMagiqueUl", $matchingData);
         }
         break;
 
     case "POST":
-        try {
+        if(isset($_GET['EffetMagiqueUl'])) {
+            try {
+                $effetMagiqueUl = json_decode($_GET['EffetMagiqueUl'])->EffetMagiqueUl;
+                $effetMagiqueUl->idEffetMagique = $_GET['idEffetMagique'];
+                $effetMagiqueUlAdded = $EffetMagiqueUlManager->addEffetMagiqueUl(json_encode($effetMagiqueUl), $effetMagiqueUl->idEffetMagique);
 
-            $effetMagiqueUl = json_decode($_GET['EffetMagiqueUlManager'])->Ul;
-            $sql = "INSERT INTO `effetmagiqueul` (`idEffetMagique`,`position`) 
-                    VALUES (:idEffetMagique, :position)";
-            $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-            $commit->bindParam(':idEffetMagique',$_GET['idEffetMagique'], PDO::PARAM_INT);
-            $commit->bindParam(':position',$effetMagiqueUl->position, PDO::PARAM_INT);
-            $commit->execute();
-            $ulIndex = $bdd->lastInsertId();
-
-            foreach($effetMagiqueUl->li as $li) {
-                    $sql = "INSERT INTO `effetMagiqueUlContent` (`idEffetMagiqueUl`,`contenu`) 
-                                        VALUES (:idEffetMagiqueUl, :contenu)";
-
-                    $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                    $commit->bindParam(':idEffetMagiqueUl',$ulIndex, PDO::PARAM_INT);
-                    $commit->bindParam(':contenu',$li, PDO::PARAM_STR);
-                    $commit->execute();
+                http_response_code(201);
+                deliver_responseRest(201, "effetMagiqueUl added", $effetMagiqueUlAdded);
+            } catch (PDOException $e) {
+                deliver_responseRest(400, "effetMagiqueUl add error in SQL", $sql . "<br>" . $e->getMessage());
             }
-
-        } catch (PDOException $e) {
-            deliver_responseRest(400, "effetMagiqueTable add error in SQL", $sql . "<br>" . $e->getMessage());
         }
         break;
     case "PUT":
+        if (!(empty($_GET['idEffetMagiqueUl']))) {
+            try {
+                $effetMagiqueUl = json_decode($_GET['EffetMagiqueUl'])->EffetMagiqueUl;
+                $sql = "UPDATE effetMagiqueUl
+                SET idEffetMagique = '" . $effetMagiqueUl->idEffetMagique . "', 
+                position = '" . $effetMagiqueUl->position . "', 
+                WHERE idEffetMagiqueUl = " . $effetMagiqueUl->idEffetMagiqueUl;
+
+
+                $bdd->exec($sql);
+                $result = $bdd->query('SELECT *
+					from effetMagiqueUl 
+                    where idEffetMagiqueUl='.$effetMagiqueUl->idEffetMagiqueUl);
+                $result->closeCursor();
+                $bdd = null;
+                http_response_code(201);
+                deliver_responseRest(201, "effetMagiqueUl modified", $fetchedResult);
+            } catch (PDOException $e) {
+                deliver_responseRest(400, "effetMagiqueUl modification error in SQL", $sql . "<br>" . $e->getMessage());
+            }
+        }
+        deliver_responseRest(400, "effetMagiqueUl modification error, missing idEffetMagique", $sql . "<br>" . $e->getMessage());
         break;
 }
 /// Envoi de la réponse au Client
