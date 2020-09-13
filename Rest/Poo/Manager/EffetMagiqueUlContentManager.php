@@ -41,7 +41,7 @@ class EffetMagiqueUlContentManager
 
     public function addEffetMagiqueUlContent($effetMagiqueUlContentData, $idEffetMagiqueUl)
     {
-        $effetMagiqueUlContent = json_decode($effetMagiqueUlContentData)->UlContent;
+        $effetMagiqueUlContent = json_decode($effetMagiqueUlContentData);
         $sql = "INSERT INTO `effetMagiqueUlContent` (`idEffetMagiqueUl`,`contenu`) 
                     VALUES (:idEffetMagiqueUl, :contenu)";
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
@@ -84,7 +84,10 @@ class EffetMagiqueUlContentManager
 
     public function deleteEffetMagiqueUlContent($idEffetMagiqueUlContent)
     {
-        $this->_db->exec('DELETE FROM effetMagiqueUlContent WHERE idEffetMagiqueUlContent = ' . $idEffetMagiqueUlContent);
+        $commit = $this->_db->prepare('DELETE FROM effetMagiqueUlContent WHERE idEffetMagiqueUlContent = :idEffetMagiqueUlContent');
+        $commit->bindParam(':idEffetMagiqueUlContent',$idEffetMagiqueUlContent, PDO::PARAM_INT);
+        $commit->execute();
+        return $commit->rowCount();
     }
 
     public function getAllEffetMagiqueUlContentAsNotJSon($idEffetMagiqueUl) {

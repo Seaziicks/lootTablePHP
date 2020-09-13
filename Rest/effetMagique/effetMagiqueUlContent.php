@@ -25,68 +25,68 @@ header("Content-Type:application/json");
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
 
-$EffetMagiqueUlManager = new EffetMagiqueUlManager($bdd);
+$EffetMagiqueUlContentManager = new EffetMagiqueUlContentManager($bdd);
 
 switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
-        if (isset($_GET['idEffetMagiqueUl'])) {
-            $effetMagiqueUl = $EffetMagiqueUlManager->getEffetMagiqueUl($_GET['idEffetMagiqueUl']);
+        if (isset($_GET['idEffetMagiqueUlContent'])) {
+            $effetMagiqueUlContent = $EffetMagiqueUlContentManager->getEffetMagiqueUlContent($_GET['idEffetMagiqueUlContent']);
 
-            $matchingData = $effetMagiqueUl;
+            $matchingData = $effetMagiqueUlContent;
             http_response_code(200);
             /// Envoi de la réponse au Client
-            deliver_responseRest(200, "effetMagiqueUl", $matchingData);
+            deliver_responseRest(200, "effetMagiqueUlContent", $matchingData);
         } elseif (isset($_GET['idEffetMagique'])) {
             /// Récupération des critères de recherche envoyés par le Client
-            $effetsMagiquesUl = $EffetMagiqueUlManager->getAllEffetMagiqueUlAsNotJSonBis($_GET['idEffetMagique']);
+            $effetsMagiquesUl = $EffetMagiqueUlContentManager->getAllEffetMagiqueUlContentAsNotJSonBis($_GET['idEffetMagique']);
             $matchingData = $effetsMagiquesUl;
             http_response_code(200);
             /// Envoi de la réponse au Client
-            deliver_responseRest(200, "Multiple effetMagiqueUl", $matchingData);
+            deliver_responseRest(200, "Multiple effetMagiqueUlContent", $matchingData);
         }
         break;
 
     case "POST":
-        if(isset($_GET['EffetMagiqueUl'])) {
+        if(isset($_GET['EffetMagiqueUlContent'])) {
             try {
-                $effetMagiqueUl = json_decode($_GET['EffetMagiqueUl'])->EffetMagiqueUl;
-                $effetMagiqueUl->idEffetMagique = $_GET['idEffetMagique'];
-                $effetMagiqueUlAdded = $EffetMagiqueUlManager->addEffetMagiqueUl(json_encode($effetMagiqueUl), $effetMagiqueUl->idEffetMagique);
+                $effetMagiqueUlContent = json_decode($_GET['EffetMagiqueUlContent'])->EffetMagiqueUlContent;
+                $effetMagiqueUlContent->idEffetMagique = $_GET['idEffetMagique'];
+                $effetMagiqueUlContentAdded = $EffetMagiqueUlContentManager->addEffetMagiqueUlContent(json_encode($effetMagiqueUlContent), $effetMagiqueUlContent->idEffetMagiqueUl);
 
                 http_response_code(201);
-                deliver_responseRest(201, "effetMagiqueUl added", $effetMagiqueUlAdded);
+                deliver_responseRest(201, "effetMagiqueUlContent added", $effetMagiqueUlContentAdded);
             } catch (PDOException $e) {
-                deliver_responseRest(400, "effetMagiqueUl add error in SQL", $sql . "<br>" . $e->getMessage());
+                deliver_responseRest(400, "effetMagiqueUlContent add error in SQL", $sql . "<br>" . $e->getMessage());
             }
         }
         break;
     case "PUT":
         try {
-            $effetMagiqueUl = json_decode($_GET['EffetMagiqueUl'])->EffetMagiqueUl;
-            $effetMagiqueUlUpdated = $EffetMagiqueUlManager->updateEffetMagiqueUl(json_encode($effetMagiqueUl));
+            $effetMagiqueUlContent = json_decode($_GET['EffetMagiqueUlContent'])->EffetMagiqueUlContent;
+            $effetMagiqueUlContentUpdated = $EffetMagiqueUlContentManager->updateEffetMagiqueUlContent(json_encode($effetMagiqueUlContent));
 
 
             http_response_code(201);
-            deliver_responseRest(201, "effetMagiqueUl modified", $effetMagiqueUlUpdated);
+            deliver_responseRest(201, "effetMagiqueUl modified", $effetMagiqueUlContentUpdated);
         } catch (PDOException $e) {
             deliver_responseRest(400, "effetMagiqueUl modification error in SQL", $sql . "<br>" . $e->getMessage());
         }
         break;
     case 'DELETE':
         try {
-            $effetMagiqueUl = json_decode($_GET['EffetMagiqueUl'])->EffetMagiqueUl;
-            $rowCount = $EffetMagiqueUlManager->deleteEffetMagiqueUl($effetMagiqueUl->idEffetMagiqueUl);
+            $effetMagiqueUlContent = json_decode($_GET['EffetMagiqueUlContent'])->EffetMagiqueUlContent;
+            $rowCount = $EffetMagiqueUlContentManager->deleteEffetMagiqueUlContent($effetMagiqueUlContent->idEffetMagiqueUlContent);
 
             if( ! $rowCount ) {
-                deliver_responseRest(400, "effetMagiqueUl deletion fail", '');
+                deliver_responseRest(400, "effetMagiqueUlContent deletion fail", '');
             } else {
                 http_response_code(201);
-                deliver_responseRest(201, "effetMagiqueUl deleted", '');
+                deliver_responseRest(201, "effetMagiqueUlContent deleted", '');
             }
         } catch (PDOException $e) {
-            deliver_responseRest(400, "effetMagiqueUl deletion error in SQL", $sql . "<br>" . $e->getMessage());
+            deliver_responseRest(400, "effetMagiqueUlContent deletion error in SQL", $sql . "<br>" . $e->getMessage());
         }
         break;
 }
