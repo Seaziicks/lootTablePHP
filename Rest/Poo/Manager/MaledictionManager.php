@@ -79,7 +79,10 @@ class MaledictionManager
 
     public function deleteMalediction($idMalediction)
     {
-        $this->_db->exec('DELETE FROM malediction WHERE idMalediction = ' . $idMalediction);
+        $commit = $this->_db->prepare('DELETE FROM malediction WHERE idMalediction = ' . $idMalediction);
+        $commit->bindParam(':idMalediction',$idMalediction, PDO::PARAM_INT);
+        $commit->execute();
+        return $commit->rowCount();
     }
 
     public function getMaledictionAsNonJSon($idMateriaux) {

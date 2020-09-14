@@ -1,4 +1,21 @@
 <?php
+declare(strict_types=1);
+spl_autoload_register('chargerClasse');
+session_start();
+header("Content-Type:application/json");
+
+/**
+ * @param $classname
+ */
+function chargerClasse($classname)
+{
+    if (is_file('../Poo/' . $classname . '.php'))
+        require '../Poo/' . $classname . '.php';
+    elseif (is_file('../Poo/Manager/' . $classname . '.php'))
+        require '../Poo/Manager/' . $classname . '.php';
+    elseif (is_file('../Poo/Classes/' . $classname . '.php'))
+        require '../Poo/Classes/' . $classname . '.php';
+}
 /// Librairies éventuelles (pour la connexion à la BDD, etc.)
 include('../../db.php');
 
@@ -7,6 +24,7 @@ header("Content-Type:application/json");
 
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
+$EffetMagiqueInfosManager = new EffetMagiqueInfosManager($bdd);
 switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
@@ -59,27 +77,31 @@ switch ($http_method){
         }
         break;
     case "PUT":
-        if (!(empty($_POST['idEffetMagiqueInfos']))) {
-            try {
-                $effetMagiqueInfos = json_decode($_GET['EffetMagiqueInfosManager']);
-                $sql = "UPDATE effetMagiqueInfos 
-                SET contenu = '" . $effetMagiqueInfos->contenu . "'
-                WHERE idEffetMagiqueInfos = " . $effetMagiqueInfos->idEffetMagiqueInfos;
+        try {
+            $effetMagiqueInfos = json_decode($_GET['EffetMagiqueInfos'])->EffetMagiqueInfos;
+            $effetMagiqueInfosUpdated = $EffetMagiqueInfosManager->updateEffetMagiqueInfos(json_encode($effetMagiqueInfos));
 
 
-                $bdd->exec($sql);
-                $result = $bdd->query('SELECT *
-					from effetMagiqueInfos 
-                    where idEffetMagiqueInfos='.$effetMagiqueInfos->idEffetMagiqueInfos);
-                $result->closeCursor();
-                $bdd = null;
-                http_response_code(201);
-                deliver_responseRest(201, "effetMagiqueInfos modified", $fetchedResult);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "effetMagiqueInfos modification error in SQL", $sql . "<br>" . $e->getMessage());
-            }
+            http_response_code(202);
+            deliver_responseRest(202, "effetMagiqueInfos modified", $effetMagiqueInfosUpdated);
+        } catch (PDOException $e) {
+            deliver_responseRest(400, "effetMagiqueInfos modification error in SQL", $sql . "<br>" . $e->getMessage());
         }
-        deliver_responseRest(400, "effetMagiqueInfos modification error, missing idEffetMagiqueInfos", $sql . "<br>" . $e->getMessage());
+        break;
+    case 'DELETE':
+        try {
+            $effetMagiqueInfos = json_decode($_GET['EffetMagiqueInfos'])->EffetMagiqueInfos;
+            $rowCount = $EffetMagiqueInfosManager->deleteEffetMagiqueInfos($effetMagiqueInfos->idEffetMagiqueInfos);
+
+            if( ! $rowCount ) {
+                deliver_responseRest(400, "effetMagiqueInfos deletion fail", '');
+            } else {
+                http_response_code(202);
+                deliver_responseRest(202, "effetMagiqueInfos deleted", '');
+            }
+        } catch (PDOException $e) {
+            deliver_responseRest(400, "effetMagiqueInfos deletion error in SQL", $sql . "<br>" . $e->getMessage());
+        }
         break;
 }
 /// Envoi de la réponse au Client

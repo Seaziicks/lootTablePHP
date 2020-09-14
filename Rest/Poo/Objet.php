@@ -23,7 +23,12 @@ class Objet implements JsonSerializable
         $_armure,
         $_bonusDexteriteMax,
         $_malusArmureTests,
-        $_risqueEchecSorts;
+        $_risqueEchecSorts,
+        $_afficherNom,
+        $_afficherEffetMagique,
+        $_afficherMalediction,
+        $_afficherMateriau,
+        $_afficherInfos;
 
 	public function __construct(array $donnees)
     {
@@ -198,6 +203,31 @@ class Objet implements JsonSerializable
         }
     }
 
+    public function setAfficherNom($afficherNom)
+    {
+        $this->_afficherNom = boolval($afficherNom);
+    }
+
+    public function setAfficherEffetMagique($afficherEffetMagique)
+    {
+        $this->_afficherEffetMagique = boolval($afficherEffetMagique);
+    }
+
+    public function setAfficherMalediction($afficherMalediction)
+    {
+        $this->_afficherMalediction = boolval($afficherMalediction);
+    }
+
+    public function setAfficherMateriau($afficherMateriau)
+    {
+        $this->_afficherMateriau = boolval($afficherMateriau);
+    }
+
+    public function setAfficherInfos($afficherInfos)
+    {
+        $this->_afficherInfos = boolval($afficherInfos);
+    }
+
 	public function hydrate(array $donnees)
     {
         foreach ($donnees as $key => $value)
@@ -236,7 +266,12 @@ class Objet implements JsonSerializable
             'armure' => $this->_armure,
             'bonusDesteriteMax' => $this->_bonusDexteriteMax,
             'malusArmureTests' => $this->_malusArmureTests,
-            'risqueEchecSorts' => $this->_risqueEchecSorts
+            'risqueEchecSorts' => $this->_risqueEchecSorts,
+            'afficherNom' => $this->_afficherNom,
+            'afficherEffetMagique' => $this->_afficherEffetMagique,
+            'afficherMalediction' => $this->_afficherMalediction,
+            'afficherMateriau' => $this->_afficherMateriau,
+            'afficherInfos' => $this->_afficherInfos,
         ];
     }
 

@@ -42,7 +42,7 @@ class EffetMagiqueTableTrManager
 
     public function addEffetMagiqueTableTr($EffetMagiqueTableTrData, $idEffetMagiqueTable)
     {
-        $EffetMagiqueTableTr = json_decode($EffetMagiqueTableTrData)->TableTr;
+        $EffetMagiqueTableTr = json_decode($EffetMagiqueTableTrData);
         $sql = "INSERT INTO `EffetMagiqueTableTr` (`idEffetMagiqueTable`) 
                     VALUES (:idEffetMagiqueTable)";
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
@@ -83,7 +83,10 @@ class EffetMagiqueTableTrManager
 
     public function deleteEffetMagiqueTableTr($idEffetMagiqueTableTr)
     {
-        $this->_db->exec('DELETE FROM EffetMagiqueTableTr WHERE idEffetMagiqueTableTr = ' . $idEffetMagiqueTableTr);
+        $commit = $this->_db->prepare('DELETE FROM EffetMagiqueTableTr WHERE idEffetMagiqueTableTr = :idEffetMagiqueTableTr');
+        $commit->bindParam(':idEffetMagiqueTableTr',$idEffetMagiqueTableTr, PDO::PARAM_INT);
+        $commit->execute();
+        return $commit->rowCount();
     }
 
     public function getAllEffetMagiqueTableTrAsNotJSon($idEffetMagiqueTableTr) {

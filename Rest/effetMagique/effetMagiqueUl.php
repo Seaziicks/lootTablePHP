@@ -68,8 +68,8 @@ switch ($http_method){
             $effetMagiqueUlUpdated = $EffetMagiqueUlManager->updateEffetMagiqueUl(json_encode($effetMagiqueUl));
 
 
-            http_response_code(201);
-            deliver_responseRest(201, "effetMagiqueUl modified", $effetMagiqueUlUpdated);
+            http_response_code(202);
+            deliver_responseRest(202, "effetMagiqueUl modified", $effetMagiqueUlUpdated);
         } catch (PDOException $e) {
             deliver_responseRest(400, "effetMagiqueUl modification error in SQL", $sql . "<br>" . $e->getMessage());
         }
@@ -82,8 +82,8 @@ switch ($http_method){
             if( ! $rowCount ) {
                 deliver_responseRest(400, "effetMagiqueUl deletion fail", '');
             } else {
-                http_response_code(201);
-                deliver_responseRest(201, "effetMagiqueUl deleted", '');
+                http_response_code(202);
+                deliver_responseRest(202, "effetMagiqueUl deleted", '');
             }
         } catch (PDOException $e) {
             deliver_responseRest(400, "effetMagiqueUl deletion error in SQL", $sql . "<br>" . $e->getMessage());

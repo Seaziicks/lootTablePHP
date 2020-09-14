@@ -80,7 +80,10 @@ class MateriauxManager
 
     public function deleteMateriaux($idMateriaux)
     {
-        $this->_db->exec('DELETE FROM materiaux WHERE idMateriaux = ' . $idMateriaux);
+        $commit = $this->_db->prepare('DELETE FROM materiaux WHERE idMateriaux = ' . $idMateriaux);
+        $commit->bindParam(':idMateriaux',$idMateriaux, PDO::PARAM_INT);
+        $commit->execute();
+        return $commit->rowCount();
     }
 
     public function getMateriauxAsNonJSon($idMateriaux) {

@@ -80,7 +80,10 @@ class EffetMagiqueManager
 
     public function deleteEffetMagique($idEffetMagique)
     {
-        $this->_db->exec('DELETE FROM effetMagique WHERE idEffetMagique = ' . $idEffetMagique);
+        $commit = $this->_db->prepare('DELETE FROM effetMagique WHERE idEffetMagique = :idEffetMagique');
+        $commit->bindParam(':idEffetMagique',$idEffetMagique, PDO::PARAM_INT);
+        $commit->execute();
+        return $commit->rowCount();
     }
 
     public function getCompleteEffetMagiqueAsNotJson($idEffetMagique) {
@@ -175,12 +178,12 @@ class EffetMagiqueManager
 
         // Gestion des Table
         if($effetMagiqueData->table) {
-            $this->addTable($effetMagiqueData->table, $createdEffet->_idEffetMagique);
+            $this->addCompleteTable($effetMagiqueData->table, $createdEffet->_idEffetMagique);
         }
 
         // Gestion des Ul
         if($effetMagiqueData->ul) {
-            $this->addUl($effetMagiqueData->ul, $createdEffet->_idEffetMagique);
+            $this->addCompleteUl($effetMagiqueData->ul, $createdEffet->_idEffetMagique);
         }
         $this->addDescription($effetMagiqueData->description, $createdEffet->_idEffetMagique);
         $this->addInfos($effetMagiqueData->infos->data, $createdEffet->_idEffetMagique);
@@ -239,16 +242,16 @@ class EffetMagiqueManager
         return $fetchedResult;
     }
 
-    public function addTable($tables, $idEffetMagique) {
+    public function addCompleteTable($tables, $idEffetMagique) {
         $EffetMagiqueTableManager = new EffetMagiqueTableManager($this->_db);
         foreach ($tables as $tableToAdd) {
             $table = new stdClass();
             $table->Table = $tableToAdd;
-            $EffetMagiqueTableManager->addEffetMagiqueTable(json_encode($table), $idEffetMagique);
+            $EffetMagiqueTableManager->addCompleteEffetMagiqueTable(json_encode($table), $idEffetMagique);
         }
     }
 
-    public function addUl($uls, $idEffetMagique) {
+    public function addCompleteUl($uls, $idEffetMagique) {
         $EffetMagiqueUlManager = new EffetMagiqueUlManager($this->_db);
         foreach ($uls as $ulToAdd) {
             $ul = new stdClass();

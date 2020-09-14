@@ -60,18 +60,18 @@ switch ($http_method){
         break;
 
     case "POST":
-        if (!(empty($_POST['idPersonnage']) || empty($_POST['idStatistique']) || empty($_POST['niveau']))) {
+        if (!(empty($_GET['idPersonnage']) || empty($_GET['idStatistique']) || empty($_GET['niveau']))) {
             try {
                 $sql = "INSERT INTO monte (idPersonnage, idStatistique, niveau, valeur)
-                VALUES (" . $_POST['idPersonnage'] . ", " . $_POST['idStatistique'] . ",
-                 " . $_POST['niveau'] . ", " . $_POST['valeur'] . ")";
+                VALUES (" . $_GET['idPersonnage'] . ", " . $_GET['idStatistique'] . ",
+                 " . $_GET['niveau'] . ", " . $_GET['valeur'] . ")";
 
 
                 $bdd->exec($sql);
                 $result = $bdd->query("SELECT *
 					FROM monte 
-                    WHERE idPersonnage = " . $_POST['idPersonnage'] . " AND idStatistique = " . $_POST['idStatistique'] . "
-                    AND niveau = " . $_POST['niveau']);
+                    WHERE idPersonnage = " . $_GET['idPersonnage'] . " AND idStatistique = " . $_GET['idStatistique'] . "
+                    AND niveau = " . $_GET['niveau']);
                 $result->closeCursor();
                 $bdd = null;
                 http_response_code(201);
@@ -84,19 +84,19 @@ switch ($http_method){
         break;
 
     case "PUT":
-        if (!(empty($_PUT['idPersonnage']) || empty($_PUT['idStatistique']) || empty($_PUT['niveau']))) {
+        if (!(empty($_GET['idPersonnage']) || empty($_GET['idStatistique']) || empty($_GET['niveau']))) {
             try {
                 $sql = "UPDATE monte 
-                SET valeur = '" . $_PUT['valeur'] . "', 
-                WHERE idPersonnage = " . $_PUT['idPersonnage'] . " AND idStatistique = " . $_PUT['idStatistique'] . "
-                AND niveau = " . $_PUT['niveau'];
+                SET valeur = '" . $_GET['valeur'] . "', 
+                WHERE idPersonnage = " . $_GET['idPersonnage'] . " AND idStatistique = " . $_GET['idStatistique'] . "
+                AND niveau = " . $_GET['niveau'];
 
 
                 $bdd->exec($sql);
                 $result = $bdd->query("SELECT *
 					FROM monte 
-                    WHERE idPersonnage = " . $_PUT['idPersonnage'] . " AND idStatistique = " . $_PUT['idStatistique'] . "
-                    AND niveau = " . $_PUT['niveau']);
+                    WHERE idPersonnage = " . $_GET['idPersonnage'] . " AND idStatistique = " . $_GET['idStatistique'] . "
+                    AND niveau = " . $_GET['niveau']);
                 $result->closeCursor();
                 $bdd = null;
                 http_response_code(200);

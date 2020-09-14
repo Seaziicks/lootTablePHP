@@ -60,12 +60,12 @@ switch ($http_method){
         break;
 
     case "POST":
-        if (!(empty($_POST['idPersonnage']))) {
+        if (!(empty($_GET['idPersonnage']))) {
             try {
                 $sql = "UPDATE personnage 
-                SET nom = '" . $_POST['nom'] . "', 
-                niveau = '" . $_POST['niveau'] . "', 
-                WHERE idPersonnage = " . $_POST['idPersonnage'];
+                SET nom = '" . $_GET['nom'] . "', 
+                niveau = '" . $_GET['niveau'] . "', 
+                WHERE idPersonnage = " . $_GET['idPersonnage'];
 
 
                 $bdd->exec($sql);

@@ -86,11 +86,11 @@ class ObjetManager
 
     public function updateObjet($objetData)
     {
-        $objet = json_decode($objetData);
+        $objet = json_decode($objetData)->Objet;
         $sql = "UPDATE objet 
                 SET nom = :nom, fauxNom = :fauxNom, bonus = :bonus, type = :type, prix = :prix,
-                prixNonHumanoide = :prixNonHumanoide, devise = :devise, idMalediction = :idMalediction, categorie = :categorie,
-                idMateriaux = :idMateriaux, taille = :taille, degats = :degats, critique = :critique, facteurPortee = :facteurPortee,
+                prixNonHumanoide = :prixNonHumanoide, devise = :devise, categorie = :categorie,
+                taille = :taille, degats = :degats, critique = :critique, facteurPortee = :facteurPortee,
                 armure = :armure, bonusDexteriteMax = :bonusDexteriteMax, malusArmureTests = :malusArmureTests, risqueEchecSorts = :risqueEchecSorts,
                 afficherNom = :afficherNom, afficherEffetMagique = :afficherEffetMagique, afficherMalediction = :afficherMalediction,
                 afficherMateriau = :afficherMateriau, afficherInfos = :afficherInfos
@@ -102,13 +102,12 @@ class ObjetManager
         $commit->bindParam(':fauxNom',$objet->fauxNom, PDO::PARAM_STR);
         $commit->bindParam(':bonus',$objet->bonus, PDO::PARAM_INT);
         $commit->bindParam(':type',$objet->type, PDO::PARAM_STR);
-        $commit->bindParam(':effetMagique',$objet->effetMagique, PDO::PARAM_INT);
         $commit->bindParam(':prix',$objet->prix, PDO::PARAM_INT);
         $commit->bindParam(':prixNonHumanoide',$objet->prixNonHumanoide, PDO::PARAM_INT);
         $commit->bindParam(':devise',$objet->devise, PDO::PARAM_INT);
-        $commit->bindParam(':idMalediction',$objet->idMalediction, PDO::PARAM_INT);
+        // $commit->bindParam(':idMalediction',$objet->idMalediction, PDO::PARAM_INT);
         $commit->bindParam(':categorie',$objet->categorie, PDO::PARAM_STR);
-        $commit->bindParam(':idMateriaux',$objet->idMateriaux, PDO::PARAM_INT);
+        // $commit->bindParam(':idMateriaux',$objet->idMateriaux, PDO::PARAM_INT);
         $commit->bindParam(':taille',$objet->taille, PDO::PARAM_STR);
         $commit->bindParam(':degats',$objet->degats, PDO::PARAM_INT);
         $commit->bindParam(':critique',$objet->critique, PDO::PARAM_STR);
@@ -117,11 +116,6 @@ class ObjetManager
         $commit->bindParam(':bonusDexteriteMax',$objet->bonusDexteriteMax, PDO::PARAM_INT);
         $commit->bindParam(':malusArmureTests',$objet->malusArmureTests, PDO::PARAM_INT);
         $commit->bindParam(':risqueEchecSorts',$objet->risqueEchecSorts, PDO::PARAM_STR);
-        $commit->bindParam(':afficherNom',$objet->afficherNom, PDO::PARAM_BOOL);
-        $commit->bindParam(':afficherEffetMagique',$objet->afficherEffetMagique, PDO::PARAM_BOOL);
-        $commit->bindParam(':afficherMalediction',$objet->afficherMalediction, PDO::PARAM_BOOL);
-        $commit->bindParam(':afficherMateriau',$objet->afficherMateriau, PDO::PARAM_BOOL);
-        $commit->bindParam(':afficherInfos',$objet->afficherInfos, PDO::PARAM_BOOL);
         $commit->bindParam(':afficherNom',$objet->afficherNom, PDO::PARAM_BOOL);
         $commit->bindParam(':afficherEffetMagique',$objet->afficherEffetMagique, PDO::PARAM_BOOL);
         $commit->bindParam(':afficherMalediction',$objet->afficherMalediction, PDO::PARAM_BOOL);
@@ -142,7 +136,10 @@ class ObjetManager
 
     public function deleteObjet($idObjet)
     {
-        $this->_db->exec('DELETE FROM objet WHERE idObjet = ' . $idObjet);
+        $commit = $this->_db->prepare('DELETE FROM objet WHERE idObjet = :idObjet');
+        $commit->bindParam(':idObjet',$idObjet, PDO::PARAM_INT);
+        $commit->execute();
+        return $commit->rowCount();
     }
 
     public function getObjetAsNonJSon($idObjet) {

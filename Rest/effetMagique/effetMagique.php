@@ -70,7 +70,7 @@ switch ($http_method){
                     foreach ($tables as $tableToAdd) {
                         $table = new stdClass();
                         $table->Table = $tableToAdd;
-                        $EffetMagiqueTableManager->addEffetMagiqueTable(json_encode($table), intval($_GET['idEffetMagique']));
+                        $EffetMagiqueTableManager->addCompleteEffetMagiqueTable(json_encode($table), intval($_GET['idEffetMagique']));
                     }
                     // $EffetMagiqueManager->addTable(json_decode($_GET['EffetMagiqueTable']), $_GET['idEffetMagique']);
                     $effetsMagiquesTable = $EffetMagiqueTableManager->getAllEffetMagiqueTableAsNotJSon(intval($_GET['idEffetMagique']));
@@ -106,28 +106,31 @@ switch ($http_method){
         }
         break;
     case "PUT":
-        if (!(empty($_GET['idEffetMagique']))) {
-            try {
-                $effetMagique = json_decode($_GET['EffetMagique']);
-                $sql = "UPDATE effetmagique 
-                SET idObjet = '" . $effetMagique->idObjet . "', 
-                title = '" . $effetMagique->title . "', 
-                WHERE idEffetMagique = " . $effetMagique->idEffetMagique;
+        try {
+            $effetMagique = json_decode($_GET['EffetMagique'])->EffetMagique;
+            $effetMagiqueUpdated = $EffetMagiqueManager->updateEffetMagique(json_encode($effetMagique));
 
 
-                $bdd->exec($sql);
-                $result = $bdd->query('SELECT *
-					from effetmagique 
-                    where idEffetMagique='.$effetMagique->idEffetMagique);
-                $result->closeCursor();
-                $bdd = null;
-                http_response_code(201);
-                deliver_responseRest(201, "effetMagique modified", $fetchedResult);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "effetMagique modification error in SQL", $sql . "<br>" . $e->getMessage());
-            }
+            http_response_code(202);
+            deliver_responseRest(202, "effetMagique modified", $effetMagiqueUpdated);
+        } catch (PDOException $e) {
+            deliver_responseRest(400, "effetMagique modification error in SQL", $sql . "<br>" . $e->getMessage());
         }
-        deliver_responseRest(400, "effetMagique modification error, missing idEffetMagique", $sql . "<br>" . $e->getMessage());
+        break;
+    case 'DELETE':
+        try {
+            $effetMagique = json_decode($_GET['EffetMagique'])->EffetMagique;
+            $rowCount = $EffetMagiqueManager->deleteEffetMagique($effetMagique->idEffetMagique);
+
+            if( ! $rowCount ) {
+                deliver_responseRest(400, "effetMagique deletion fail", '');
+            } else {
+                http_response_code(202);
+                deliver_responseRest(202, "effetMagique deleted", '');
+            }
+        } catch (PDOException $e) {
+            deliver_responseRest(400, "effetMagique deletion error in SQL", $sql . "<br>" . $e->getMessage());
+        }
         break;
 }
 /// Envoi de la réponse au Client

@@ -70,6 +70,31 @@ class EffetMagiqueTableManager
         $commit->bindParam(':position',$effetMagiqueTable->position, PDO::PARAM_INT);
         $commit->execute();
         $tableIndex = $this->_db->lastInsertId();
+
+        $result = $this->_db->query('SELECT *
+					from effetMagiqueTable 
+                    where idEffetMagiqueTable=' . $tableIndex . '
+                    ');
+        $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+        $result->closeCursor();
+        $bdd = null;
+
+        $Table = new EffetMagiqueTable($fetchedResult);
+        $Table->updateTitles($this->_db);
+        $Table->updateTrs($this->_db);
+        return $Table;
+    }
+
+    public function addCompleteEffetMagiqueTable($effetMagiqueTableData, $idEffetMagique)
+    {
+        $effetMagiqueTable = json_decode($effetMagiqueTableData)->Table;
+        $sql = "INSERT INTO `effetMagiqueTable` (`idEffetMagique`,`position`) 
+                    VALUES (:idEffetMagique, :position)";
+        $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $commit->bindParam(':idEffetMagique',$idEffetMagique, PDO::PARAM_INT);
+        $commit->bindParam(':position',$effetMagiqueTable->position, PDO::PARAM_INT);
+        $commit->execute();
+        $tableIndex = $this->_db->lastInsertId();
         foreach($effetMagiqueTable->title as $title) {
             $sql = "INSERT INTO `effetMagiqueTableTitle` (`idEffetMagiqueTable`) 
                                         VALUES (:idEffetMagiqueTable)";
@@ -143,7 +168,10 @@ class EffetMagiqueTableManager
 
     public function deleteEffetMagiqueTable($idEffetMagiqueTable)
     {
-        $this->_db->exec('DELETE FROM effetMagiqueTable WHERE idEffetMagiqueTable = ' . $idEffetMagiqueTable);
+        $commit = $this->_db->prepare('DELETE FROM EffetMagiqueTable WHERE idEffetMagiqueTable = :idEffetMagiqueTable');
+        $commit->bindParam(':idEffetMagiqueTable',$idEffetMagiqueTable, PDO::PARAM_INT);
+        $commit->execute();
+        return $commit->rowCount();
     }
 
     public function getAllEffetMagiqueTableAsNotJSon($idEffetMagique) {

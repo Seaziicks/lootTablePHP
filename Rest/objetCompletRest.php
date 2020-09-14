@@ -31,7 +31,20 @@ switch ($http_method) {
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
-        if (isset($_GET['idObjet'])) {
+        if (isset($_GET['idObjet']) && isset($_GET['nameOnly']) && filter_var($_GET['nameOnly'], FILTER_VALIDATE_BOOLEAN)) {
+            /// Récupération des critères de recherche envoyés par le Client
+            $objetsQuery = $bdd->query('SELECT nom, fauxNom, idObjet
+                                                FROM objet
+                                                WHERE idObjet = ' . $_GET['idObjet'] . '');
+
+            $objet = $objetFetched=$objetsQuery->fetch(PDO::FETCH_ASSOC);
+            $objet['idObjet'] = intval($objet['idObjet']);
+
+            $matchingData = $objet;
+            http_response_code(200);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Voici le nom que vous avez commandé.", $matchingData);
+        } elseif (isset($_GET['idObjet'])) {
             $objet = $ObjetManager->getObjetAsNonJSonBis($_GET['idObjet']);
 
             $matchingData = $objet;
@@ -48,6 +61,20 @@ switch ($http_method) {
                 array_push($ids, intval($objetFetched['idObjet']));
             }
             $matchingData = $ids;
+            http_response_code(200);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Voici les identifiants de tous nos produits concernant cette référence.", $matchingData);
+
+        } elseif (isset($_GET['idPersonnage']) && isset($_GET['namesOnly']) && filter_var($_GET['namesOnly'], FILTER_VALIDATE_BOOLEAN)) {
+            /// Récupération des critères de recherche envoyés par le Client
+            $objetsQuery = $bdd->query('SELECT nom, fauxNom, idObjet
+                                                FROM objet
+                                                WHERE idPersonnage = ' . $_GET['idPersonnage'] . '');
+            $names = [];
+            while($objetFetched=$objetsQuery->fetch(PDO::FETCH_ASSOC)){
+                array_push($names, ["nom" => $objetFetched['nom'], "fauxNom" => $objetFetched['fauxNom'], "idObjet" => intval($objetFetched['idObjet'])]);
+            }
+            $matchingData = $names;
             http_response_code(200);
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Voici les identifiants de tous nos produits concernant cette référence.", $matchingData);
@@ -72,15 +99,37 @@ switch ($http_method) {
 
     case "POST":
         try {
-            $fetchedResult = $ObjetManager->addCompleteObjet($_GET['Objet']);
+            $objet = $ObjetManager->addCompleteObjet($_GET['Objet']);
             http_response_code(201);
-            deliver_responseRest(201, "objet added", $fetchedResult);
+            deliver_responseRest(201, "objet added", $objet);
         } catch (PDOException $e) {
             deliver_responseRest(400, "objet add error in SQL", $sql . "<br>" . $e->getMessage());
         }
         break;
     case "PUT":
+        try {
+            $objet = $ObjetManager->updateObjet($_GET['Objet']);
+            http_response_code(201);
+            deliver_responseRest(201, "objet modified", $objet);
+        } catch (PDOException $e) {
+            deliver_responseRest(400, "objet modification error in SQL", $sql . "<br>" . $e->getMessage());
+        }
+        break;
+    case "DELETE":
+        try {
+            $objet = json_decode($_GET['Objet'])->Objet;
+            print_r($objet);
+            $rowCount = $ObjetManager->deleteObjet($objet->idObjet);
 
+            if( ! $rowCount ) {
+                deliver_responseRest(400, "objet deletion fail", '');
+            } else {
+                http_response_code(202);
+                deliver_responseRest(202, "objet deleted", '');
+            }
+        } catch (PDOException $e) {
+            deliver_responseRest(400, "objet deletion error in SQL", $sql . "<br>" . $e->getMessage());
+        }
         break;
 }
 /// Envoi de la réponse au Client

@@ -41,7 +41,7 @@ class EffetMagiqueDescriptionManager
 
     public function addEffetMagiqueDescription($effetMagiqueDescriptionData, $idEffetMagique)
     {
-        $effetMagiqueDescription = json_decode($effetMagiqueDescriptionData)->Description;
+        $effetMagiqueDescription = json_decode($effetMagiqueDescriptionData);
         $sql = "INSERT INTO `effetMagiqueDescription` (`idEffetMagique`,`contenu`) 
                     VALUES (:idEffetMagique, :contenu)";
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
@@ -83,9 +83,42 @@ class EffetMagiqueDescriptionManager
         return new EffetMagiqueDescription($fetchedResult);
     }
 
-    public function deleteEffetMagiqueDescription($idEffetMagiqueDescription)
+    public function deleteEffetMagiqueDescription($effetMagiqueDescription)
     {
-        $this->_db->exec('DELETE FROM effetMagiqueDescription WHERE idEffetMagiqueDescription = ' . $idEffetMagiqueDescription);
+        $commit = $this->_db->prepare('DELETE FROM effetMagiqueDescription WHERE idEffetMagiqueDescription = :idEffetMagiqueDescription');
+        $commit->bindParam(':idEffetMagiqueDescription',$effetMagiqueDescription->idEffetMagiqueDescription, PDO::PARAM_INT);
+
+        $this->modifierTableEtUlPosition($effetMagiqueDescription);
+
+        $commit->execute();
+        return $commit->rowCount();
+    }
+
+    public function modifierTableEtUlPosition($effetMagiqueDescription) {
+
+        print_r($effetMagiqueDescription);
+
+        $effetMagiqueDescriptionQuery = $this->_db->query('SELECT *
+                                                    FROM effetMagiqueDescription
+                                                    WHERE idEffetMagique =' . $effetMagiqueDescription->idEffetMagique);
+
+        $descriptions = $effetMagiqueDescriptionQuery->fetchAll(PDO::FETCH_ASSOC);
+
+        $position = array_search($effetMagiqueDescription->idEffetMagiqueDescription, array_column($descriptions, 'idEffetMagiqueDescription'));
+
+        print_r($position);
+
+        $sql = "UPDATE EffetMagiqueTable
+                SET position = position - 1
+                WHERE idEffetMagique = " . $effetMagiqueDescription->idEffetMagique ."
+                AND position > ". $position ."";
+        $this->_db->exec($sql);
+
+        $sql = "UPDATE EffetMagiqueUl
+                SET position = position - 1
+                WHERE idEffetMagique = " . $effetMagiqueDescription->idEffetMagique ."
+                AND position > ". $position ."";
+        $this->_db->exec($sql);
     }
 
     public function getAllEffetMagiqueDescriptionAsNotJSon($idEffetMagique) {

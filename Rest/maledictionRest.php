@@ -1,4 +1,21 @@
 <?php
+declare(strict_types=1);
+spl_autoload_register('chargerClasse');
+session_start();
+header("Content-Type:application/json");
+
+/**
+ * @param $classname
+ */
+function chargerClasse($classname)
+{
+    if (is_file('Poo/' . $classname . '.php'))
+        require 'Poo/' . $classname . '.php';
+    elseif (is_file('Poo/Manager/' . $classname . '.php'))
+        require 'Poo/Manager/' . $classname . '.php';
+    elseif (is_file('Poo/Classes/' . $classname . '.php'))
+        require 'Poo/Classes/' . $classname . '.php';
+}
 /// Librairies éventuelles (pour la connexion à la BDD, etc.)
 include('../db.php');
 
@@ -7,6 +24,9 @@ header("Content-Type:application/json");
 
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
+
+$MaledictionManager = new MaledictionManager($bdd);
+
 switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
@@ -49,28 +69,31 @@ switch ($http_method){
         }
         break;
     case "PUT":
-        if (!(empty($_POST['idMalediction']))) {
+        if (!(empty($_GET['idMalediction']))) {
             try {
-                $malediction = json_decode($_GET['Malediction']);
-                $sql = "UPDATE malediction 
-                SET nom = '" . $malediction->nom . "', 
-                description = '" . $malediction->description . "', 
-                WHERE idMalediction = " . $malediction->idMalediction;
-
-
-                $bdd->exec($sql);
-                $result = $bdd->query('SELECT *
-					from malediction 
-                    where idMalediction='.$malediction->idMalediction);
-                $result->closeCursor();
-                $bdd = null;
+                $malediction = $MaledictionManager->updateMalediction($_GET['Malediction']);
                 http_response_code(201);
-                deliver_responseRest(201, "malediction modified", $fetchedResult);
+                deliver_responseRest(201, "malediction modified", $malediction);
             } catch (PDOException $e) {
                 deliver_responseRest(400, "malediction modification error in SQL", $sql . "<br>" . $e->getMessage());
             }
+        } else
+            deliver_responseRest(400, "malediction modification error, missing idMalediction", '');
+        break;
+    case "DELETE":
+        try {
+            $malediction = json_decode($_GET['Malediction'])->Malediction;
+            $rowCount = $MaledictionManager->deleteMalediction($malediction->idMalediction);
+
+            if( ! $rowCount ) {
+                deliver_responseRest(400, "malediction deletion fail", '');
+            } else {
+                http_response_code(202);
+                deliver_responseRest(202, "malediction deleted", '');
+            }
+        } catch (PDOException $e) {
+            deliver_responseRest(400, "malediction deletion error in SQL", $sql . "<br>" . $e->getMessage());
         }
-        deliver_responseRest(400, "malediction modification error, missing idMalediction", $sql . "<br>" . $e->getMessage());
         break;
 }
 /// Envoi de la réponse au Client

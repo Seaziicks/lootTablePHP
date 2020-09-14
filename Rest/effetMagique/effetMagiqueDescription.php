@@ -1,4 +1,21 @@
 <?php
+declare(strict_types=1);
+spl_autoload_register('chargerClasse');
+session_start();
+header("Content-Type:application/json");
+
+/**
+ * @param $classname
+ */
+function chargerClasse($classname)
+{
+    if (is_file('../Poo/' . $classname . '.php'))
+        require '../Poo/' . $classname . '.php';
+    elseif (is_file('../Poo/Manager/' . $classname . '.php'))
+        require '../Poo/Manager/' . $classname . '.php';
+    elseif (is_file('../Poo/Classes/' . $classname . '.php'))
+        require '../Poo/Classes/' . $classname . '.php';
+}
 /// Librairies éventuelles (pour la connexion à la BDD, etc.)
 include('../../db.php');
 
@@ -7,6 +24,7 @@ header("Content-Type:application/json");
 
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
+$EffetMagiqueDescriptionManager = new EffetMagiqueDescriptionManager($bdd);
 switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
@@ -26,7 +44,7 @@ switch ($http_method){
 
     case "POST":
         try {
-            $effetMagiqueDescriptionsInfos = json_decode($_GET['EffetMagiqueDescriptions']);
+            $effetMagiqueDescriptions = json_decode($_GET['EffetMagiqueDescriptions']);
             $effetMagiqueDescriptions = json_decode($_GET['EffetMagiqueDescriptions'])->Descriptions;
 
             $idDescriptions = '';
@@ -35,7 +53,7 @@ switch ($http_method){
                                         VALUES (:idEffetMagique, :contenu)";
 
                 $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $commit->bindParam(':idEffetMagique', $effetMagiqueDescriptionsInfos->idEffetMagique, PDO::PARAM_INT);
+                $commit->bindParam(':idEffetMagique', $effetMagiqueDescriptions->idEffetMagique, PDO::PARAM_INT);
                 $commit->bindParam(':contenu', $description, PDO::PARAM_STR);
                 $commit->execute();
                 $idDescriptions .= $bdd->lastInsertId();
@@ -58,27 +76,31 @@ switch ($http_method){
         }
         break;
     case "PUT":
-        if (!(empty($_POST['idEffetMagiqueDescription']))) {
-            try {
-                $effetMagiqueDescription = json_decode($_GET['EffetMagiqueDescriptionManager']);
-                $sql = "UPDATE effetMagiqueDescription 
-                SET contenu = '" . $effetMagiqueDescription->contenu . "'
-                WHERE idEffetMagiqueDescription = " . $effetMagiqueDescription->idEffetMagiqueDescription;
+        try {
+            $effetMagiqueDescription = json_decode($_GET['EffetMagiqueDescription'])->EffetMagiqueDescription;
+            $effetMagiqueDescriptionUpdated = $EffetMagiqueDescriptionManager->updateEffetMagiqueDescription(json_encode($effetMagiqueDescription));
 
 
-                $bdd->exec($sql);
-                $result = $bdd->query('SELECT *
-					from effetMagiqueDescription 
-                    where idEffetMagiqueDescription='.$effetMagiqueDescription->idEffetMagiqueDescription);
-                $result->closeCursor();
-                $bdd = null;
-                http_response_code(201);
-                deliver_responseRest(201, "effetMagiqueDescription modified", $fetchedResult);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "effetMagiqueDescription modification error in SQL", $sql . "<br>" . $e->getMessage());
-            }
+            http_response_code(202);
+            deliver_responseRest(202, "effetMagiqueDescription modified", $effetMagiqueDescriptionUpdated);
+        } catch (PDOException $e) {
+            deliver_responseRest(400, "effetMagiqueDescription modification error in SQL", $sql . "<br>" . $e->getMessage());
         }
-        deliver_responseRest(400, "effetMagiqueDescription modification error, missing idEffetMagiqueDescription", $sql . "<br>" . $e->getMessage());
+        break;
+    case 'DELETE':
+        try {
+            $effetMagiqueDescription = json_decode($_GET['EffetMagiqueDescription'])->EffetMagiqueDescription;
+            $rowCount = $EffetMagiqueDescriptionManager->deleteEffetMagiqueDescription($effetMagiqueDescription);
+
+            if( ! $rowCount ) {
+                deliver_responseRest(400, "effetMagiqueDescription deletion fail", '');
+            } else {
+                http_response_code(202);
+                deliver_responseRest(202, "effetMagiqueDescription deleted", '');
+            }
+        } catch (PDOException $e) {
+            deliver_responseRest(400, "effetMagiqueDescription deletion error in SQL", $sql . "<br>" . $e->getMessage());
+        }
         break;
 }
 /// Envoi de la réponse au Client

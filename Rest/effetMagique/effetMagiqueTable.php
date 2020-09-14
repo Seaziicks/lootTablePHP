@@ -1,4 +1,21 @@
 <?php
+declare(strict_types=1);
+spl_autoload_register('chargerClasse');
+session_start();
+header("Content-Type:application/json");
+
+/**
+ * @param $classname
+ */
+function chargerClasse($classname)
+{
+    if (is_file('../Poo/' . $classname . '.php'))
+        require '../Poo/' . $classname . '.php';
+    elseif (is_file('../Poo/Manager/' . $classname . '.php'))
+        require '../Poo/Manager/' . $classname . '.php';
+    elseif (is_file('../Poo/Classes/' . $classname . '.php'))
+        require '../Poo/Classes/' . $classname . '.php';
+}
 /// Librairies éventuelles (pour la connexion à la BDD, etc.)
 include('../../db.php');
 
@@ -7,6 +24,7 @@ header("Content-Type:application/json");
 
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
+$EffetMagiqueTableManager = new EffetMagiqueTableManager($bdd);
 switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
@@ -125,6 +143,31 @@ switch ($http_method){
         }
         break;
     case "PUT":
+        try {
+            $effetMagiqueTable = json_decode($_GET['EffetMagiqueTable'])->EffetMagiqueTable;
+            $effetMagiqueTableUpdated = $EffetMagiqueTableManager->updateEffetMagiqueTable(json_encode($effetMagiqueTable));
+
+
+            http_response_code(202);
+            deliver_responseRest(202, "effetMagiqueTable modified", $effetMagiqueTableUpdated);
+        } catch (PDOException $e) {
+            deliver_responseRest(400, "effetMagiqueTable modification error in SQL", $sql . "<br>" . $e->getMessage());
+        }
+        break;
+    case 'DELETE':
+        try {
+            $effetMagiqueTable = json_decode($_GET['EffetMagiqueTable'])->EffetMagiqueTable;
+            $rowCount = $EffetMagiqueTableManager->deleteEffetMagiqueTable($effetMagiqueTable->idEffetMagiqueTable);
+
+            if( ! $rowCount ) {
+                deliver_responseRest(400, "effetMagiqueTable deletion fail", '');
+            } else {
+                http_response_code(202);
+                deliver_responseRest(202, "effetMagiqueTable deleted", '');
+            }
+        } catch (PDOException $e) {
+            deliver_responseRest(400, "effetMagiqueTable deletion error in SQL", $sql . "<br>" . $e->getMessage());
+        }
         break;
 }
 /// Envoi de la réponse au Client

@@ -1,4 +1,21 @@
 <?php
+declare(strict_types=1);
+spl_autoload_register('chargerClasse');
+session_start();
+header("Content-Type:application/json");
+
+/**
+ * @param $classname
+ */
+function chargerClasse($classname)
+{
+    if (is_file('Poo/' . $classname . '.php'))
+        require 'Poo/' . $classname . '.php';
+    elseif (is_file('Poo/Manager/' . $classname . '.php'))
+        require 'Poo/Manager/' . $classname . '.php';
+    elseif (is_file('Poo/Classes/' . $classname . '.php'))
+        require 'Poo/Classes/' . $classname . '.php';
+}
 /// Librairies éventuelles (pour la connexion à la BDD, etc.)
 include('../db.php');
 
@@ -7,6 +24,9 @@ header("Content-Type:application/json");
 
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
+
+$MateriauxManager = new MateriauxManager($bdd);
+
 switch ($http_method) {
     /// Cas de la méthode GET
     case "GET" :
@@ -62,31 +82,30 @@ switch ($http_method) {
     case "PUT":
         if (!empty($_GET['idMateriaux'])) {
             try {
-                $materiau = json_decode($_GET['Materiaux']);
-                $sql = "UPDATE materiaux 
-                SET nom = :nom, effet = :effet
-                WHERE idMateriaux = :idMateriaux;";
-
-                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $commit->bindParam(':idMateriaux',$materiau->idMateriaux, PDO::PARAM_INT);
-                $commit->bindParam(':nom',$materiau->nom, PDO::PARAM_STR);
-                $commit->bindParam(':effet',$materiau->effet, PDO::PARAM_STR);
-                $commit->execute();
-
-                $result = $bdd->query('SELECT *
-					from materiaux
-                    where idMateriaux=' . $materiau->idMateriaux . '
-                    ');
-                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-                $result->closeCursor();
-                $bdd = null;
+                $materiau = $MateriauxManager->updateMateriaux($_GET['Materiaux']);
                 http_response_code(201);
-                deliver_responseRest(201, "materiau modified", $fetchedResult);
+                deliver_responseRest(201, "materiau modified", $materiau);
             } catch (PDOException $e) {
                 deliver_responseRest(400, "materiau modification error in SQL", $sql . "<br>" . $e->getMessage());
             }
-            break;
+        } else
+            deliver_responseRest(400, "materiau modification error, missing idMateriaux", '');
+        break;
+    case "DELETE":
+        try {
+            $materiau = json_decode($_GET['Materiaux'])->Materiaux;
+            $rowCount = $MateriauxManager->deleteMateriaux($materiau->idMateriaux);
+
+            if( ! $rowCount ) {
+                deliver_responseRest(400, "materiau deletion fail", '');
+            } else {
+                http_response_code(202);
+                deliver_responseRest(202, "materiau deleted", '');
+            }
+        } catch (PDOException $e) {
+            deliver_responseRest(400, "materiau deletion error in SQL", $sql . "<br>" . $e->getMessage());
         }
+        break;
 }
 /// Envoi de la réponse au Client
 function deliver_responseRest($status, $status_message, $data)

@@ -41,7 +41,7 @@ class EffetMagiqueInfosManager
 
     public function addEffetMagiqueInfos($effetMagiqueInfosData, $idEffetMagique)
     {
-        $effetMagiqueInfos = json_decode($effetMagiqueInfosData)->Infos;
+        $effetMagiqueInfos = json_decode($effetMagiqueInfosData);
         $sql = "INSERT INTO `effetMagiqueInfos` (`idEffetMagique`,`contenu`) 
                     VALUES (:idEffetMagique, :contenu)";
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
@@ -85,7 +85,10 @@ class EffetMagiqueInfosManager
 
     public function deleteEffetMagiqueInfos($idEffetMagiqueInfos)
     {
-        $this->_db->exec('DELETE FROM effetMagiqueInfos WHERE idEffetMagiqueInfos = ' . $idEffetMagiqueInfos);
+        $commit = $this->_db->prepare('DELETE FROM effetMagiqueInfos WHERE idEffetMagiqueInfos = :idEffetMagiqueInfos');
+        $commit->bindParam(':idEffetMagiqueInfos',$idEffetMagiqueInfos, PDO::PARAM_INT);
+        $commit->execute();
+        return $commit->rowCount();
     }
 
     public function getAllEffetMagiqueInfosAsNotJSon($idEffetMagique) {
