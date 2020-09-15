@@ -66,12 +66,16 @@ class EffetMagiqueUlContentManager
     {
         $effetMagiqueUlContent = json_decode($effetMagiqueUlContentData);
         $sql = "UPDATE effetMagiqueUlContent 
-                SET idEffetMagiqueUl = '" . $effetMagiqueUlContent->idEffetMagiqueUl . "', 
-                contenu = '" . $effetMagiqueUlContent->contenu . "'
-                WHERE idEffetMagiqueUlContent = " . $effetMagiqueUlContent->idEffetMagiqueUlContent;
+                SET idEffetMagiqueUl = :idEffetMagiqueUl, 
+                contenu = :contenu
+                WHERE idEffetMagiqueUlContent = :idEffetMagiqueUlContent";
 
+        $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $commit->bindParam(':idEffetMagiqueUlContent',$effetMagiqueUlContent->idEffetMagiqueUlContent, PDO::PARAM_INT);
+        $commit->bindParam(':idEffetMagiqueUl',$effetMagiqueUlContent->idEffetMagiqueUl, PDO::PARAM_INT);
+        $commit->bindParam(':contenu',$effetMagiqueUlContent->contenu, PDO::PARAM_STR);
+        $commit->execute();
 
-        $this->_db->exec($sql);
         $result = $this->_db->query('SELECT *
 					from effetMagiqueUlContent
                     where idEffetMagiqueUlContent='.$effetMagiqueUlContent->idEffetMagiqueUlContent);

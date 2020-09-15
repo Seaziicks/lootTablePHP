@@ -53,6 +53,7 @@ switch ($http_method) {
                 WHERE idObjet = :idObjet;";
 
             $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+            $commit->bindParam(':idObjet',$_GET['idObjet'], PDO::PARAM_INT);
             $commit->bindParam(':idMalediction',$_GET['idMalediction'], PDO::PARAM_INT);
             $commit->execute();
 
@@ -71,7 +72,8 @@ switch ($http_method) {
                 WHERE idObjet = :idObjet;";
 
             $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-            $commit->bindParam(':idMateriaux',$_GET['idMateriaux'], PDO::PARAM_INT);
+            $commit->bindParam(':idObjet',$_GET['idObjet'], PDO::PARAM_INT);
+            $commit->bindParam(':idMalediction',$_GET['idMalediction'], PDO::PARAM_INT);
             $commit->execute();
 
             $result = $bdd->query('SELECT *

@@ -66,11 +66,15 @@ class EffetMagiqueTableTitleManager
     {
         $effetMagiqueTableTitle = json_decode($effetMagiqueTableTitleData);
         $sql = "UPDATE effetMagiqueTableTitle 
-                SET idEffetMagiqueTable = '" . $effetMagiqueTableTitle->idEffetMagiqueTable . "' 
-                WHERE idEffetMagiqueTableTitle = " . $effetMagiqueTableTitle->idEffetMagiqueTableTitle;
+                SET idEffetMagiqueTable = :idEffetMagiqueTable
+                WHERE idEffetMagiqueTableTitle = :idEffetMagiqueTableTitle";
+
+        $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $commit->bindParam(':idEffetMagiqueTableTitle',$effetMagiqueTableTitle->idEffetMagiqueTableTitle, PDO::PARAM_INT);
+        $commit->bindParam(':idEffetMagiqueTable',$effetMagiqueTableTitle->idEffetMagiqueTable, PDO::PARAM_INT);
+        $commit->execute();
 
 
-        $this->_db->exec($sql);
         $result = $this->_db->query('SELECT *
 					from effetMagiqueTableTitle
                     where idEffetMagiqueTableTitle='.$effetMagiqueTableTitle->idEffetMagiqueTableTitle);

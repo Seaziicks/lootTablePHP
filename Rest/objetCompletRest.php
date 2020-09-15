@@ -67,12 +67,13 @@ switch ($http_method) {
 
         } elseif (isset($_GET['idPersonnage']) && isset($_GET['namesOnly']) && filter_var($_GET['namesOnly'], FILTER_VALIDATE_BOOLEAN)) {
             /// Récupération des critères de recherche envoyés par le Client
-            $objetsQuery = $bdd->query('SELECT nom, fauxNom, idObjet
+            $objetsQuery = $bdd->query('SELECT nom, fauxNom, idObjet, afficherNom
                                                 FROM objet
                                                 WHERE idPersonnage = ' . $_GET['idPersonnage'] . '');
             $names = [];
             while($objetFetched=$objetsQuery->fetch(PDO::FETCH_ASSOC)){
-                array_push($names, ["nom" => $objetFetched['nom'], "fauxNom" => $objetFetched['fauxNom'], "idObjet" => intval($objetFetched['idObjet'])]);
+                array_push($names, ["nom" => $objetFetched['nom'], "fauxNom" => $objetFetched['fauxNom'],
+                    "idObjet" => intval($objetFetched['idObjet']), "afficherNom" => boolval($objetFetched['afficherNom'])]);
             }
             $matchingData = $names;
             http_response_code(200);

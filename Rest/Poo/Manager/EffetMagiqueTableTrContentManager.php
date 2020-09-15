@@ -66,12 +66,17 @@ class EffetMagiqueTableTrContentManager
     {
         $effetMagiqueTableTrContent = json_decode($effetMagiqueTableTrContentData);
         $sql = "UPDATE effetMagiqueTableTrContent 
-                SET idEffetMagiqueTableTr = '" . $effetMagiqueTableTrContent->idEffetMagiqueTableTr . "', 
-                contenu = '" . $effetMagiqueTableTrContent->contenu . "'
-                WHERE idEffetMagiqueTableTrContent = " . $effetMagiqueTableTrContent->idEffetMagiqueTableTrContent;
+                SET idEffetMagiqueTableTr = :idEffetMagiqueTableTr, 
+                contenu = :contenu
+                WHERE idEffetMagiqueTableTrContent = :idEffetMagiqueTableTrContent";
+
+        $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $commit->bindParam(':idEffetMagiqueTableTrContent',$effetMagiqueTableTrContent->idEffetMagiqueTableTrContent, PDO::PARAM_INT);
+        $commit->bindParam(':idEffetMagiqueTableTr',$effetMagiqueTableTrContent->idEffetMagiqueTableTr, PDO::PARAM_INT);
+        $commit->bindParam(':contenu',$effetMagiqueTableTrContent->contenu, PDO::PARAM_STR);
+        $commit->execute();
 
 
-        $this->_db->exec($sql);
         $result = $this->_db->query('SELECT *
 					from effetMagiqueTableTrContent
                     where idEffetMagiqueTableTrContent='.$effetMagiqueTableTrContent->idEffetMagiqueTableTrContent);

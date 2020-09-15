@@ -63,12 +63,16 @@ switch ($http_method){
         if (!(empty($_GET['idPersonnage']))) {
             try {
                 $sql = "UPDATE personnage 
-                SET nom = '" . $_GET['nom'] . "', 
-                niveau = '" . $_GET['niveau'] . "', 
-                WHERE idPersonnage = " . $_GET['idPersonnage'];
+                SET nom = :nom, 
+                niveau = :niveau
+                WHERE idPersonnage = :idPersonnage";
 
+                $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit->bindParam(':idPersonnage', intval($_GET['idPersonnage']), PDO::PARAM_INT);
+                $commit->bindParam(':nom', $_GET['nom'], PDO::PARAM_STR);
+                $commit->bindParam(':niveau', intval($_GET['niveau']), PDO::PARAM_INT);
+                $commit->execute();
 
-                $bdd->exec($sql);
                 $result = $bdd->query('SELECT *
 					from personnage
                     where idPersonnage='.$_GET['idPersonnage']);

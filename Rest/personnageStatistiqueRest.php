@@ -87,12 +87,18 @@ switch ($http_method){
         if (!(empty($_GET['idPersonnage']) || empty($_GET['idStatistique']) || empty($_GET['niveau']))) {
             try {
                 $sql = "UPDATE monte 
-                SET valeur = '" . $_GET['valeur'] . "', 
-                WHERE idPersonnage = " . $_GET['idPersonnage'] . " AND idStatistique = " . $_GET['idStatistique'] . "
-                AND niveau = " . $_GET['niveau'];
+                SET valeur = :valeur 
+                WHERE idPersonnage = :idPersonnage 
+                AND idStatistique = :idStatistique 
+                AND niveau = :niveau";
 
+                $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
+                $commit->bindParam(':idStatistique', $_GET['idStatistique'], PDO::PARAM_INT);
+                $commit->bindParam(':niveau', $_GET['niveau'], PDO::PARAM_INT);
+                $commit->bindParam(':valeur', $_GET['valeur'], PDO::PARAM_INT);
+                $commit->execute();
 
-                $bdd->exec($sql);
                 $result = $bdd->query("SELECT *
 					FROM monte 
                     WHERE idPersonnage = " . $_GET['idPersonnage'] . " AND idStatistique = " . $_GET['idStatistique'] . "

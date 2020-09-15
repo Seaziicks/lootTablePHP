@@ -66,12 +66,17 @@ class EffetMagiqueTableTitleContentManager
     {
         $effetMagiqueTableTitleContent = json_decode($effetMagiqueTableTitleContentData);
         $sql = "UPDATE effetMagiqueTableTitleContent 
-                SET idEffetMagiqueTableTitle = '" . $effetMagiqueTableTitleContent->idEffetMagiqueTableTitle . "', 
-                contenu = '" . $effetMagiqueTableTitleContent->contenu . "'
-                WHERE idEffetMagiqueTableTitleContent = " . $effetMagiqueTableTitleContent->idEffetMagiqueTableTitleContent;
+                SET idEffetMagiqueTableTitle = :idEffetMagiqueTableTitle, 
+                contenu = :contenu 
+                WHERE idEffetMagiqueTableTitleContent = :idEffetMagiqueTableTitleContent";
+
+        $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $commit->bindParam(':idEffetMagiqueTableTitleContent',$effetMagiqueTableTitleContent->idEffetMagiqueTableTitleContent, PDO::PARAM_INT);
+        $commit->bindParam(':idEffetMagiqueTableTitle',$effetMagiqueTableTitleContent->idEffetMagiqueTableTitle, PDO::PARAM_INT);
+        $commit->bindParam(':contenu',$effetMagiqueTableTitleContent->contenu, PDO::PARAM_STR);
+        $commit->execute();
 
 
-        $this->_db->exec($sql);
         $result = $this->_db->query('SELECT *
 					from effetMagiqueTableTitleContent
                     where idEffetMagiqueTableTitleContent='.$effetMagiqueTableTitleContent->idEffetMagiqueTableTitleContent);

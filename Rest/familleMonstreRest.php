@@ -63,10 +63,14 @@ switch ($http_method) {
             try {
                 $famille = json_decode($_GET['Famille']);
                 $sql = "UPDATE famillemonstre 
-                SET libelle = '" . $famille->libelle . "'
-                WHERE idFamilleMonstre = " . $famille->idFamilleMonstre .";";
+                SET libelle = :libelle 
+                WHERE idFamilleMonstre = :idFamilleMonstre;";
 
-                $bdd->exec($sql);
+                $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit->bindParam(':idFamilleMonstre',$famille->idFamilleMonstre, PDO::PARAM_INT);
+                $commit->bindParam(':libelle',$famille->libelle, PDO::PARAM_STR);
+                $commit->execute();
+
                 $result = $bdd->query('SELECT *
 					from famillemonstre
                     where idFamilleMonstre=' . $famille->idFamilleMonstre . '

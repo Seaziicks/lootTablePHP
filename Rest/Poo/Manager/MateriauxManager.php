@@ -48,8 +48,8 @@ class MateriauxManager
         $commit->bindParam(':effet',$materiaux->effet, PDO::PARAM_STR);
         $commit->execute();
         $result = $this->_db->query('SELECT *
-					from materiaux 
-                    where idMateriaux=' . $this->_db->lastInsertId() . '
+					FROM materiaux 
+                    WHERE idMateriaux=' . $this->_db->lastInsertId() . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
         $result->closeCursor();
@@ -62,12 +62,16 @@ class MateriauxManager
     {
         $materiaux = json_decode($materiauxData);
         $sql = "UPDATE materiaux 
-                SET nom = '" . $materiaux->nom . "', 
-                effet = '" . $materiaux->effet . "', 
-                WHERE idMateriaux = " . $materiaux->idMateriaux;
+                SET nom = :nom, 
+                effet = :effet
+                WHERE idMateriaux = :idMateriaux";
 
+        $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $commit->bindParam(':idMateriaux',$materiaux->idMateriaux, PDO::PARAM_INT);
+        $commit->bindParam(':nom',$materiaux->nom, PDO::PARAM_STR);
+        $commit->bindParam(':effet',$materiaux->effet, PDO::PARAM_STR);
+        $commit->execute();
 
-        $this->_db->exec($sql);
         $result = $this->_db->query('SELECT *
 					from materiaux
                     where idMateriaux='.$materiaux->idMateriaux);

@@ -97,15 +97,21 @@ switch ($http_method) {
                 $params = json_decode($_GET['Loot']);
                 $loot = $params->Loot;
                 $sql = "UPDATE dropchance 
-                SET minRoll = " . $loot->minRoll . ", maxRoll = " . $loot->maxRoll . ",
-                niveauMonstre = NULL, multiplier = " . $loot->multiplier . ",
-                dicePower = " . $loot->dicePower . "
-                WHERE idMonstre = " . $params->idMonstre . "
-                AND idLoot = " . $loot->idLoot . ";";
-                $sql .= "(" . $params->idMonstre . ", " . $loot->idLoot . ", " . $loot->minRoll . ", " . $loot->maxRoll . ", NULL, " . $loot->multiplier . ", " . $loot->dicePower . ")";
+                SET minRoll = :minRoll, maxRoll = :maxRoll,
+                niveauMonstre = NULL, multiplier = :multiplier,
+                dicePower =:dicePower 
+                WHERE idMonstre = :idMonstre 
+                AND idLoot = :idLoot;";
 
+                $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit->bindParam(':idMonstre', $params->idMonstre, PDO::PARAM_INT);
+                $commit->bindParam(':idLoot', $loot->idLoot, PDO::PARAM_INT);
+                $commit->bindParam(':minRoll', $loot->minRoll, PDO::PARAM_INT);
+                $commit->bindParam(':maxRoll', $loot->maxRoll, PDO::PARAM_INT);
+                $commit->bindParam(':multiplier', $loot->multiplier, PDO::PARAM_INT);
+                $commit->bindParam(':dicePower', $loot->dicePower, PDO::PARAM_INT);
+                $commit->execute();
 
-                $bdd->exec($sql);
                 $result = $bdd->query('SELECT l.libelle, d.minRoll, d.maxRoll, d.niveauMonstre, d.multiplier, d.dicePower, l.poids
 					from dropchance as d, loot as l
                     where idMonstre=' . $params->idMonstre . '
@@ -127,12 +133,20 @@ switch ($http_method) {
             $idLoots = '';
             foreach ($loots as $loot) {
                 $sql = "UPDATE dropchance 
-                SET minRoll = " . $loot->minRoll . ", maxRoll = " . $loot->maxRoll . ",
-                niveauMonstre = NULL, multiplier = " . $loot->multiplier . ",
-                dicePower = " . $loot->dicePower . "
-                WHERE idMonstre = " . $params->idMonstre . "
-                AND idLoot = " . $loot->idLoot . ";";
-                $sql .= "(" . $params->idMonstre . ", " . $loot->idLoot . ", " . $loot->minRoll . ", " . $loot->maxRoll . ", NULL, " . $loot->multiplier . ", " . $loot->dicePower . ")";
+                SET minRoll = :minRoll, maxRoll = :maxRoll,
+                niveauMonstre = NULL, multiplier = :multiplier,
+                dicePower = :dicePower 
+                WHERE idMonstre = :idMonstre 
+                AND idLoot = :idLoot;";
+
+                $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit->bindParam(':idMonstre', $params->idMonstre, PDO::PARAM_INT);
+                $commit->bindParam(':idLoot', $loot->idLoot, PDO::PARAM_INT);
+                $commit->bindParam(':minRoll', $loot->minRoll, PDO::PARAM_INT);
+                $commit->bindParam(':maxRoll', $loot->maxRoll, PDO::PARAM_INT);
+                $commit->bindParam(':multiplier', $loot->multiplier, PDO::PARAM_INT);
+                $commit->bindParam(':dicePower', $loot->dicePower, PDO::PARAM_INT);
+                $commit->execute();
 
                 $idLoots .= $loot->idLoot;
                 if ($loot != $loots[count($loots) - 1]) {
@@ -140,7 +154,6 @@ switch ($http_method) {
                 }
             }
 
-            $bdd->exec($sql);
             $result = $bdd->query('SELECT l.libelle, d.minRoll, d.maxRoll, d.niveauMonstre, d.multiplier, d.dicePower, l.poids
 					from dropchance as d, loot as l
                     where idMonstre=' . $params->idMonstre . '

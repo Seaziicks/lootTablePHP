@@ -61,12 +61,16 @@ class MaledictionManager
     {
         $malediction = json_decode($maledictionData);
         $sql = "UPDATE malediction 
-                SET nom = '" . $malediction->nom . "', 
-                description = '" . $malediction->description . "', 
-                WHERE idMalediction = " . $malediction->idMalediction;
+                SET nom = :nom, 
+                description = :description
+                WHERE idMalediction = :idMalediction";
 
+        $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $commit->bindParam(':idMalediction',$malediction->idMalediction, PDO::PARAM_INT);
+        $commit->bindParam(':nom',$malediction->nom, PDO::PARAM_STR);
+        $commit->bindParam(':description',$malediction->description, PDO::PARAM_STR);
+        $commit->execute();
 
-        $this->_db->exec($sql);
         $result = $this->_db->query('SELECT *
 					from malediction
                     where idMalediction='.$malediction->idMalediction);

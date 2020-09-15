@@ -91,12 +91,16 @@ class PersonnageManager
     {
         $personnage = json_decode($personnageData);
         $sql = "UPDATE personnage 
-                SET nom = '" . $personnage->nom . "', 
-                niveau = '" . $personnage->niveau . "', 
-                WHERE idPersonnage = " . $personnage->idPersonnage;
+                SET nom = :nom, 
+                niveau = :niveau 
+                WHERE idPersonnage = :idPersonnage";
 
+        $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $commit->bindParam(':idPersonnage',$personnage->idPersonnage, PDO::PARAM_INT);
+        $commit->bindParam(':nom',$personnage->nom, PDO::PARAM_STR);
+        $commit->bindParam(':niveau',$personnage->niveau, PDO::PARAM_INT);
+        $commit->execute();
 
-        $this->_db->exec($sql);
         $result = $this->_db->query('SELECT *
 					from personnage
                     where idPersonnage='.$personnage->idPersonnage);
@@ -109,7 +113,10 @@ class PersonnageManager
 
     public function deletePersonnage($idPersonnage)
     {
-        $this->_db->exec('DELETE FROM personnage WHERE idPersonnage = ' . $idPersonnage);
+        $commit = $this->_db->prepare('DELETE FROM personnage WHERE idPersonnage = :idPersonnage');
+        $commit->bindParam(':idPersonnage',$idPersonnage, PDO::PARAM_INT);
+        $commit->execute();
+        return $commit->rowCount();
     }
 
     public function setDb(PDO $db)
