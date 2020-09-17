@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.5
+-- version 4.9.2
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  jeu. 10 sep. 2020 à 15:20
--- Version du serveur :  5.7.26
--- Version de PHP :  7.2.18
+-- Généré le :  jeu. 17 sep. 2020 à 22:37
+-- Version du serveur :  10.4.10-MariaDB
+-- Version de PHP :  7.3.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `dropchance` (
   `minRoll` tinyint(4) NOT NULL,
   `maxRoll` tinyint(4) NOT NULL,
   `niveauMonstre` tinyint(4) DEFAULT NULL,
-  `multiplier` tinyint(4) NOT NULL DEFAULT '1',
+  `multiplier` tinyint(4) NOT NULL DEFAULT 1,
   `dicePower` int(11) NOT NULL,
   PRIMARY KEY (`idMonstre`,`idLoot`),
   KEY `FK_dropchance_idLoot` (`idLoot`)
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `dropchancebis` (
   `roll` tinyint(4) NOT NULL,
   `idLoot` smallint(5) UNSIGNED DEFAULT NULL,
   `niveauMonstre` tinyint(4) DEFAULT NULL,
-  `diceNumber` tinyint(4) NOT NULL DEFAULT '1',
+  `diceNumber` tinyint(4) NOT NULL DEFAULT 1,
   `dicePower` tinyint(4) NOT NULL,
   `multiplier` smallint(6) NOT NULL,
   PRIMARY KEY (`idMonstre`,`roll`),
@@ -107,12 +107,24 @@ INSERT INTO `dropchancebis` (`idMonstre`, `roll`, `idLoot`, `niveauMonstre`, `di
 
 DROP TABLE IF EXISTS `effetdecouvert`;
 CREATE TABLE IF NOT EXISTS `effetdecouvert` (
+  `idEffetMagiqueDecouvert` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `idPersonnage` smallint(5) UNSIGNED NOT NULL,
   `idObjet` smallint(5) UNSIGNED NOT NULL,
   `effet` text NOT NULL,
+  UNIQUE KEY `idEffetMagiqueDecouvert` (`idEffetMagiqueDecouvert`),
   KEY `FK_effetdecouvert_idPersonnage` (`idPersonnage`),
   KEY `FK_effetdecouvert_idPossede` (`idObjet`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `effetdecouvert`
+--
+
+INSERT INTO `effetdecouvert` (`idEffetMagiqueDecouvert`, `idPersonnage`, `idObjet`, `effet`) VALUES
+(1, 1, 2, 'Tout ce que je peux en dire, c\'est que c\'est une \"Faucille de la mort qui tue la vie et tout\" ...'),
+(2, 1, 2, 'Deuxième effet découvert : Je me suis trompé sur le premier. En fait cet objet sert à servir le thé.'),
+(5, 1, 2, 'Troisième effet : Le café, peut-être ?'),
+(6, 1, 2, 'Dans mon sommeil, j\'ai cru entendre l\'objet dire : \"Error 418, I\'m a teapot.\". Probablement que c\'était bien le thé !');
 
 -- --------------------------------------------------------
 
@@ -128,14 +140,20 @@ CREATE TABLE IF NOT EXISTS `effetmagique` (
   PRIMARY KEY (`idEffetMagique`),
   UNIQUE KEY `idEffectMagique` (`idEffetMagique`),
   KEY `FK_effetmagique_idObjet` (`idObjet`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagique`
 --
 
 INSERT INTO `effetmagique` (`idEffetMagique`, `idObjet`, `title`) VALUES
-(2, 2, 'EffetMagiqueTest');
+(2, 2, 'EffetMagiqueTest'),
+(36, 27, 'Alliances bénies'),
+(37, 28, 'Ami du chapardeur'),
+(38, 29, 'Amitié avec les animaux'),
+(39, 30, 'Attaque tournoyante'),
+(40, 31, 'Barrière mentale'),
+(41, 32, 'Bonté inflexible');
 
 -- --------------------------------------------------------
 
@@ -151,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiquedescription` (
   PRIMARY KEY (`idEffetMagiqueDescription`),
   UNIQUE KEY `idObjetDescription` (`idEffetMagiqueDescription`),
   KEY `FK_effetmagiquedescription_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiquedescription`
@@ -161,7 +179,19 @@ INSERT INTO `effetmagiquedescription` (`idEffetMagiqueDescription`, `idEffetMagi
 (1, 2, 'Ce casque d’aspect normal révèle sa puissance quand son utilisateur l’enfile et prononce le mot de commande. Fait d’argent rutilant et d’acier poli, un casque de mille feux nouvellement créé est serti de 10 diamants, 20 rubis, 30 opales de feu et 40 opales, chacune de ces pierres étant magiques. À ce moment, les aspérités qu’il arbore donnent l’impression que le personnage porte une couronne enchâssée de pierres précieuses. Au moindre rai de lumière, le casque brille de mille feux, d’où son nom. Les fonctions des pierres sont les suivantes :'),
 (2, 2, 'Le casque peut être utilisé une fois par round, mais chaque pierre perd son éclat après avoir utilisé son pouvoir. Tant que toutes ses pierres ne sont pas ternes, le casque de mille feux a les propriétés suivantes :'),
 (3, 2, 'Une fois que toutes les pierres ont été utilisées, elles tombent en poussière et le casque perd tous ses pouvoirs. Toute pierre que l’on essaye d’extraire se brise automatiquement.'),
-(4, 2, 'Si le porteur du casque est brûlé par un feu d’origine magique (malgré l’importante protection dont il bénéficie) et s’il rate un jet de Volonté (DD 15), une surcharge se produit et toutes les pierres restantes saturent et explosent instantanément. Les diamants deviennent des rayons prismatiques visant chacun une créature choisie au hasard parmi celles à portée (éventuellement le porteur lui-même), les rubis deviennent des murs de feu en ligne droite partant du porteur dans une direction aléatoire et les opales de feu deviennent des boules de feu centrées sur le porteur. Les opales et le casque lui-même sont détruits.');
+(4, 2, 'Si le porteur du casque est brûlé par un feu d’origine magique (malgré l’importante protection dont il bénéficie) et s’il rate un jet de Volonté (DD 15), une surcharge se produit et toutes les pierres restantes saturent et explosent instantanément. Les diamants deviennent des rayons prismatiques visant chacun une créature choisie au hasard parmi celles à portée (éventuellement le porteur lui-même), les rubis deviennent des murs de feu en ligne droite partant du porteur dans une direction aléatoire et les opales de feu deviennent des boules de feu centrées sur le porteur. Les opales et le casque lui-même sont détruits.'),
+(98, 36, 'Ces anneaux peuvent prendre des apparences très variées et vont toujours par paire. Ils sont créés pour deux personnes précises, et n\'ont aucun effet portés par une autre personne. Les deux anneaux doivent être portées par la bonne personne pour que leurs effets soient actifs.'),
+(99, 36, 'Un porteur d\'une alliance bénie connait l\'état de santé de l\'autre porteur comme par un effet de Rapport, si ce n\'est que les barrières planaires ne bloquent pas cet effet. De plus, chaque porteur peut communiquer avec l\'autre comme apr un sort de Message.'),
+(100, 36, 'Le prix indiqué est le prix de base de l\'objet, mais les alliances bénies sont souvent décorés de pierres précieuses qui en augmente le prix.'),
+(101, 37, 'Quand il est activé, cet anneau d\'acier attire tout objet métallique non fixé situé dans un rayon de 30 cm et ne pesant pas plus de 30 g (généralement, une pièce, un bijou ou une petite clef). Les objets n\'ont pas besoin d\'être ferreux, il leur suffit de contenir du métal, quel qu\'il soit. Un ami du chapardeur confère également un bonus de  5 aux tests d\'Escamotage impliquant des objets métalliques.'),
+(102, 38, 'Sur commande, cet anneau affecte l’animal désigné comme si le personnage venait de lancer le sort charme-animal.'),
+(103, 39, 'Le porteur de cet anneau représentant un tourbillon stylisé peut utiliser le don Attaque en rotation comme une attaque standard, au lieu d\'une attaque à outrance.'),
+(104, 39, 'et anneau n\'a aucun effet sur une créature n\'ayant pas le don Attaque en rotation.'),
+(105, 40, 'Dans la plupart des cas, cet anneau est en or massif finement ouvragé. Son porteur est immunisé en permanence contre les sorts détection de pensées et détection du mensonge, ainsi que contre toutes les tentatives faites pour déterminer son alignement par magie.'),
+(106, 41, 'Cet anneau en or est orné de divers runes signifiant \"Bien \"Bonté\" et autres sens similaires. Il est porté par les agents du bien qui craignent que la magie les fasse retourner contre leur cause.'),
+(107, 41, 'Le porteur de cet anneau est immunisé contre tout effet modifiant son alignement vers un alignement non-bon. De plus, le porteur considère un acte maléfique comme un acte suicidaire dans le cadre des sorts ou effets de charme et coercition.'),
+(108, 41, 'Cet anneau vient avec quelques restrictions, bien que son porteur ne les considèrent que rarement comme tel. Premièrement, le porteur de cet anneau est incapable de lancer des sorts dotés du registre du Mal. Et deuxièmement, le porteur de cet anneau subit un malus de -2 aux jets d\'attaque contre les créatures du sous-type Bien.'),
+(109, 41, 'Toute créature mauvaise essayant de porter cet anneau acquiert aussitôt deux niveaux négatifs, qui persistent jusqu’à ce qu’elle se débarrasse de l’anneau. Ces niveaux négatifs n’entraîne jamais une perte de niveau réelle, mais aucun sort, pas même restauration, ne permet de le résorber tant que l’aventurier conserve l’anneau.');
 
 -- --------------------------------------------------------
 
@@ -177,7 +207,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiqueinfos` (
   PRIMARY KEY (`idEffetMagiqueInfos`),
   UNIQUE KEY `idObjetInfos` (`idEffetMagiqueInfos`),
   KEY `FK_effetmagiqueinfos_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiqueinfos`
@@ -188,7 +218,31 @@ INSERT INTO `effetmagiqueinfos` (`idEffetMagiqueInfos`, `idEffetMagique`, `conte
 (2, 2, ' <span class=\"compobj\">NLS</span> 13 '),
 (3, 2, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-objets-merveilleux-23.htm#23\">Création d’objets merveilleux</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-boule-de-feu.htm\">boule de feu</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-detection-des-morts-vivants.htm\">détection des morts-vivants</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-lame-de-feu.htm\">lame de feu</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-lumiere.htm\">lumière</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-mur-de-feu.htm\">mur de feu</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-protection-contre-les-energies-destructives.htm\">protection contre les énergies destructives</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-rayons-prismatiques.htm\">rayons prismatiques</a> '),
 (4, 2, ' <span class=\"compobj\">Prix</span> 125 000 po '),
-(5, 2, ' <span class=\"compobj\">Poids</span> 1,5 kg.');
+(5, 2, ' <span class=\"compobj\">Poids</span> 1,5 kg.'),
+(78, 36, '<span class=\"divi\">Divination</span> faible '),
+(79, 36, ' <span class=\"compobj\">NLS</span> 3 '),
+(80, 36, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-message.htm\">message</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-rapport.htm\">rapport</a> '),
+(81, 36, ' <span class=\"compobj\">Prix</span> 7 600 po (la paire).'),
+(82, 37, '<span class=\"transmu\">Transmutation</span> faible '),
+(83, 37, ' <span class=\"compobj\">NLS</span> 12 '),
+(84, 37, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-manipulation-a-distance.htm\">manipulation à distance</a> '),
+(85, 37, ' <span class=\"compobj\">Prix</span> 2 500 po.'),
+(86, 38, '<span class=\"enchen\">Enchantement</span> faible '),
+(87, 38, ' <span class=\"compobj\">NLS</span> 3 '),
+(88, 38, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-charme-animal.htm\">charme-animal</a> '),
+(89, 38, ' <span class=\"compobj\">Prix</span> 10 800 po.'),
+(90, 39, '<span class=\"transmu\">Transmutation</span> faible '),
+(91, 39, ' <span class=\"compobj\">NLS</span> 4 '),
+(92, 39, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, Attaque en rotation '),
+(93, 39, ' <span class=\"compobj\">Prix</span> 8 000 po.'),
+(94, 40, '<span class=\"abju\">Abjuration</span> faible '),
+(95, 40, ' <span class=\"compobj\">NLS</span> 3 '),
+(96, 40, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, <a href=\"http://www.gemmaline.com/sorts/sort-nom-antidetection.htm\">antidétection</a> '),
+(97, 40, ' <span class=\"compobj\">Prix</span> 8 000 po.'),
+(98, 41, '<span class=\"abju\">Abjuration</span> [Bien] faible '),
+(99, 41, ' <span class=\"compobj\">NLS</span> 5 '),
+(100, 41, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-anneaux-magiques-21.htm#21\">Création d’anneaux magiques</a>, le créateur doit être bon '),
+(101, 41, ' <span class=\"compobj\">Prix</span> 4 000 po.');
 
 -- --------------------------------------------------------
 
@@ -204,7 +258,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetable` (
   PRIMARY KEY (`idEffetMagiqueTable`),
   UNIQUE KEY `idTable` (`idEffetMagiqueTable`),
   KEY `FK_effetmagiquetable_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiquetable`
@@ -226,7 +280,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetabletitle` (
   PRIMARY KEY (`idEffetMagiqueTableTitle`),
   UNIQUE KEY `idTableObjetTitle` (`idEffetMagiqueTableTitle`),
   KEY `FK_effetmagiquetabletitle_idEffetMagiqueTable` (`idEffetMagiqueTable`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiquetabletitle`
@@ -250,7 +304,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetabletitlecontent` (
   PRIMARY KEY (`idEffetMagiqueTableTitleContent`),
   UNIQUE KEY `idTableObjetTitleContent` (`idEffetMagiqueTableTitleContent`),
   KEY `FK_effetmagiquetabletitlecontent_idEffetMagiqueTableTitle` (`idEffetMagiqueTableTitle`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiquetabletitlecontent`
@@ -280,7 +334,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetabletr` (
   PRIMARY KEY (`idEffetMagiqueTableTr`),
   UNIQUE KEY `idTableObjetTr` (`idEffetMagiqueTableTr`),
   KEY `FK_effetmagiquetabletr_idEffetMagiqueTable` (`idEffetMagiqueTable`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiquetabletr`
@@ -307,7 +361,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiquetabletrcontent` (
   PRIMARY KEY (`idEffetMagiqueTableTrContent`),
   UNIQUE KEY `idTableObjetTrContent` (`idEffetMagiqueTableTrContent`),
   KEY `FK_effetmagiquetabletrcontent_idEffetMagiqueTableTr` (`idEffetMagiqueTableTr`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiquetabletrcontent`
@@ -359,7 +413,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiqueul` (
   PRIMARY KEY (`idEffetMagiqueUl`),
   UNIQUE KEY `idUlObjet` (`idEffetMagiqueUl`),
   KEY `FK_effetmagiqueul_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiqueul`
@@ -382,7 +436,7 @@ CREATE TABLE IF NOT EXISTS `effetmagiqueulcontent` (
   PRIMARY KEY (`idEffetMagiqueUlContent`),
   UNIQUE KEY `idUlObjetContent` (`idEffetMagiqueUlContent`),
   KEY `FK_effetmagiqueulcontent_idEffetMagiqueUl` (`idEffetMagiqueUl`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `effetmagiqueulcontent`
@@ -581,24 +635,30 @@ CREATE TABLE IF NOT EXISTS `objet` (
   `bonusDexteriteMax` int(11) DEFAULT NULL,
   `malusArmureTests` int(11) DEFAULT NULL,
   `risqueEchecSorts` varchar(9) DEFAULT NULL,
-  `afficherNom` tinyint(1) NOT NULL DEFAULT '0',
-  `afficherEffetMagique` tinyint(1) NOT NULL DEFAULT '0',
-  `afficherMalediction` tinyint(1) NOT NULL DEFAULT '0',
-  `afficherMateriau` tinyint(1) NOT NULL DEFAULT '0',
-  `afficherInfos` tinyint(1) NOT NULL DEFAULT '0',
+  `afficherNom` tinyint(1) NOT NULL DEFAULT 0,
+  `afficherEffetMagique` tinyint(1) NOT NULL DEFAULT 0,
+  `afficherMalediction` tinyint(1) NOT NULL DEFAULT 0,
+  `afficherMateriau` tinyint(1) NOT NULL DEFAULT 0,
+  `afficherInfos` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`idObjet`),
   UNIQUE KEY `id_objet_magique` (`idObjet`),
   KEY `FK_objet_idMalediction` (`idMalediction`),
   KEY `FK_objet_idMateriaux` (`idMateriaux`),
   KEY `FK_objet_idPersonnage` (`idPersonnage`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `objet`
 --
 
 INSERT INTO `objet` (`idObjet`, `idPersonnage`, `nom`, `fauxNom`, `bonus`, `type`, `prix`, `prixNonHumanoide`, `devise`, `idMalediction`, `categorie`, `idMateriaux`, `taille`, `degats`, `critique`, `facteurPortee`, `armure`, `bonusDexteriteMax`, `malusArmureTests`, `risqueEchecSorts`, `afficherNom`, `afficherEffetMagique`, `afficherMalediction`, `afficherMateriau`, `afficherInfos`) VALUES
-(2, 1, 'objetTest', '', 3, 'Test', 1000, NULL, 'po', 1, NULL, 1, 'petit', '1d6', 'x3', '1.5m', 2, NULL, NULL, NULL, 0, 0, 0, 0, 0);
+(2, 1, 'objetTest', 'Faucille de la mort qui tue la vie et tout', 3, 'Test', 1000, NULL, '0', 1, NULL, 1, 'petit', '1', 'x3', '1.5m', 2, NULL, NULL, NULL, 0, 0, 0, 0, 0),
+(27, 1, 'Alliances bénies', 'Anneaux de fers', NULL, 'Anneau', 7600, NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0),
+(28, 1, 'Ami du chapardeur', 'Anneau de pierre', NULL, 'Anneaux', 2500, NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0),
+(29, 1, 'Amitié avec les animaux', NULL, NULL, 'Anneau', 10800, NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, 0, 0),
+(30, 1, 'Attaque tournoyante', 'Anneau de lys', NULL, 'Anneau', 8000, NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0),
+(31, 1, 'Barrière mentale', 'Anneau de protection mental', NULL, 'Anneau', 8000, NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 1, 0, 0, 0),
+(32, 1, 'Bonté inflexible', 'Anneau de magie d\'abjuration', NULL, 'Anneau', 4000, NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -613,14 +673,16 @@ CREATE TABLE IF NOT EXISTS `personnage` (
   `niveau` tinyint(4) NOT NULL,
   PRIMARY KEY (`idPersonnage`),
   UNIQUE KEY `idPersonnage` (`idPersonnage`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `personnage`
 --
 
 INSERT INTO `personnage` (`idPersonnage`, `nom`, `niveau`) VALUES
-(1, '?', 3);
+(1, '?', 3),
+(2, 'Drakcouille', 5),
+(8, 'Rocktar', 5);
 
 -- --------------------------------------------------------
 
@@ -648,6 +710,31 @@ INSERT INTO `statistique` (`idStatistique`, `libelle`) VALUES
 (5, 'constitution'),
 (6, 'vitalite'),
 (7, 'mana');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `user`
+--
+
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE IF NOT EXISTS `user` (
+  `idUser` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `idPersonnage` smallint(5) UNSIGNED DEFAULT NULL,
+  `isGameMaster` tinyint(1) NOT NULL DEFAULT 0,
+  `isAdmin` tinyint(1) NOT NULL DEFAULT 0,
+  UNIQUE KEY `idUser` (`idUser`),
+  KEY `FK_user_idPersonnage` (`idPersonnage`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `user`
+--
+
+INSERT INTO `user` (`idUser`, `username`, `password`, `idPersonnage`, `isGameMaster`, `isAdmin`) VALUES
+(1, 'Jraam', 'banane', 1, 0, 0);
 
 --
 -- Contraintes pour les tables déchargées
@@ -754,6 +841,12 @@ ALTER TABLE `objet`
   ADD CONSTRAINT `FK_objet_idMalediction` FOREIGN KEY (`idMalediction`) REFERENCES `malediction` (`idMalediction`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_objet_idMateriaux` FOREIGN KEY (`idMateriaux`) REFERENCES `materiaux` (`idMateriaux`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_objet_idPersonnage` FOREIGN KEY (`idPersonnage`) REFERENCES `personnage` (`idPersonnage`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Contraintes pour la table `user`
+--
+ALTER TABLE `user`
+  ADD CONSTRAINT `FK_user_idPersonnage` FOREIGN KEY (`idPersonnage`) REFERENCES `personnage` (`idPersonnage`) ON DELETE SET NULL ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

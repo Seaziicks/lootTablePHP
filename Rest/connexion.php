@@ -1,4 +1,21 @@
 <?php
+declare(strict_types=1);
+spl_autoload_register('chargerClasse');
+session_start();
+header("Content-Type:application/json");
+
+/**
+ * @param $classname
+ */
+function chargerClasse($classname)
+{
+    if (is_file('Poo/' . $classname . '.php'))
+        require 'Poo/' . $classname . '.php';
+    elseif (is_file('Poo/Manager/' . $classname . '.php'))
+        require 'Poo/Manager/' . $classname . '.php';
+    elseif (is_file('Poo/Classes/' . $classname . '.php'))
+        require 'Poo/Classes/' . $classname . '.php';
+}
 /// Librairies éventuelles (pour la connexion à la BDD, etc.)
 include('../db.php');
 
@@ -7,45 +24,96 @@ header("Content-Type:application/json");
 
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
+
+$UserManager = new UserManager($bdd);
+
 switch ($http_method) {
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
         if (isset($_GET['Connexion'])) {
             $user = json_decode($_GET['Connexion']);
-            $sql = 'SELECT *
-                    FROM user
-                    WHERE username = :username
-                    AND password = :password';
 
-            $user->Username = strtolower($user->Username);
-            $userQuery = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-            $userQuery->bindParam(':username', $user->Username, PDO::PARAM_STR);
-            $userQuery->bindParam(':password', $user->Password, PDO::PARAM_STR);
-            $userQuery->execute();
-            $userFetched = $userQuery->fetch(PDO::FETCH_ASSOC);
+            $user = $UserManager->getUserAvecPersonnage($_GET['Connexion']);
 
-            if (!$userFetched) {
+            if (!$user) {
                 http_response_code(403);
                 /// Envoi de la réponse au Client
                 deliver_responseRest(403, "Désolé, connais pas !", '');
-            } elseif ($userFetched) {
-                $personnage = null;
-                if($userFetched['idPersonnage']) {
-                    $personnageQuery = $bdd->query('SELECT *
-                                                    FROM personnage
-                                                    WHERE idPersonnage = ' . $userFetched['idPersonnage']);
-                    $personnage = $personnageQuery->fetch(PDO::FETCH_ASSOC);
-                }
-                $matchingData = [$userFetched, $personnage];
+            } elseif ($user) {
+
+                $matchingData = $user;
                 http_response_code(200);
                 /// Envoi de la réponse au Client
                 deliver_responseRest(200, "Ah, mais je vous reconnais, vous êtes un habitué !", $matchingData);
+            }
+        } elseif(isset($_GET['leftPersonnage']) && filter_var($_GET['leftPersonnage'], FILTER_VALIDATE_BOOLEAN)) {
+            $sql = 'SELECT * 
+                    FROM personnage 
+                    WHERE idPersonnage NOT IN (
+                        SELECT idPersonnage 
+                        FROM user WHERE idPersonnage IS NOT NULL)';
+            $allLeftPersonnageQuery = $bdd->query($sql);
+
+            $allPersonnage = [];
+
+            while($allLeftPersonnageFetched = $allLeftPersonnageQuery->fetch(PDO::FETCH_ASSOC)) {
+                array_push($allPersonnage, $allLeftPersonnageFetched);
+            }
+
+            $matchingData = $allPersonnage;
+
+            http_response_code(200);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Voilà un catalogue de nos meilleurs specimens encore disponibles.", $matchingData);
+        } elseif(isset($_GET['User']) && isset($_GET['checkAvailable']) && filter_var($_GET['checkAvailable'], FILTER_VALIDATE_BOOLEAN)) {
+            $userData = json_encode(json_decode($_GET['User'])->User);
+            $userExist = $UserManager->userExist($userData);
+            if ($userExist) {
+                http_response_code(409);
+                /// Envoi de la réponse au Client
+                deliver_responseRest(409, "Vous êtes déjà inscrit dans notre club privé.", '');
+            } else {
+                http_response_code(200);
+                /// Envoi de la réponse au Client
+                deliver_responseRest(200, "Votre nom ne me dis rien ... Voulez-vous nous rejoindre ?", '');
+            }
+        } elseif(isset($_GET['nomPersonnage']) && isset($_GET['checkAvailable']) && filter_var($_GET['checkAvailable'], FILTER_VALIDATE_BOOLEAN)) {
+            $PersonnageManager = new PersonnageManager($bdd);
+
+            $personnageExist = $PersonnageManager->personnageExist($_GET['nomPersonnage']);
+            if ($personnageExist) {
+                http_response_code(409);
+                /// Envoi de la réponse au Client
+                deliver_responseRest(409, "Cet avatar est déjà ... Hum ... Utilisé.", '');
+            } else {
+                http_response_code(200);
+                /// Envoi de la réponse au Client
+                deliver_responseRest(200, "Oh, ce serait un nouveau costume ?", '');
             }
         }
         break;
 
     case "POST":
+        /// Récupération des critères de recherche envoyés par le Client
+        if (isset($_GET['Creation'])) {
+            $userData = json_encode(json_decode($_GET['Creation'])->User);
+            $userExist = $UserManager->userExist($userData);
+            if ($userExist) {
+                http_response_code(409);
+                /// Envoi de la réponse au Client
+                deliver_responseRest(409, "Vous êtes déjà inscrit dans notre club privé.", $matchingData);
+            } else {
+                $user = json_decode($_GET['Creation']);
+                $user = $UserManager->addUserWithPersonnage($_GET['Creation']);
+
+                $matchingData = $user;
+
+                http_response_code(200);
+                /// Envoi de la réponse au Client
+                deliver_responseRest(200, "Alors comme ça vous voulez faire parti du Fight Club ?", $matchingData);
+            }
+        }
         break;
     case "PUT":
         break;
