@@ -42,7 +42,7 @@ class EffetMagiqueUlContentManager
     public function addEffetMagiqueUlContent($effetMagiqueUlContentData, $idEffetMagiqueUl)
     {
         $effetMagiqueUlContent = json_decode($effetMagiqueUlContentData);
-        $sql = "INSERT INTO `effetMagiqueUlContent` (`idEffetMagiqueUl`,`contenu`) 
+        $sql = "INSERT INTO `effetmagiqueulcontent` (`idEffetMagiqueUl`,`contenu`) 
                     VALUES (:idEffetMagiqueUl, :contenu)";
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $commit->bindParam(':idEffetMagiqueUl',$idEffetMagiqueUl, PDO::PARAM_INT);
@@ -65,7 +65,7 @@ class EffetMagiqueUlContentManager
     public function updateEffetMagiqueUlContent($effetMagiqueUlContentData)
     {
         $effetMagiqueUlContent = json_decode($effetMagiqueUlContentData);
-        $sql = "UPDATE effetMagiqueUlContent 
+        $sql = "UPDATE effetmagiqueulcontent 
                 SET idEffetMagiqueUl = :idEffetMagiqueUl, 
                 contenu = :contenu
                 WHERE idEffetMagiqueUlContent = :idEffetMagiqueUlContent";

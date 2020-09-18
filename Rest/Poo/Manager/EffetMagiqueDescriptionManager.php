@@ -42,7 +42,7 @@ class EffetMagiqueDescriptionManager
     public function addEffetMagiqueDescription($effetMagiqueDescriptionData, $idEffetMagique)
     {
         $effetMagiqueDescription = json_decode($effetMagiqueDescriptionData);
-        $sql = "INSERT INTO `effetMagiqueDescription` (`idEffetMagique`,`contenu`) 
+        $sql = "INSERT INTO `effetmagiquedescription` (`idEffetMagique`,`contenu`) 
                     VALUES (:idEffetMagique, :contenu)";
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $commit->bindParam(':idEffetMagique',$idEffetMagique, PDO::PARAM_INT);
@@ -66,7 +66,7 @@ class EffetMagiqueDescriptionManager
     public function updateEffetMagiqueDescription($effetMagiqueDescriptionData)
     {
         $effetMagiqueDescription = json_decode($effetMagiqueDescriptionData);
-        $sql = "UPDATE effetMagiqueDescription 
+        $sql = "UPDATE effetmagiquedescription 
                 SET idEffetMagique = :idEffetMagique, 
                 contenu = :contenu
                 WHERE idEffetMagiqueDescription = :idEffetMagiqueDescription";
@@ -112,13 +112,13 @@ class EffetMagiqueDescriptionManager
 
         print_r($position);
 
-        $sql = "UPDATE EffetMagiqueTable
+        $sql = "UPDATE effetmagiquetable
                 SET position = position - 1
                 WHERE idEffetMagique = " . $effetMagiqueDescription->idEffetMagique ."
                 AND position > ". $position ."";
         $this->_db->exec($sql);
 
-        $sql = "UPDATE EffetMagiqueUl
+        $sql = "UPDATE effetmagiqueul
                 SET position = position - 1
                 WHERE idEffetMagique = " . $effetMagiqueDescription->idEffetMagique ."
                 AND position > ". $position ."";

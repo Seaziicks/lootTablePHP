@@ -43,7 +43,7 @@ class EffetMagiqueTableTrManager
     public function addEffetMagiqueTableTr($EffetMagiqueTableTrData, $idEffetMagiqueTable)
     {
         $EffetMagiqueTableTr = json_decode($EffetMagiqueTableTrData);
-        $sql = "INSERT INTO `EffetMagiqueTableTr` (`idEffetMagiqueTable`) 
+        $sql = "INSERT INTO `effetmagiquetabletr` (`idEffetMagiqueTable`) 
                     VALUES (:idEffetMagiqueTable)";
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $commit->bindParam(':idEffetMagiqueTableTr',$idEffetMagiqueTable, PDO::PARAM_INT);
@@ -65,7 +65,7 @@ class EffetMagiqueTableTrManager
     public function updateEffetMagiqueTableTr($EffetMagiqueTableTrData)
     {
         $EffetMagiqueTableTr = json_decode($EffetMagiqueTableTrData);
-        $sql = "UPDATE EffetMagiqueTableTr 
+        $sql = "UPDATE effetmagiquetabletr 
                 SET idEffetMagiqueTable = :idEffetMagiqueTable
                 WHERE idEffetMagiqueTableTr = :idEffetMagiqueTableTr";
 

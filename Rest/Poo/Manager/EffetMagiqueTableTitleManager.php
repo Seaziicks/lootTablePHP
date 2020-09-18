@@ -43,7 +43,7 @@ class EffetMagiqueTableTitleManager
     public function addEffetMagiqueTableTitle($effetMagiqueTableTitleData, $idEffetMagiqueTable)
     {
         $effetMagiqueTableTitle = json_decode($effetMagiqueTableTitleData);
-        $sql = "INSERT INTO `effetMagiqueTableTitle` (`idEffetMagiqueTable`) 
+        $sql = "INSERT INTO `effetmagiquetabletitle` (`idEffetMagiqueTable`) 
                     VALUES (:idEffetMagiqueTable)";
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $commit->bindParam(':idEffetMagiqueTableTitle',$idEffetMagiqueTable, PDO::PARAM_INT);
@@ -65,7 +65,7 @@ class EffetMagiqueTableTitleManager
     public function updateEffetMagiqueTableTitle($effetMagiqueTableTitleData)
     {
         $effetMagiqueTableTitle = json_decode($effetMagiqueTableTitleData);
-        $sql = "UPDATE effetMagiqueTableTitle 
+        $sql = "UPDATE effetmagiquetabletitle 
                 SET idEffetMagiqueTable = :idEffetMagiqueTable
                 WHERE idEffetMagiqueTableTitle = :idEffetMagiqueTableTitle";
 

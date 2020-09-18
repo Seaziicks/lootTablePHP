@@ -149,7 +149,7 @@ class EffetMagiqueTableManager
     public function updateEffetMagiqueTable($effetMagiqueTableData)
     {
         $effetMagiqueTable = json_decode($effetMagiqueTableData);
-        $sql = "UPDATE effetMagiqueTable 
+        $sql = "UPDATE effetmagiquetable 
                 SET idEffetMagique = :idEffetMagique, 
                 position = :position 
                 WHERE idEffetMagiqueTable = :idEffetMagiqueTable";

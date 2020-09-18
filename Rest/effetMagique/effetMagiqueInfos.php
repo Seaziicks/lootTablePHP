@@ -49,7 +49,7 @@ switch ($http_method){
 
             $idInfos = '';
             foreach ($effetMagiqueInfos as $info) {
-                $sql = "INSERT INTO `effetMagiqueInfos` (`idEffetMagique`,`contenu`) 
+                $sql = "INSERT INTO `effetmagiqueinfos` (`idEffetMagique`,`contenu`) 
                                         VALUES (:idEffetMagique, :contenu)";
 
                 $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));

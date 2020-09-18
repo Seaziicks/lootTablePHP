@@ -46,7 +46,7 @@ class EffetMagiqueDecouvertManager
     public function addEffetMagiqueDecouvert($effetMagiqueDecouvertData)
     {
         $effetMagiqueDecouvert = json_decode($effetMagiqueDecouvertData);
-        $sql = "INSERT INTO `effetDecouvert` (`idPersonnage`,`idObjet`, `effet`) 
+        $sql = "INSERT INTO `effetdecouvert` (`idPersonnage`,`idObjet`, `effet`) 
                     VALUES (:idPersonnage, :idObjet, :effet)";
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $commit->bindParam(':idPersonnage', $effetMagiqueDecouvert->idPersonnage, PDO::PARAM_INT);
@@ -71,7 +71,7 @@ class EffetMagiqueDecouvertManager
     public function updateEffetMagiqueDecouvert($effetMagiqueDecouvertData)
     {
         $effetMagiqueDecouvert = json_decode($effetMagiqueDecouvertData);
-        $sql = "UPDATE effetDecouvert 
+        $sql = "UPDATE effetdecouvert 
                 SET effet = :effet 
                 WHERE idEffetMagiqueDecouvert = :idEffetMagiqueDecouvert";
 

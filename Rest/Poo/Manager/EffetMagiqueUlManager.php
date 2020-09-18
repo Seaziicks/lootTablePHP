@@ -103,7 +103,7 @@ class EffetMagiqueUlManager
     public function updateEffetMagiqueUl($effetMagiqueUlData)
     {
         $effetMagiqueUl = json_decode($effetMagiqueUlData);
-        $sql = "UPDATE effetMagiqueUl 
+        $sql = "UPDATE effetMagiqueul 
                 SET idEffetMagique = :idEffetMagique, 
                 position = :position
                 WHERE idEffetMagiqueUl = :idEffetMagiqueUl";

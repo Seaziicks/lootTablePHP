@@ -42,7 +42,7 @@ class EffetMagiqueTableTitleContentManager
     public function addEffetMagiqueTableTitleContent($effetMagiqueTableTitleContentData, $idEffetMagiqueTableTitle)
     {
         $effetMagiqueTableTitleContent = json_decode($effetMagiqueTableTitleContentData);
-        $sql = "INSERT INTO `effetMagiqueTableTitleContent` (`idEffetMagiqueTableTitle`,`contenu`) 
+        $sql = "INSERT INTO `effetmagiquetabletitlecontent` (`idEffetMagiqueTableTitle`,`contenu`) 
                     VALUES (:idEffetMagiqueTableTitle, :contenu)";
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $commit->bindParam(':idEffetMagiqueTableTitle',$idEffetMagiqueTableTitle, PDO::PARAM_INT);

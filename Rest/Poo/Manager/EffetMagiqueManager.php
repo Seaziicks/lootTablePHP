@@ -40,7 +40,7 @@ class EffetMagiqueManager
     public function addEffetMagique($effetMagiqueData)
     {
         $effetMagique = json_decode($effetMagiqueData);
-        $sql = "INSERT INTO `effetMagique` (`idObjet`,`title`) 
+        $sql = "INSERT INTO `effetmagique` (`idObjet`,`title`) 
                                         VALUES (:idObjet, :title)";
 
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
@@ -61,7 +61,7 @@ class EffetMagiqueManager
     public function updateEffetMagique($effetMagiqueData)
     {
         $effetMagique = json_decode($effetMagiqueData);
-        $sql = "UPDATE effetMagique 
+        $sql = "UPDATE effetmagique 
                 SET idObjet = :idObjet, 
                 title = :title 
                 WHERE idEffetMagique = :idEffetMagique";
@@ -196,7 +196,7 @@ class EffetMagiqueManager
     public function addDescription($descriptions, $idEffetMagique) {
         $idDescriptions = '';
         foreach ($descriptions as $description) {
-            $sql = "INSERT INTO `effetMagiqueDescription` (`idEffetMagique`,`contenu`) 
+            $sql = "INSERT INTO `effetmagiquedescription` (`idEffetMagique`,`contenu`) 
                                         VALUES (:idEffetMagique, :contenu)";
 
             $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
@@ -222,7 +222,7 @@ class EffetMagiqueManager
     public function addInfos($infos, $idEffetMagique) {
         $idInfos = '';
         foreach ($infos as $info) {
-            $sql = "INSERT INTO `effetMagiqueInfos` (`idEffetMagique`,`contenu`) 
+            $sql = "INSERT INTO `effetmagiqueinfos` (`idEffetMagique`,`contenu`) 
                                         VALUES (:idEffetMagique, :contenu)";
 
             $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));

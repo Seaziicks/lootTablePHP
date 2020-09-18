@@ -93,7 +93,7 @@ switch ($http_method){
         try {
 
             $effetMagiqueTable = json_decode($_GET['EffetMagiqueTable'])->Table;
-            $sql = "INSERT INTO `effetMagiqueTable` (`idEffetMagique`,`position`) 
+            $sql = "INSERT INTO `effetmagiquetable` (`idEffetMagique`,`position`) 
                     VALUES (:idEffetMagique, :position)";
             $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
 
@@ -102,14 +102,14 @@ switch ($http_method){
             $commit->execute();
             $tableIndex = $bdd->lastInsertId();
             foreach($effetMagiqueTable->title as $title) {
-                $sql = "INSERT INTO `effetMagiqueTableTitle` (`idEffetMagiqueTable`) 
+                $sql = "INSERT INTO `effetmagiquetabletitle` (`idEffetMagiqueTable`) 
                                         VALUES (:idEffetMagiqueTable)";
                 $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
                 $commit->bindParam(':idEffetMagiqueTable', $tableIndex, PDO::PARAM_INT);
                 $commit->execute();
                 $tableTitleIndex = $bdd->lastInsertId();
                 foreach ($title as $contenu) {
-                    $sql = "INSERT INTO `effetMagiqueTableTitleContent` (`idEffetMagiqueTableTitle`,`contenu`) 
+                    $sql = "INSERT INTO `effetmagiquetabletitlecontent` (`idEffetMagiqueTableTitle`,`contenu`) 
                                         VALUES (:idEffetMagiqueTableTitle, :contenu)";
 
                     $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
@@ -128,7 +128,7 @@ switch ($http_method){
                 $commit->execute();
                 $tableTrIndex = $bdd->lastInsertId();
                 foreach ($tr as $contenu) {
-                    $sql = "INSERT INTO `effetMagiqueTableTrContent` (`idEffetMagiqueTableTr`,`contenu`) 
+                    $sql = "INSERT INTO `effetmagiquetabletrcontent` (`idEffetMagiqueTableTr`,`contenu`) 
                                         VALUES (:idEffetMagiqueTableTr, :contenu)";
 
                     $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
