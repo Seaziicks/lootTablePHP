@@ -45,7 +45,7 @@ switch ($http_method) {
 
             $bdd->exec($sql);
             $result = $bdd->query('SELECT *
-					from famillemonstre 
+					FROM famillemonstre 
                     where idFamilleMonstre=' . $bdd->lastInsertId() . '
                     ');
             $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -72,7 +72,7 @@ switch ($http_method) {
                 $commit->execute();
 
                 $result = $bdd->query('SELECT *
-					from famillemonstre
+					FROM famillemonstre
                     where idFamilleMonstre=' . $famille->idFamilleMonstre . '
                     ');
                 $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);

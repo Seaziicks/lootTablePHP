@@ -58,7 +58,7 @@ switch ($http_method) {
             $commit->execute();
 
             $result = $bdd->query('SELECT *
-					from objet
+					FROM objet
                     where idObjet=' . $_GET['idObjet'] . '
                     ');
             $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -77,7 +77,7 @@ switch ($http_method) {
             $commit->execute();
 
             $result = $bdd->query('SELECT *
-					from objet
+					FROM objet
                     where idObjet=' . $_GET['idObjet'] . '
                     ');
             $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);

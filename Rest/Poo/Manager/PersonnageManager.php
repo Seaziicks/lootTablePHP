@@ -92,7 +92,7 @@ class PersonnageManager
         $commit->bindParam(':niveau',$personnage->niveau, PDO::PARAM_INT);
         $commit->execute();
         $result = $this->_db->query('SELECT *
-					from personnage 
+					FROM personnage 
                     where idPersonnage=' . $this->_db->lastInsertId() . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -117,7 +117,7 @@ class PersonnageManager
         $commit->execute();
 
         $result = $this->_db->query('SELECT *
-					from personnage
+					FROM personnage
                     where idPersonnage='.$personnage->idPersonnage);
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
         $result->closeCursor();

@@ -48,7 +48,7 @@ class EffetMagiqueManager
         $commit->bindParam(':title',$effetMagique->title, PDO::PARAM_STR);
         $commit->execute();
         $result = $this->_db->query('SELECT *
-					from effetMagique 
+					FROM effetmagique 
                     where idEffetMagique=' . $this->_db->lastInsertId() . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -73,7 +73,7 @@ class EffetMagiqueManager
         $commit->execute();
 
         $result = $this->_db->query('SELECT *
-					from effetMagique
+					FROM effetmagique
                     where idEffetMagique='.$effetMagique->idEffetMagique);
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
         $result->closeCursor();
@@ -149,7 +149,7 @@ class EffetMagiqueManager
 
     private function getInfos($idEffetMagique) {
         $effetMagiqueInfosQuery = $this->_db->query('SELECT *
-					from effetMagiqueInfos 
+					FROM effetmagiqueinfos 
                     where idEffetMagique=' . $idEffetMagique);
 
         $infos = [];
@@ -161,7 +161,7 @@ class EffetMagiqueManager
 
     private function getDescription($idEffetMagique) {
         $effetMagiqueDescriptionsQuery = $this->_db->query('SELECT *
-					from effetMagiquedescription
+					FROM effetmagiquedescription
                     where idEffetMagique=' . $idEffetMagique);
 
         $descriptions = [];
@@ -209,7 +209,7 @@ class EffetMagiqueManager
             }
         }
         $result = $this->_db->query('SELECT *
-					from effetMagiqueDescription 
+					FROM effetmagiquedescription 
                     where idEffetMagiqueDescription in (' . $idDescriptions . ')
                     ');
         $fetchedResult = $result->fetchAll(PDO::FETCH_ASSOC);
@@ -236,7 +236,7 @@ class EffetMagiqueManager
         }
 
         $result = $this->_db->query('SELECT *
-					from effetMagiqueInfos 
+					FROM effetmagiqueinfos 
                     where idEffetMagiqueInfos in (' . $idInfos . ')
                     ');
         $fetchedResult = $result->fetchAll(PDO::FETCH_ASSOC);

@@ -33,7 +33,7 @@ switch ($http_method){
         /// Récupération des critères de recherche envoyés par le Client
         if (!empty($_GET['idMalediction'])) {
             $maledictionQuery = $bdd->query('SELECT *
-					from malediction 
+					FROM malediction 
                     where idMalediction='.$_GET['idMalediction']);
 
             $malediction =  $maledictionQuery->fetch(PDO::FETCH_ASSOC);
@@ -55,7 +55,7 @@ switch ($http_method){
             $commit->bindParam(':description',$malediction->description, PDO::PARAM_STR);
             $commit->execute();
             $result = $bdd->query('SELECT *
-					from malediction 
+					FROM malediction 
                     where idMalediction=' . $bdd->lastInsertId() . '
                     ');
             $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);

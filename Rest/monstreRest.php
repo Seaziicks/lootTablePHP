@@ -45,7 +45,7 @@ switch ($http_method) {
             $commit->bindParam(':libelle',$monstre->libelle, PDO::PARAM_STR);
             $commit->execute();
             $result = $bdd->query('SELECT *
-					from monstre 
+					FROM monstre 
                     where idMonstre=' . $bdd->lastInsertId() . '
                     ');
             $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -74,7 +74,7 @@ switch ($http_method) {
                 $commit->execute();
 
                 $result = $bdd->query('SELECT *
-					from monstre
+					FROM monstre
                     where idMonstre=' . $monstre->idMonstre . '
                     ');
                 $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);

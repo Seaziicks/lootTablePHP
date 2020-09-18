@@ -72,7 +72,7 @@ class EffetMagiqueTableManager
         $tableIndex = $this->_db->lastInsertId();
 
         $result = $this->_db->query('SELECT *
-					from effetMagiqueTable 
+					FROM effetmagiquetable 
                     where idEffetMagiqueTable=' . $tableIndex . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -133,7 +133,7 @@ class EffetMagiqueTableManager
         }
 
         $result = $this->_db->query('SELECT *
-					from effetMagiqueTable 
+					FROM effetmagiquetable 
                     where idEffetMagiqueTable=' . $tableIndex . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -161,7 +161,7 @@ class EffetMagiqueTableManager
         $commit->execute();
 
         $result = $this->_db->query('SELECT *
-					from effetMagiqueTable
+					FROM effetmagiquetable
                     where idEffetMagiqueTable='.$effetMagiqueTable->idEffetMagiqueTable);
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
         $result->closeCursor();

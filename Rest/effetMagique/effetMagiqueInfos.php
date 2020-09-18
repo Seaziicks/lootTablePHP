@@ -31,7 +31,7 @@ switch ($http_method){
         /// Récupération des critères de recherche envoyés par le Client
         if (!empty($_GET['idEffetMagiqueInfos'])) {
             $effetMagiqueInfosQuery = $bdd->query('SELECT *
-					from effetMagiqueInfos 
+					FROM effetmagiqueinfos 
                     where idEffetMagiqueInfos='.$_GET['idEffetMagiqueInfos']);
 
             $effetMagiqueInfos =  $effetMagiqueInfosQuery->fetch(PDO::FETCH_ASSOC);
@@ -63,7 +63,7 @@ switch ($http_method){
             }
 
             $result = $bdd->query('SELECT *
-					from effetMagiqueInfos 
+					FROM effetmagiqueinfos 
                     where idEffetMagiqueInfos in (' . $idInfos . ')
                     ');
             $fetchedResult = $result->fetchAll(PDO::FETCH_ASSOC);

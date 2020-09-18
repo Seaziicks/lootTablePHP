@@ -31,7 +31,7 @@ switch ($http_method){
         /// Récupération des critères de recherche envoyés par le Client
         if (!empty($_GET['idEffetMagiqueTable'])) {
             $effetMagiqueTablesQuery = $bdd->query('SELECT *
-					from effetMagiqueTable 
+					FROM effetmagiquetable 
                     where idEffetMagique='.$_GET['idEffetMagique']);
 
             $allTables = [];
@@ -41,14 +41,14 @@ switch ($http_method){
 
                 /* Récupération des titres de la table */
                 $effetMagiqueTableTitlesQuery = $bdd->query('SELECT *
-					from effetmagiquetabletitle 
+					FROM effetmagiquetabletitle 
                     where idEffetMagiqueTable='.$effetMagiqueTable['idEffetMagiqueTable']);
 
                 $titles= [];
                 while ($effetMagiqueTableTitle = $effetMagiqueTableTitlesQuery->fetch(PDO::FETCH_ASSOC)) {
 
                     $effetMagiqueTableTitleContensQuery = $bdd->query('SELECT *
-					from effetmagiquetabletitlecontent 
+					FROM effetmagiquetabletitlecontent 
                     where idEffetMagiqueTableTitle='.$effetMagiqueTableTitle['idEffetMagiqueTableTitle']);
 
                     $title= [];
@@ -61,14 +61,14 @@ switch ($http_method){
 
                 /* Récupération des lignes de la table */
                 $effetMagiqueTableTrsQuery = $bdd->query('SELECT *
-					from effetmagiquetabletr
+					FROM effetmagiquetabletr
                     where idEffetMagiqueTable='.$effetMagiqueTable['idEffetMagiqueTable']);
 
                 $trs= [];
                 while ($effetMagiqueTableTr = $effetMagiqueTableTrsQuery->fetch(PDO::FETCH_ASSOC)) {
 
                     $effetMagiqueTableTrContensQuery = $bdd->query('SELECT *
-					from effetmagiquetabletrcontent 
+					FROM effetmagiquetabletrcontent 
                     where idEffetMagiqueTableTr='.$effetMagiqueTableTr['idEffetMagiqueTableTr']);
 
                     $tr= [];

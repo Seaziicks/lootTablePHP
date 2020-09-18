@@ -46,7 +46,7 @@ switch ($http_method) {
 
                 $bdd->exec($sql);
                 $result = $bdd->query('SELECT l.libelle, d.minRoll, d.maxRoll, d.niveauMonstre, d.multiplier, d.dicePower, l.poids
-					from dropchance as d, loot as l
+					FROM dropchance as d, loot as l
                     where idMonstre=' . $params->idMonstre . '
                     order by minRoll');
                 $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -75,7 +75,7 @@ switch ($http_method) {
 
             $bdd->exec($sql);
             $result = $bdd->query('SELECT l.libelle, d.minRoll, d.maxRoll, d.niveauMonstre, d.multiplier, d.dicePower, l.poids
-					from dropchance as d, loot as l
+					FROM dropchance as d, loot as l
                     where idMonstre=' . $params->idMonstre . '
                     AND d.idLoot in (' . $idLoots . ')
                     AND d.idLoot = l.idLoot
@@ -113,7 +113,7 @@ switch ($http_method) {
                 $commit->execute();
 
                 $result = $bdd->query('SELECT l.libelle, d.minRoll, d.maxRoll, d.niveauMonstre, d.multiplier, d.dicePower, l.poids
-					from dropchance as d, loot as l
+					FROM dropchance as d, loot as l
                     where idMonstre=' . $params->idMonstre . '
                     AND d.idLoot =' . $loot->idLoot . '
                     AND d.idLoot = l.idLoot
@@ -155,7 +155,7 @@ switch ($http_method) {
             }
 
             $result = $bdd->query('SELECT l.libelle, d.minRoll, d.maxRoll, d.niveauMonstre, d.multiplier, d.dicePower, l.poids
-					from dropchance as d, loot as l
+					FROM dropchance as d, loot as l
                     where idMonstre=' . $params->idMonstre . '
                     AND d.idLoot in (' . $idLoots . ')
                     AND d.idLoot = l.idLoot

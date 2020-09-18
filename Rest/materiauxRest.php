@@ -66,7 +66,7 @@ switch ($http_method) {
             $commit->bindParam(':effet',$materiau->effet, PDO::PARAM_STR);
             $commit->execute();
             $result = $bdd->query('SELECT *
-					from materiaux 
+					FROM materiaux 
                     where idMateriaux=' . $bdd->lastInsertId() . '
                     ');
             $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);

@@ -51,7 +51,7 @@ class EffetMagiqueUlContentManager
         $UlContentIndex = $this->_db->lastInsertId();
 
         $result = $this->_db->query('SELECT *
-					from effetMagiqueUlContent 
+					FROM effetmagiqueulcontent 
                     where idEffetMagiqueUlContent=' . $UlContentIndex . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -77,7 +77,7 @@ class EffetMagiqueUlContentManager
         $commit->execute();
 
         $result = $this->_db->query('SELECT *
-					from effetMagiqueUlContent
+					FROM effetmagiqueulcontent
                     where idEffetMagiqueUlContent='.$effetMagiqueUlContent->idEffetMagiqueUlContent);
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
         $result->closeCursor();

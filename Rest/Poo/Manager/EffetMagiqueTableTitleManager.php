@@ -51,7 +51,7 @@ class EffetMagiqueTableTitleManager
         $tableTitleIndex = $this->_db->lastInsertId();
 
         $result = $this->_db->query('SELECT *
-					from effetMagiqueTableTitle 
+					FROM effetmagiquetabletitle 
                     where idEffetMagiqueTableTitle=' . $tableTitleIndex . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -76,7 +76,7 @@ class EffetMagiqueTableTitleManager
 
 
         $result = $this->_db->query('SELECT *
-					from effetMagiqueTableTitle
+					FROM effetmagiquetabletitle
                     where idEffetMagiqueTableTitle='.$effetMagiqueTableTitle->idEffetMagiqueTableTitle);
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
         $result->closeCursor();

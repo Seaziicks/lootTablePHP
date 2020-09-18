@@ -74,7 +74,7 @@ class ObjetManager
         $commit->bindParam(':afficherInfos',$objet->afficherInfos, PDO::PARAM_BOOL);
         $commit->execute();
         $result = $this->_db->query('SELECT *
-					from objet 
+					FROM objet 
                     where idObjet=' . $this->_db->lastInsertId() . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -126,7 +126,7 @@ class ObjetManager
         $commit->debugDumpParams();
 
         $result = $this->_db->query('SELECT *
-					from objet
+					FROM objet
                     where idObjet=' . $objet->idObjet . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);

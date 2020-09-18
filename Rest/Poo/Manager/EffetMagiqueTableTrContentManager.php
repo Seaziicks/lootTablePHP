@@ -51,7 +51,7 @@ class EffetMagiqueTableTrContentManager
         $tableTrContentIndex = $this->_db->lastInsertId();
 
         $result = $this->_db->query('SELECT *
-					from effetMagiqueTableTrContent 
+					FROM effetmagiquetabletrcontent 
                     where idEffetMagiqueTableTrContent=' . $tableTrContentIndex . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -78,7 +78,7 @@ class EffetMagiqueTableTrContentManager
 
 
         $result = $this->_db->query('SELECT *
-					from effetMagiqueTableTrContent
+					FROM effetmagiquetabletrcontent
                     where idEffetMagiqueTableTrContent='.$effetMagiqueTableTrContent->idEffetMagiqueTableTrContent);
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
         $result->closeCursor();

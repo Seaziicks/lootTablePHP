@@ -51,7 +51,7 @@ class EffetMagiqueTableTrManager
         $tableTrIndex = $this->_db->lastInsertId();
 
         $result = $this->_db->query('SELECT *
-					from EffetMagiqueTableTr 
+					FROM effetmagiquetabletr 
                     where idEffetMagiqueTableTr=' . $tableTrIndex . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -75,7 +75,7 @@ class EffetMagiqueTableTrManager
         $commit->execute();
 
         $result = $this->_db->query('SELECT *
-					from EffetMagiqueTableTr
+					FROM effetmagiquetabletr
                     where idEffetMagiqueTableTr='.$EffetMagiqueTableTr->idEffetMagiqueTableTr);
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
         $result->closeCursor();

@@ -47,7 +47,7 @@ class MaledictionManager
         $commit->bindParam(':description',$malediction->description, PDO::PARAM_STR);
         $commit->execute();
         $result = $this->_db->query('SELECT *
-					from malediction 
+					FROM malediction 
                     where idMalediction=' . $this->_db->lastInsertId() . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -72,7 +72,7 @@ class MaledictionManager
         $commit->execute();
 
         $result = $this->_db->query('SELECT *
-					from malediction
+					FROM malediction
                     where idMalediction='.$malediction->idMalediction);
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
         $result->closeCursor();

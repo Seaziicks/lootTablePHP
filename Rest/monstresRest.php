@@ -14,7 +14,7 @@ switch ($http_method) {
         if (isset($_GET['withFamille']) && filter_var($_GET['withFamille'], FILTER_VALIDATE_BOOLEAN)) {
             $famillesQuery = $bdd->query('SELECT DISTINCT fm.* 
                                                     FROM famillemonstre as fm, monstre as m 
-                                                    WHERE fm.idFamilleMonstre IN (Select DISTINCT idFamilleMonstre from monstre) 
+                                                    WHERE fm.idFamilleMonstre IN (Select DISTINCT idFamilleMonstre FROM monstre) 
                                                     ORDER BY fm.libelle');
             $familles = [];
             // Pour chaque famille, on crée un tableau avec le nom de la famille.

@@ -50,14 +50,14 @@ class EffetMagiqueTable implements JsonSerializable
     public function updateTitles(PDO $bdd) {
         /* Récupération des titres de la table */
         $effetMagiqueTableTitlesQuery = $bdd->query('SELECT *
-					from effetmagiquetabletitle 
+					FROM effetmagiquetabletitle 
                     where idEffetMagiqueTable='.$this->_idEffetMagiqueTable);
 
         $titles= [];
         while ($effetMagiqueTableTitle = $effetMagiqueTableTitlesQuery->fetch(PDO::FETCH_ASSOC)) {
 
             $effetMagiqueTableTitleContensQuery = $bdd->query('SELECT *
-					from effetmagiquetabletitlecontent 
+					FROM effetmagiquetabletitlecontent 
                     where idEffetMagiqueTableTitle='.$effetMagiqueTableTitle['idEffetMagiqueTableTitle']);
 
             $title= [];
@@ -83,14 +83,14 @@ class EffetMagiqueTable implements JsonSerializable
     public function updateTrs(PDO $bdd) {
         /* Récupération des lignes de la table */
         $effetMagiqueTableTrsQuery = $bdd->query('SELECT *
-					from effetmagiquetabletr
+					FROM effetmagiquetabletr
                     where idEffetMagiqueTable='.$this->_idEffetMagiqueTable);
 
         $trs= [];
         while ($effetMagiqueTableTr = $effetMagiqueTableTrsQuery->fetch(PDO::FETCH_ASSOC)) {
 
             $effetMagiqueTableTrContensQuery = $bdd->query('SELECT *
-					from effetmagiquetabletrcontent 
+					FROM effetmagiquetabletrcontent 
                     where idEffetMagiqueTableTr='.$effetMagiqueTableTr['idEffetMagiqueTableTr']);
 
             $tr= [];

@@ -54,7 +54,7 @@ class EffetMagiqueUl implements JsonSerializable
 
             /* Récupération des lignes de la table */
             $effetMagiqueUlContentsQuery = $bdd->query('SELECT *
-					from effetmagiqueulcontent
+					FROM effetmagiqueulcontent
                     where idEffetMagiqueUl='.$this->_idEffetMagiqueUl);
 
             $li= [];

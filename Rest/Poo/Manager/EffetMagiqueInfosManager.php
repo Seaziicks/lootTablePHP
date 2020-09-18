@@ -52,7 +52,7 @@ class EffetMagiqueInfosManager
 
 
         $result = $this->_db->query('SELECT *
-					from effetMagiqueInfos 
+					FROM effetmagiqueinfos 
                     where idEffetMagiqueInfos=' . $infosIndex . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -79,7 +79,7 @@ class EffetMagiqueInfosManager
 
 
         $result = $this->_db->query('SELECT *
-					from effetMagiqueInfos
+					FROM effetmagiqueinfos
                     where idEffetMagiqueInfos='.$effetMagiqueInfos->idEffetMagiqueInfos);
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
         $result->closeCursor();

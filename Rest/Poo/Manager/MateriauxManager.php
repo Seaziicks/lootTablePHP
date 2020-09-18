@@ -73,7 +73,7 @@ class MateriauxManager
         $commit->execute();
 
         $result = $this->_db->query('SELECT *
-					from materiaux
+					FROM materiaux
                     where idMateriaux='.$materiaux->idMateriaux);
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
         $result->closeCursor();

@@ -40,7 +40,7 @@ switch ($http_method){
         } elseif (!empty($_GET['idPersonnage'])) {
 
             $personnageQuery = $bdd->query('SELECT *
-					from personnage 
+					FROM personnage 
                     where idPersonnage ='.$_GET['idPersonnage']);
 
             $personnage =  $personnageQuery->fetch(PDO::FETCH_ASSOC);
@@ -74,7 +74,7 @@ switch ($http_method){
                 $commit->execute();
 
                 $result = $bdd->query('SELECT *
-					from personnage
+					FROM personnage
                     where idPersonnage='.$_GET['idPersonnage']);
                 $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
                 $result->closeCursor();
