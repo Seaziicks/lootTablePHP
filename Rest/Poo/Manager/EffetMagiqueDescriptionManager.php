@@ -15,7 +15,7 @@ class EffetMagiqueDescriptionManager
     {
         $idEffetMagiqueDescription = (int)$idEffetMagiqueDescription;
         $effetMagiqueDescriptionQuery = $this->_db->query('SELECT *
-                                                    FROM effetMagiqueDescription
+                                                    FROM effetmagiquedescription
                                                     WHERE idEffetMagiqueDescription = ' . $idEffetMagiqueDescription);
 
         $effetMagiqueDescriptionFetched = $effetMagiqueDescriptionQuery->fetch(PDO::FETCH_ASSOC);
@@ -27,7 +27,7 @@ class EffetMagiqueDescriptionManager
     public function getAllEffetMagiqueDescription(int $idEffetMagique)
     {
         $effetMagiqueDescriptionQuery = $this->_db->query('SELECT *
-                                                    FROM effetMagiqueDescription
+                                                    FROM effetmagiquedescription
                                                     WHERE idEffetMagique =' . $idEffetMagique);
 
         $allEffetMagiqueDescription = [];
@@ -89,7 +89,7 @@ class EffetMagiqueDescriptionManager
 
     public function deleteEffetMagiqueDescription($effetMagiqueDescription)
     {
-        $commit = $this->_db->prepare('DELETE FROM effetMagiqueDescription WHERE idEffetMagiqueDescription = :idEffetMagiqueDescription');
+        $commit = $this->_db->prepare('DELETE FROM effetmagiquedescription WHERE idEffetMagiqueDescription = :idEffetMagiqueDescription');
         $commit->bindParam(':idEffetMagiqueDescription',$effetMagiqueDescription->idEffetMagiqueDescription, PDO::PARAM_INT);
 
         $this->modifierTableEtUlPosition($effetMagiqueDescription);
@@ -103,7 +103,7 @@ class EffetMagiqueDescriptionManager
         print_r($effetMagiqueDescription);
 
         $effetMagiqueDescriptionQuery = $this->_db->query('SELECT *
-                                                    FROM effetMagiqueDescription
+                                                    FROM effetmagiquedescription
                                                     WHERE idEffetMagique =' . $effetMagiqueDescription->idEffetMagique);
 
         $descriptions = $effetMagiqueDescriptionQuery->fetchAll(PDO::FETCH_ASSOC);

@@ -16,7 +16,7 @@ class EffetMagiqueDecouvertManager
         $idPersonnage = (int)$idPersonnage;
         $idObjet = (int)$idObjet;
         $effetMagiqueDecouvertQuery = $this->_db->query('SELECT *
-                                                    FROM effetDecouvert
+                                                    FROM effetdecouvert
                                                     WHERE idPersonnage = ' . $idPersonnage . '
                                                     AND idObjet = ' . $idObjet);
 
@@ -31,7 +31,7 @@ class EffetMagiqueDecouvertManager
     public function getAllEffetMagiqueDecouvert(int $idObjet)
     {
         $effetMagiqueDecouvertQuery = $this->_db->query('SELECT *
-                                                    FROM effetDecouvert
+                                                    FROM effetdecouvert
                                                     WHERE idObjet =' . $idObjet);
 
         $allEffetMagiqueDecouvert = [];
@@ -57,7 +57,7 @@ class EffetMagiqueDecouvertManager
 
 
         $result = $this->_db->query('SELECT *
-					FROM effetDecouvert 
+					FROM effetdecouvert 
                     WHERE idEffetMagiqueDecouvert=' . $decouvertIndex . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -81,7 +81,7 @@ class EffetMagiqueDecouvertManager
         $commit->execute();
 
         $result = $this->_db->query('SELECT *
-					FROM effetDecouvert 
+					FROM effetdecouvert 
                     WHERE idEffetMagiqueDecouvert=' . $effetMagiqueDecouvert->idEffetMagiqueDecouvert . '
                     ');
         $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
@@ -93,7 +93,7 @@ class EffetMagiqueDecouvertManager
 
     public function deleteEffetMagiqueDecouvert($effetMagiqueDecouvert)
     {
-        $commit = $this->_db->prepare('DELETE FROM effetDecouvert WHERE idEffetMagiqueDecouvert = :idEffetMagiqueDecouvert');
+        $commit = $this->_db->prepare('DELETE FROM effetdecouvert WHERE idEffetMagiqueDecouvert = :idEffetMagiqueDecouvert');
         $commit->bindParam(':idEffetMagiqueDecouvert', $effetMagiqueDecouvert->idEffetMagiqueDecouvert, PDO::PARAM_INT);
         $commit->execute();
         return $commit->rowCount();

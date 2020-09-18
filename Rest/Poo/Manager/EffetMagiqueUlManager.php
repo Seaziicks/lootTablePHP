@@ -15,7 +15,7 @@ class EffetMagiqueUlManager
     {
         $idEffetMagiqueUl = (int)$idEffetMagiqueUl;
         $effetMagiqueUlQuery = $this->_db->query('SELECT *
-                                                    FROM effetMagiqueUl
+                                                    FROM effetmagiqueul
                                                     WHERE idEffetMagiqueUl = ' . $idEffetMagiqueUl);
 
         $effetMagiqueUlFetched = $effetMagiqueUlQuery->fetch(PDO::FETCH_ASSOC);
@@ -28,7 +28,7 @@ class EffetMagiqueUlManager
     public function getAllEffetMagiqueUl(int $idEffetMagique)
     {
         $effetMagiqueUlQuery = $this->_db->query('SELECT *
-                                                    FROM effetMagiqueUl
+                                                    FROM effetmagiqueul
                                                     WHERE idEffetMagique =' . $idEffetMagique);
 
         $allEffetMagiqueUl = [];
@@ -127,7 +127,7 @@ class EffetMagiqueUlManager
 
     public function deleteEffetMagiqueUl($idEffetMagiqueUl)
     {
-        $commit = $this->_db->prepare('DELETE FROM effetMagiqueUl WHERE idEffetMagiqueUl = :idEffetMagiqueUl');
+        $commit = $this->_db->prepare('DELETE FROM effetmagiqueul WHERE idEffetMagiqueUl = :idEffetMagiqueUl');
         $commit->bindParam(':idEffetMagiqueUl',$idEffetMagiqueUl, PDO::PARAM_INT);
         $commit->execute();
         return $commit->rowCount();
@@ -146,7 +146,7 @@ class EffetMagiqueUlManager
     public function getAllEffetMagiqueUlBis(int $idEffetMagique)
     {
         $effetMagiqueUlQuery = $this->_db->query('SELECT *
-                                                    FROM effetMagiqueUl
+                                                    FROM effetmagiqueul
                                                     WHERE idEffetMagique =' . $idEffetMagique);
 
         $allEffetMagiqueUl = [];

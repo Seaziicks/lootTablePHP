@@ -15,7 +15,7 @@ class EffetMagiqueTableTitleManager
     {
         $idEffetMagiqueTableTitle = (int)$idEffetMagiqueTableTitle;
         $EffetMagiqueTableTitleQuery = $this->_db->query('SELECT *
-                                                    FROM EffetMagiqueTableTitle
+                                                    FROM effetmagiquetabletitle
                                                     WHERE idEffetMagiqueTableTitle = ' . $idEffetMagiqueTableTitle);
 
         $EffetMagiqueTableTitleFetched = $EffetMagiqueTableTitleQuery->fetch(PDO::FETCH_ASSOC);
@@ -27,7 +27,7 @@ class EffetMagiqueTableTitleManager
     public function getAllEffetMagiqueTableTitle(int $idEffetMagiqueTable)
     {
         $effetMagiqueTableTitleQuery = $this->_db->query('SELECT *
-                                                    FROM effetMagiqueTableTitle
+                                                    FROM effetmagiquetabletitle
                                                     WHERE idEffetMagiqueTable =' . $idEffetMagiqueTable);
 
         $allEffetMagiqueTableTitle = [];
@@ -87,7 +87,7 @@ class EffetMagiqueTableTitleManager
 
     public function deleteEffetMagiqueTableTitle($idEffetMagiqueTableTitle)
     {
-        $commit = $this->_db->prepare('DELETE FROM EffetMagiqueTableTitle WHERE idEffetMagiqueTableTitle = :idEffetMagiqueTableTitle');
+        $commit = $this->_db->prepare('DELETE FROM effetmagiquetabletitle WHERE idEffetMagiqueTableTitle = :idEffetMagiqueTableTitle');
         $commit->bindParam(':idEffetMagiqueTableTitle',$idEffetMagiqueTableTitle, PDO::PARAM_INT);
         $commit->execute();
         return $commit->rowCount();

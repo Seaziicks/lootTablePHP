@@ -4,7 +4,7 @@
 
 try
 {
-    $bdd = new PDO('mysql:host=localhost;dbname=loottable;charset=utf8', 'root', '');
+    $bdd = new PDO('mysql:host=localhost;dbname=u418341279_lootTable;charset=utf8', 'root', '');
 }
 
 catch(Exception $e)

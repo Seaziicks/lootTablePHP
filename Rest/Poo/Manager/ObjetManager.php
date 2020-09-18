@@ -104,12 +104,12 @@ class ObjetManager
         $commit->bindParam(':type',$objet->type, PDO::PARAM_STR);
         $commit->bindParam(':prix',$objet->prix, PDO::PARAM_INT);
         $commit->bindParam(':prixNonHumanoide',$objet->prixNonHumanoide, PDO::PARAM_INT);
-        $commit->bindParam(':devise',$objet->devise, PDO::PARAM_INT);
+        $commit->bindParam(':devise',$objet->devise, PDO::PARAM_STR);
         // $commit->bindParam(':idMalediction',$objet->idMalediction, PDO::PARAM_INT);
         $commit->bindParam(':categorie',$objet->categorie, PDO::PARAM_STR);
         // $commit->bindParam(':idMateriaux',$objet->idMateriaux, PDO::PARAM_INT);
         $commit->bindParam(':taille',$objet->taille, PDO::PARAM_STR);
-        $commit->bindParam(':degats',$objet->degats, PDO::PARAM_INT);
+        $commit->bindParam(':degats',$objet->degats, PDO::PARAM_STR);
         $commit->bindParam(':critique',$objet->critique, PDO::PARAM_STR);
         $commit->bindParam(':facteurPortee',$objet->facteurPortee, PDO::PARAM_STR);
         $commit->bindParam(':armure',$objet->armure, PDO::PARAM_INT);
@@ -122,6 +122,8 @@ class ObjetManager
         $commit->bindParam(':afficherMateriau',$objet->afficherMateriau, PDO::PARAM_BOOL);
         $commit->bindParam(':afficherInfos',$objet->afficherInfos, PDO::PARAM_BOOL);
         $commit->execute();
+
+        $commit->debugDumpParams();
 
         $result = $this->_db->query('SELECT *
 					from objet
@@ -170,8 +172,6 @@ class ObjetManager
     public function getObjetAsNonJSonBis($idObjet) {
         $unmodifiedObjet = $this->getObjet($idObjet);
         $Objet = json_decode(json_encode($unmodifiedObjet));
-
-
 
 
         $EffetMagiqueManager = new EffetMagiqueManager($this->_db);

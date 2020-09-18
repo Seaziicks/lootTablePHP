@@ -88,22 +88,17 @@ class Objet implements JsonSerializable
     }
 	public function setPrix($prix)
     {
-        if($prix) {
+        if($prix || intval($prix) === 0) {
             $prix = (float)$prix;
-
-            if ($prix > 0) {
-                $this->_prix = $prix;
-            }
+            $this->_prix = $prix;
         }
     }
 	public function setPrixNonHumanoide($prixNonHumanoide)
     {
-        if($prixNonHumanoide) {
+        if($prixNonHumanoide || intval($prixNonHumanoide) === 0) {
             $prixNonHumanoide = (float)$prixNonHumanoide;
+            $this->_prixNonHumanoide = $prixNonHumanoide;
 
-            if ($prixNonHumanoide > 0) {
-                $this->_prixNonHumanoide = $prixNonHumanoide;
-            }
         }
     }
 

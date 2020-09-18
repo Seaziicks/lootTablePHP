@@ -15,7 +15,7 @@ class EffetMagiqueManager
     {
         $idEffetMagique = (int)$idEffetMagique;
         $effetMagiqueQuery = $this->_db->query('SELECT *
-                                                    FROM effetMagique
+                                                    FROM effetmagique
                                                     WHERE idEffetMagique = ' . $idEffetMagique);
 
         $effetMagiqueFetched = $effetMagiqueQuery->fetch(PDO::FETCH_ASSOC);
@@ -26,7 +26,7 @@ class EffetMagiqueManager
     public function getAllEffetMagiqueForObjet($idObjet)
     {
         $effetMagiqueQuery = $this->_db->query('SELECT *
-                                                    FROM effetMagique
+                                                    FROM effetmagique
                                                     WHERE idObjet=' . $idObjet);
 
         $allEffetMagique = [];
@@ -84,7 +84,7 @@ class EffetMagiqueManager
 
     public function deleteEffetMagique($idEffetMagique)
     {
-        $commit = $this->_db->prepare('DELETE FROM effetMagique WHERE idEffetMagique = :idEffetMagique');
+        $commit = $this->_db->prepare('DELETE FROM effetmagique WHERE idEffetMagique = :idEffetMagique');
         $commit->bindParam(':idEffetMagique',$idEffetMagique, PDO::PARAM_INT);
         $commit->execute();
         return $commit->rowCount();
@@ -126,7 +126,7 @@ class EffetMagiqueManager
     public function getAllEffetMagiqueTableAsNotJSon($idObjet) {
         $EffetsMagiques = [];
         $effetMagiqueQuery = $this->_db->query('SELECT *
-                                                    FROM effetMagique
+                                                    FROM effetmagique
                                                     WHERE idObjet = ' . $idObjet);
 
         while($effetMagiqueFetched = $effetMagiqueQuery->fetch(PDO::FETCH_ASSOC)) {
@@ -138,7 +138,7 @@ class EffetMagiqueManager
     public function getAllEffetMagiqueTableAsNotJSonBis($idObjet) {
         $EffetsMagiques = [];
         $effetMagiqueQuery = $this->_db->query('SELECT *
-                                                    FROM effetMagique
+                                                    FROM effetmagique
                                                     WHERE idObjet = ' . $idObjet);
 
         while($effetMagiqueFetched = $effetMagiqueQuery->fetch(PDO::FETCH_ASSOC)) {

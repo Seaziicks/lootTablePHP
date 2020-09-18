@@ -15,7 +15,7 @@ class EffetMagiqueUlContentManager
     {
         $idEffetMagiqueUlContent = (int)$idEffetMagiqueUlContent;
         $EffetMagiqueUlContentQuery = $this->_db->query('SELECT *
-                                                    FROM EffetMagiqueUlContent
+                                                    FROM effetmagiqueulcontent
                                                     WHERE idEffetMagiqueUlContent = ' . $idEffetMagiqueUlContent);
 
         $EffetMagiqueUlContentFetched = $EffetMagiqueUlContentQuery->fetch(PDO::FETCH_ASSOC);
@@ -27,7 +27,7 @@ class EffetMagiqueUlContentManager
     public function getAllEffetMagiqueUlContent(int $idEffetMagiqueUl)
     {
         $effetMagiqueUlContentQuery = $this->_db->query('SELECT *
-                                                    FROM effetMagiqueUlContent
+                                                    FROM effetmagiqueulcontent
                                                     WHERE idEffetMagiqueUl =' . $idEffetMagiqueUl);
 
         $allEffetMagiqueUlContent = [];
@@ -88,7 +88,7 @@ class EffetMagiqueUlContentManager
 
     public function deleteEffetMagiqueUlContent($idEffetMagiqueUlContent)
     {
-        $commit = $this->_db->prepare('DELETE FROM effetMagiqueUlContent WHERE idEffetMagiqueUlContent = :idEffetMagiqueUlContent');
+        $commit = $this->_db->prepare('DELETE FROM effetmagiqueulcontent WHERE idEffetMagiqueUlContent = :idEffetMagiqueUlContent');
         $commit->bindParam(':idEffetMagiqueUlContent',$idEffetMagiqueUlContent, PDO::PARAM_INT);
         $commit->execute();
         return $commit->rowCount();
