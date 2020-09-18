@@ -156,7 +156,7 @@ class ObjetManager
 
         if (isset($Objet->idMalediction)) {
             unset($Objet->idMalediction);
-            $MaledictionManager = new Maledictionmanager($this->_db);
+            $MaledictionManager = new MaledictionManager($this->_db);
             $Objet->malediction = $MaledictionManager->getMaledictionAsNonJSon($unmodifiedObjet->_idMalediction);
         }
 
@@ -179,7 +179,7 @@ class ObjetManager
 
         if (isset($Objet->idMalediction)) {
             unset($Objet->idMalediction);
-            $MaledictionManager = new Maledictionmanager($this->_db);
+            $MaledictionManager = new MaledictionManager($this->_db);
             $Objet->malediction = $MaledictionManager->getMaledictionAsNonJSon($unmodifiedObjet->_idMalediction);
         }
 
