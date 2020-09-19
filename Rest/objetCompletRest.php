@@ -39,6 +39,8 @@ switch ($http_method) {
 
             $objet = $objetFetched=$objetsQuery->fetch(PDO::FETCH_ASSOC);
             $objet['idObjet'] = intval($objet['idObjet']);
+            $objet['idPersonnage'] = intval($objet['idPersonnage']);
+            $objet['afficherNom'] = boolval($objet['afficherNom']);
 
             $matchingData = $objet;
             http_response_code(200);
@@ -72,8 +74,9 @@ switch ($http_method) {
                                                 WHERE idPersonnage = ' . $_GET['idPersonnage'] . '');
             $names = [];
             while($objetFetched=$objetsQuery->fetch(PDO::FETCH_ASSOC)){
-                array_push($names, ["nom" => $objetFetched['nom'], "fauxNom" => $objetFetched['fauxNom'],
-                    "idObjet" => intval($objetFetched['idObjet']), "afficherNom" => boolval($objetFetched['afficherNom'])]);
+                array_push($names, ["idObjet" => intval($objetFetched['idObjet']), "idPersonnage" => intval($objetFetched['idPersonnage']),
+                    "nom" => $objetFetched['nom'], "fauxNom" => $objetFetched['fauxNom'],
+                    "afficherNom" => boolval($objetFetched['afficherNom'])]);
             }
             $matchingData = $names;
             http_response_code(200);
