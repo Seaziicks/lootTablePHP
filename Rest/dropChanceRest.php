@@ -57,6 +57,7 @@ switch ($http_method) {
             } catch (PDOException $e) {
                 deliver_responseRest(400, "dropChance add error in SQL", $sql . "<br>" . $e->getMessage());
             }
+
         } elseif (!(empty($_GET['idMonstre']) || empty($_GET['multipleInput'])) && filter_var($_GET['multipleInput'], FILTER_VALIDATE_BOOLEAN)) {
 
             $params = json_decode($_GET['Loot']);
