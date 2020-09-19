@@ -100,7 +100,7 @@ class EffetMagiqueDescriptionManager
 
     public function modifierTableEtUlPosition($effetMagiqueDescription) {
 
-        print_r($effetMagiqueDescription);
+        // print_r($effetMagiqueDescription);
 
         $effetMagiqueDescriptionQuery = $this->_db->query('SELECT *
                                                     FROM effetmagiquedescription
@@ -110,7 +110,7 @@ class EffetMagiqueDescriptionManager
 
         $position = array_search($effetMagiqueDescription->idEffetMagiqueDescription, array_column($descriptions, 'idEffetMagiqueDescription'));
 
-        print_r($position);
+        // print_r($position);
 
         $sql = "UPDATE effetmagiquetable
                 SET position = position - 1

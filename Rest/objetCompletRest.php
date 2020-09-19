@@ -33,7 +33,7 @@ switch ($http_method) {
         /// Récupération des critères de recherche envoyés par le Client
         if (isset($_GET['idObjet']) && isset($_GET['nameOnly']) && filter_var($_GET['nameOnly'], FILTER_VALIDATE_BOOLEAN)) {
             /// Récupération des critères de recherche envoyés par le Client
-            $objetsQuery = $bdd->query('SELECT nom, fauxNom, idObjet
+            $objetsQuery = $bdd->query('SELECT idObjet, idPersonnage, nom, fauxNom, afficherNom
                                                 FROM objet
                                                 WHERE idObjet = ' . $_GET['idObjet'] . '');
 
@@ -67,7 +67,7 @@ switch ($http_method) {
 
         } elseif (isset($_GET['idPersonnage']) && isset($_GET['namesOnly']) && filter_var($_GET['namesOnly'], FILTER_VALIDATE_BOOLEAN)) {
             /// Récupération des critères de recherche envoyés par le Client
-            $objetsQuery = $bdd->query('SELECT nom, fauxNom, idObjet, afficherNom
+            $objetsQuery = $bdd->query('SELECT idObjet, idPersonnage, nom, fauxNom, afficherNom
                                                 FROM objet
                                                 WHERE idPersonnage = ' . $_GET['idPersonnage'] . '');
             $names = [];
@@ -119,7 +119,7 @@ switch ($http_method) {
     case "DELETE":
         try {
             $objet = json_decode($_GET['Objet'])->Objet;
-            print_r($objet);
+            // print_r($objet);
             $rowCount = $ObjetManager->deleteObjet($objet->idObjet);
 
             if( ! $rowCount ) {

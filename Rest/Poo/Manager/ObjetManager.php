@@ -88,7 +88,7 @@ class ObjetManager
     {
         $objet = json_decode($objetData)->Objet;
         $sql = "UPDATE objet 
-                SET nom = :nom, fauxNom = :fauxNom, bonus = :bonus, type = :type, prix = :prix,
+                SET idPersonnage = :idPersonnage, nom = :nom, fauxNom = :fauxNom, bonus = :bonus, type = :type, prix = :prix,
                 prixNonHumanoide = :prixNonHumanoide, devise = :devise, categorie = :categorie,
                 taille = :taille, degats = :degats, critique = :critique, facteurPortee = :facteurPortee,
                 armure = :armure, bonusDexteriteMax = :bonusDexteriteMax, malusArmureTests = :malusArmureTests, risqueEchecSorts = :risqueEchecSorts,
@@ -98,6 +98,7 @@ class ObjetManager
 
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $commit->bindParam(':idObjet',$objet->idObjet, PDO::PARAM_INT);
+        $commit->bindParam(':idPersonnage',$objet->idPersonnage, PDO::PARAM_INT);
         $commit->bindParam(':nom',$objet->nom, PDO::PARAM_STR);
         $commit->bindParam(':fauxNom',$objet->fauxNom, PDO::PARAM_STR);
         $commit->bindParam(':bonus',$objet->bonus, PDO::PARAM_INT);
@@ -123,7 +124,7 @@ class ObjetManager
         $commit->bindParam(':afficherInfos',$objet->afficherInfos, PDO::PARAM_BOOL);
         $commit->execute();
 
-        $commit->debugDumpParams();
+        // $commit->debugDumpParams();
 
         $result = $this->_db->query('SELECT *
 					FROM objet

@@ -55,6 +55,13 @@ switch ($http_method){
 
             http_response_code(200);
             /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Et voilà la fine équipe, avec tous leurs attributs !", $personnages);
+        } elseif (!empty($_GET['withStatistique']) && !filter_var($_GET['withStatistique'],FILTER_VALIDATE_BOOLEAN)) {
+            $PersonnageManager = new PersonnageManager($bdd);
+            $personnages = $PersonnageManager->getAllPersonnage();
+
+            http_response_code(200);
+            /// Envoi de la réponse au Client
             deliver_responseRest(200, "Et voilà la fine équipe !", $personnages);
         }
         break;
