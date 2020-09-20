@@ -73,6 +73,9 @@ class ObjetManager
         $commit->bindParam(':afficherMateriau',$objet->afficherMateriau, PDO::PARAM_BOOL);
         $commit->bindParam(':afficherInfos',$objet->afficherInfos, PDO::PARAM_BOOL);
         $commit->execute();
+
+        // $commit->debugDumpParams();
+
         $result = $this->_db->query('SELECT *
 					FROM objet 
                     where idObjet=' . $this->_db->lastInsertId() . '
