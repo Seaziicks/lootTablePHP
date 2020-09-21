@@ -22,11 +22,7 @@ class Personnage implements JsonSerializable
 	public function setIdPersonnage($idPersonnage)
     {
         $idPersonnage = (int) $idPersonnage;
-
-        if ($idPersonnage > 0)
-        {
-            $this->_idPersonnage = $idPersonnage;
-        }
+        $this->_idPersonnage = $idPersonnage;
     }
 
 	public function setNom($nom)
