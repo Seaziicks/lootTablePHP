@@ -53,49 +53,63 @@ switch ($http_method){
         break;
 
     case "POST":
-        try {
-            $progression = json_decode($_GET['Progression'])->Progression;
-            $sql = "INSERT INTO `progressionpersonnage` (`niveau`,`statistiques`,`nombreStatistiques`,`pointCompetence`,`nombrePointsCompetences`) 
+        $progression = json_decode($_GET['ProgressionPersonnage'])->ProgressionPersonnage;
+
+        $sql = 'SELECT *
+                FROM progressionpersonnage
+                WHERE niveau = :niveau';
+
+        $progressionPersonnageNiveauExistQuery = $bdd->prepare($sql);
+        $progressionPersonnageNiveauExistQuery->bindParam(':niveau',$progression->niveau, PDO::PARAM_INT);
+        $progressionPersonnageNiveauExistQuery->execute();
+
+        if ($progressionPersonnageNiveauExistQuery->fetch()) {
+            http_response_code(409);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(409, "Cette progression est déjà définie.", '');
+        } else {
+            try {
+                $sql = "INSERT INTO `progressionpersonnage` (`niveau`,`statistiques`,`nombreStatistiques`,`pointCompetence`,`nombrePointsCompetences`) 
                                         VALUES (:niveau, :statistiques, :nombreStatistiques, :pointCompetence, :nombrePointsCompetences)";
 
-            $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-            $commit->bindParam(':niveau',$progression->niveau, PDO::PARAM_INT);
-            $commit->bindParam(':statistiques',$progression->statistiques, PDO::PARAM_BOOL);
-            $commit->bindParam(':nombreStatistiques',$progression->nombreStatistiques, PDO::PARAM_INT);
-            $commit->bindParam(':pointCompetence',$progression->pointCompetence, PDO::PARAM_BOOL);
-            $commit->bindParam(':nombrePointsCompetences',$progression->nombrePointsCompetences, PDO::PARAM_INT);
-            $commit->execute();
+                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
+                $commit->bindParam(':statistiques', $progression->statistiques, PDO::PARAM_BOOL);
+                $commit->bindParam(':nombreStatistiques', $progression->nombreStatistiques, PDO::PARAM_INT);
+                $commit->bindParam(':pointCompetence', $progression->pointCompetence, PDO::PARAM_BOOL);
+                $commit->bindParam(':nombrePointsCompetences', $progression->nombrePointsCompetences, PDO::PARAM_INT);
+                $commit->execute();
 
-            // $commit->debugDumpParams();
+                // $commit->debugDumpParams();
 
-            $result = $bdd->query('SELECT *
-					FROM malediction 
-                    where idMalediction=' . $bdd->lastInsertId() . '
+                $result = $bdd->query('SELECT *
+					FROM progressionpersonnage 
+                    where idProgressionPersonnage=' . $bdd->lastInsertId() . '
                     ');
-            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-            $result->closeCursor();
-            $bdd = null;
+                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                $result->closeCursor();
+                $bdd = null;
 
-            http_response_code(201);
-            deliver_responseRest(201, "progression added", $fetchedResult);
-        } catch (PDOException $e) {
-            deliver_responseRest(400, "progression add error in SQL", $sql . "<br>" . $e->getMessage());
+                http_response_code(201);
+                deliver_responseRest(201, "progression added", $fetchedResult);
+            } catch (PDOException $e) {
+                deliver_responseRest(400, "progression add error in SQL", $sql . "<br>" . $e->getMessage());
+            }
         }
         break;
     case "PUT":
         if (!(empty($_GET['idProgressionPersonnage']))) {
             try {
-                $progression = json_decode($_GET['Progression'])->Progression;
+                $progression = json_decode($_GET['ProgressionPersonnage'])->ProgressionPersonnage;
                 $sql = "UPDATE progressionpersonnage 
-                SET niveau = :niveau, 
-                statistiques = :statistiques,
+                SET statistiques = :statistiques,
                 nombreStatistiques = :nombreStatistiques,
                 pointCompetence = :pointCompetence,
                 nombrePointsCompetences = :nombrePointsCompetences
-                WHERE idProgressionPersonnage = :idProgressionPersonnage";
+                WHERE niveau = :niveau";
 
-                $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $commit->bindParam(':idProgressionPersonnage',$progression->idProgressionPersonnage, PDO::PARAM_INT);
+                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                // $commit->bindParam(':idProgressionPersonnage',$progression->idProgressionPersonnage, PDO::PARAM_INT);
                 $commit->bindParam(':niveau',$progression->niveau, PDO::PARAM_INT);
                 $commit->bindParam(':statistiques',$progression->statistiques, PDO::PARAM_BOOL);
                 $commit->bindParam(':nombreStatistiques',$progression->nombreStatistiques, PDO::PARAM_INT);
@@ -103,14 +117,14 @@ switch ($http_method){
                 $commit->bindParam(':nombrePointsCompetences',$progression->nombrePointsCompetences, PDO::PARAM_INT);
                 $commit->execute();
 
-                $result = $this->_db->query('SELECT *
+                $result = $bdd->query('SELECT *
 					FROM progressionpersonnage
                     where idProgressionPersonnage='.$progression->idProgressionPersonnage);
                 $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
                 $result->closeCursor();
                 $bdd = null;
                 http_response_code(201);
-                deliver_responseRest(201, "progression modified", $malediction);
+                deliver_responseRest(201, "progression modified", $fetchedResult);
             } catch (PDOException $e) {
                 deliver_responseRest(400, "progression modification error in SQL", $sql . "<br>" . $e->getMessage());
             }
@@ -119,9 +133,9 @@ switch ($http_method){
         break;
     case "DELETE":
         try {
-            $progression = json_decode($_GET['Progression'])->Progression;
-            $commit = $this->_db->prepare('DELETE FROM progressionpersonnage WHERE idProgressionPersonnage = :idProgressionPersonnage');
-            $commit->bindParam(':idProgressionPersonnage',$progression->idProgressionPersonnage, PDO::PARAM_INT);
+            $progression = json_decode($_GET['ProgressionPersonnage'])->ProgressionPersonnage;
+            $commit = $bdd->prepare('DELETE FROM progressionpersonnage WHERE niveau = :niveau');
+            $commit->bindParam(':niveau',$progression->niveau, PDO::PARAM_INT);
             $commit->execute();
             $rowCount = $commit->rowCount();
 
