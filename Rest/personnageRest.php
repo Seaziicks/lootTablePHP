@@ -91,8 +91,9 @@ switch ($http_method){
             } catch (PDOException $e) {
                 deliver_responseRest(400, "personnage modification error in SQL", $sql . "<br>" . $e->getMessage());
             }
+        } else {
+            deliver_responseRest(400, "personnage modification error, missing idPersonnage", '');
         }
-        deliver_responseRest(400, "personnage modification error, missing idPersonnage", $sql . "<br>" . $e->getMessage());
         break;
 }
 /// Envoi de la réponse au Client

@@ -40,16 +40,40 @@ switch ($http_method){
 
             $statistiqueQuery = $bdd->query('SELECT *
 					FROM monte 
-                    where idPersonnage='.$_GET['idPersonnage']);
+                    WHERE idPersonnage='.$_GET['idPersonnage'].'
+                    ORDER BY niveau DESC');
+
             $statistiques = [];
+            $statistique = [];
+            $niveauCourant = null;
+
             while($statistiqueFetched = $statistiqueQuery->fetch(PDO::FETCH_ASSOC)) {
-                if(empty($statistiques[$statistiqueFetched['niveau']]))
-                    foreach($statistiquesNames as $statistiqueName) {
-                        $statistiques[$statistiqueFetched['niveau']][$statistiqueName['libelle']] = 0;
+                if (intval($statistiqueFetched['niveau']) !== $niveauCourant) {
+                    if ($statistique)
+                        array_push($statistiques, $statistique);
+                    $statistique = [];
+                    $niveauCourant = intval($statistiqueFetched['niveau']);
+                    $statistique['niveau'] = $niveauCourant;
+                    foreach ($statistiquesNames as $statistiqueName) {
+                        $statistique[$statistiqueName['libelle']] = 0;
                     }
+                }
                 $currentStatistiqueName = $statistiquesNames[array_search($statistiqueFetched['idStatistique'], array_column($statistiquesNames, 'idStatistique'))]['libelle'];
-                $statistiques[$statistiqueFetched['niveau']][$currentStatistiqueName] = intval($statistiqueFetched['valeur']);
+                $statistique[$currentStatistiqueName] = intval($statistiqueFetched['valeur']);
             }
+            if (!array_search($statistique, $statistiques))
+                array_push($statistiques, $statistique);
+
+/*
+            for ($i = 0 ; $i < count($statistiques); $i++) {
+                $statistiques[$i]['vitalite'] += $statistiques[$i]['vitaliteNaturelle'] + $statistiques[$i]['deVitalite'];
+                $statistiques[$i]['mana'] += $statistiques[$i]['manaNaturel'] + $statistiques[$i]['deMana'];
+                unset($statistiques[$i]['vitaliteNaturelle']);
+                unset($statistiques[$i]['deVitalite']);
+                unset($statistiques[$i]['manaNaturel']);
+                unset($statistiques[$i]['deMana']);
+            }
+*/
 
             $matchingData = $statistiques;
             http_response_code(200);

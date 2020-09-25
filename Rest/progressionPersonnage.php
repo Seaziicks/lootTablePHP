@@ -25,31 +25,52 @@ header("Content-Type:application/json");
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
 
-$MaledictionManager = new MaledictionManager($bdd);
-
 switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
+        if (!empty($_GET['niveau'])) {
+            $sql = 'SELECT *
+                FROM progressionpersonnage
+                WHERE niveau = :niveau';
 
-        $progressionPersonnageQuery = $bdd->query('SELECT *
-                FROM progressionpersonnage');
+            $progressionPersonnageNiveauQuery = $bdd->prepare($sql);
+            $progressionPersonnageNiveauQuery->bindParam(':niveau',$_GET['niveau'], PDO::PARAM_INT);
+            $progressionPersonnageNiveauQuery->execute();
 
-        $progressionPersonnage = [];
-        while($progressionPersonnageFetched =  $progressionPersonnageQuery->fetch(PDO::FETCH_ASSOC)) {
-            $progressionPersonnageFetched['idProgressionPersonnage'] = $progressionPersonnageFetched['idProgressionPersonnage'] ? intval($progressionPersonnageFetched['idProgressionPersonnage']) : null;
-            $progressionPersonnageFetched['niveau'] = intval($progressionPersonnageFetched['niveau']);
-            $progressionPersonnageFetched['statistiques'] = boolval($progressionPersonnageFetched['statistiques']);
-            $progressionPersonnageFetched['nombreStatistiques'] = intval($progressionPersonnageFetched['nombreStatistiques']);
-            $progressionPersonnageFetched['pointCompetence'] = boolval($progressionPersonnageFetched['pointCompetence']);
-            $progressionPersonnageFetched['nombrePointsCompetences'] = intval($progressionPersonnageFetched['nombrePointsCompetences']);
-            array_push($progressionPersonnage, $progressionPersonnageFetched);
+            $progressionPersonnageNiveauFetched = $progressionPersonnageNiveauQuery->fetch(PDO::FETCH_ASSOC);
+            $progressionPersonnageNiveauFetched['idProgressionPersonnage'] = $progressionPersonnageNiveauFetched['idProgressionPersonnage'] ? intval($progressionPersonnageNiveauFetched['idProgressionPersonnage']) : null;
+            $progressionPersonnageNiveauFetched['niveau'] = intval($progressionPersonnageNiveauFetched['niveau']);
+            $progressionPersonnageNiveauFetched['statistiques'] = boolval($progressionPersonnageNiveauFetched['statistiques']);
+            $progressionPersonnageNiveauFetched['nombreStatistiques'] = intval($progressionPersonnageNiveauFetched['nombreStatistiques']);
+            $progressionPersonnageNiveauFetched['pointCompetence'] = boolval($progressionPersonnageNiveauFetched['pointCompetence']);
+            $progressionPersonnageNiveauFetched['nombrePointsCompetences'] = intval($progressionPersonnageNiveauFetched['nombrePointsCompetences']);
+
+            $matchingData = $progressionPersonnageNiveauFetched;
+            http_response_code(200);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Voilà comment vous êtes sensé vous développer. C'est pas fameux.", $matchingData);
+
+        } else {
+            $progressionPersonnageQuery = $bdd->query('SELECT *
+                FROM progressionpersonnage
+                ORDER BY niveau DESC');
+
+            $progressionPersonnage = [];
+            while ($progressionPersonnageFetched = $progressionPersonnageQuery->fetch(PDO::FETCH_ASSOC)) {
+                $progressionPersonnageFetched['idProgressionPersonnage'] = $progressionPersonnageFetched['idProgressionPersonnage'] ? intval($progressionPersonnageFetched['idProgressionPersonnage']) : null;
+                $progressionPersonnageFetched['niveau'] = intval($progressionPersonnageFetched['niveau']);
+                $progressionPersonnageFetched['statistiques'] = boolval($progressionPersonnageFetched['statistiques']);
+                $progressionPersonnageFetched['nombreStatistiques'] = intval($progressionPersonnageFetched['nombreStatistiques']);
+                $progressionPersonnageFetched['pointCompetence'] = boolval($progressionPersonnageFetched['pointCompetence']);
+                $progressionPersonnageFetched['nombrePointsCompetences'] = intval($progressionPersonnageFetched['nombrePointsCompetences']);
+                array_push($progressionPersonnage, $progressionPersonnageFetched);
+            }
+            $matchingData = $progressionPersonnage;
+            http_response_code(200);
+            /// Envoi de la réponse au Client
+            deliver_responseRest(200, "Voilà comment vous êtes sensé vous développer. C'est pas fameux.", $matchingData);
         }
-        $matchingData = $progressionPersonnage;
-        http_response_code(200);
-        /// Envoi de la réponse au Client
-        deliver_responseRest(200, "Voilà comment vous êtes sensé vous développer. C'est pas fameux.", $matchingData);
-
         break;
 
     case "POST":

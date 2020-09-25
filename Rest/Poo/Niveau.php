@@ -1,59 +1,60 @@
 <?php
 
 
-class Personnage implements JsonSerializable
+class Niveau
 {
     public
+        $_idNiveau,
         $_idPersonnage,
-        $_nom,
         $_niveau,
-        $_niveauEnAttente,
         $_intelligence = 0,
         $_force = 0,
         $_agilite = 0,
         $_sagesse = 0,
         $_constitution = 0,
         $_vitalite = 0,
+        $_deVitalite = 0,
+        $_vitaliteNaturelle = 0,
         $_mana = 0,
-        $_deVitaliteNaturelle,
-        $_deManaNaturel;
+        $_deMana = 0,
+        $_manaNaturel = 0;
 
-	public function __construct(array $donnees)
+    public function __construct(array $donnees)
     {
         $this->hydrate($donnees);
     }
-	public function setIdPersonnage($idPersonnage)
-    {
-        $idPersonnage = (int) $idPersonnage;
-        $this->_idPersonnage = $idPersonnage;
-    }
 
-	public function setNom($nom)
+    public function setIdNiveau($idNiveau)
     {
-        if (is_string($nom))
+        $idNiveau = (int) $idNiveau;
+
+        if ($idNiveau > 0)
         {
-            $this->_nom = $nom;
+            $this->_idNiveau = $idNiveau;
         }
     }
 
-	public function setNiveau($niveau)
+    public function setIdPersonnage($idPersonnage)
+    {
+        $idPersonnage = (int) $idPersonnage;
+
+        if ($idPersonnage > 0)
+        {
+            $this->_idPersonnage = $idPersonnage;
+        }
+    }
+
+    public function settitle($title)
+    {
+        if (is_string($title))
+        {
+            $this->_title = $title;
+        }
+    }
+
+    public function setNiveau($niveau)
     {
         $this->_niveau = (int)$niveau;
-    }
-
-    public function setNiveauEnAttente($niveauEnAttente)
-    {
-        $this->_niveauEnAttente = (int)$niveauEnAttente;
-    }
-
-    public function setDeVitaliteNaturelle($deVitaliteNaturelle)
-    {
-        $this->_deVitaliteNaturelle = (int)$deVitaliteNaturelle;
-    }
-
-    public function setDeManaNaturel($deManaNaturel)
-    {
-        $this->_deManaNaturel = (int)$deManaNaturel;
     }
 
     public function setIntelligence($intelligence)
@@ -86,12 +87,37 @@ class Personnage implements JsonSerializable
         $this->_vitalite = (int)$vitalite;
     }
 
+    public function setDeVitalite($deVitalite)
+    {
+        $this->_deVitalite = (int)$deVitalite;
+    }
+
+    public function setVitaliteNaturelle($_vitaliteNaturelle)
+    {
+        $this->_vitaliteNaturelle = (int)$_vitaliteNaturelle;
+    }
+
     public function setMana($mana)
     {
         $this->_mana = (int)$mana;
     }
 
-	public function hydrate(array $donnees)
+    public function setDeMana($deMana)
+    {
+        $this->_deMana = (int)$deMana;
+    }
+
+    public function setManaNaturel($manaNaturel)
+    {
+        $this->_manaNaturel = (int)$manaNaturel;
+    }
+
+    public function getNbStatistique() {
+        return $this->_mana + $this->_vitalite + $this->_constitution + $this->_sagesse + $this->_intelligence +
+            $this->_agilite + $this->_force;
+    }
+
+    public function hydrate(array $donnees)
     {
         foreach ($donnees as $key => $value)
         {
@@ -110,20 +136,20 @@ class Personnage implements JsonSerializable
     public function jsonSerialize()
     {
         return [
+            'idNiveau' => $this->_idNiveau,
             'idPersonnage' => $this->_idPersonnage,
-            'nom' => $this->_nom,
             'niveau' => $this->_niveau,
-            'niveauEnAttente' => $this->_niveauEnAttente,
             'intelligence' => $this->_intelligence,
             'force' => $this->_force,
             'agilite' => $this->_agilite,
             'sagesse' => $this->_sagesse,
             'constitution' => $this->_constitution,
             'vitalite' => $this->_vitalite,
+            'deVitalite' => $this->_deVitalite,
+            'vitaliteNaturelle' => $this->_vitaliteNaturelle,
             'mana' => $this->_mana,
-            'deVitaliteNaturelle' => $this->_deVitaliteNaturelle,
-            'deManaNaturel' => $this->_deManaNaturel,
+            'deMana' => $this->_deMana,
+            'manaNaturel' => $this->_manaNaturel,
         ];
     }
-
 }

@@ -49,8 +49,17 @@ class PersonnageManager
 
         while($personnageFetched = $personnageQuery->fetch(PDO::FETCH_ASSOC)) {
             $attribute = '_'.strtolower($personnageFetched['libelle']);
-            $personnage->$attribute += $personnageFetched['valeur'];
+            if (property_exists($personnage, $attribute))
+                $personnage->$attribute += $personnageFetched['valeur'];
+            
+            if ($attribute === "_devitalite" || $attribute === "_vitalitenaturelle") {
+                $personnage->_vitalite += intval($personnageFetched['valeur']);
+            } elseif ($attribute === "_demana" || $attribute === "_mananaturel") {
+                $personnage->_mana += intval($personnageFetched['valeur']);
+            }
+
         }
+
 
         return $personnage;
     }
