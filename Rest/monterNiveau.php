@@ -31,15 +31,15 @@ $NiveauManager = new NiveauManager($bdd);
 
 switch ($http_method) {
     /// Cas de la méthode POST
-    case "GET":
+    case "POST":
         if (!(empty($_GET['idPersonnage'])) && !empty($_GET['Niveau'])) {
             try {
 
-                $personnage = $PersonnageManager->getPersonnage($_GET['idPersonnage']);
+                $personnage = $PersonnageManager->getPersonnageAvecStatistiques($_GET['idPersonnage']);
 
                 if ($personnage->_niveauEnAttente > 0) {
 
-                    $niveau = new Niveau(json_decode($_GET['Niveau'])->Niveau);
+                    $niveau = new Niveau((array) json_decode($_GET['Niveau'])->Niveau);
 
                     if ($niveau->niveau = $personnage->_niveau + 1) {
 
@@ -49,7 +49,7 @@ switch ($http_method) {
                                                     FROM progressionpersonnage
                                                     WHERE niveau = :niveau';
 
-                        $progressionPersonnageNiveauQuery = $bdd->prepare($sqlProgresssionPersonnage);
+                        $progressionPersonnageNiveauQuery = $bdd->prepare($sqlProgresssionPersonnage, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
                         $progressionPersonnageNiveauQuery->bindParam(':niveau', $prochainNiveau, PDO::PARAM_INT);
                         $progressionPersonnageNiveauQuery->execute();
 
@@ -65,21 +65,23 @@ switch ($http_method) {
                             && $niveau->getNbStatistique() === $progressionPersonnageNiveauFetched['nombreStatistiques']
                             && $personnage->_deVitaliteNaturelle >= $niveau->_deVitalite && $personnage->_deManaNaturel >= $niveau->_deMana) {
 
-                            $vitaliteNaturelle = ((($personnage->_constitution + $niveau->_constitution) - 10) / 2);
+                            $vitaliteNaturelle =  intval(max(floor(((($personnage->_constitution + $niveau->_constitution) - 10) / 2)), 0));
 
                             $idPersonnage = $personnage->_idPersonnage;
                             $niveauNiveau = $niveau->_niveau;
                             $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'intelligence', $niveauNiveau, $niveau->_intelligence);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'force', $niveauNiveau, $niveau->_force);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'agilite', $niveauNiveau, $niveau->_agilite);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'sagesse', $niveauNiveau, $niveau->_sagesse);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'constitution', $niveauNiveau, $niveau->_constitution);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'vitalite', $niveauNiveau, $niveau->_vitalite);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'vitaliteNaturelle', $niveauNiveau, $vitaliteNaturelle);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'deVitalite', $niveauNiveau, $niveau->_deVitalite);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'mana', $niveauNiveau, $niveau->_mana);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'manaNaturel', $niveauNiveau, $niveau->_manaNaturel);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'deMana', $niveauNiveau, $niveau->_deMana);
+                            $insertForce = $NiveauManager->insertInto($idPersonnage, 'force', $niveauNiveau, $niveau->_force);
+                            $insertAgilite = $NiveauManager->insertInto($idPersonnage, 'agilite', $niveauNiveau, $niveau->_agilite);
+                            $insertSagesse = $NiveauManager->insertInto($idPersonnage, 'sagesse', $niveauNiveau, $niveau->_sagesse);
+                            $insertConstitution = $NiveauManager->insertInto($idPersonnage, 'constitution', $niveauNiveau, $niveau->_constitution);
+                            $insertVitalite = $NiveauManager->insertInto($idPersonnage, 'vitalite', $niveauNiveau, $niveau->_vitalite);
+                            $insertVitaliteNaturelle = $NiveauManager->insertInto($idPersonnage, 'vitaliteNaturelle', $niveauNiveau, $vitaliteNaturelle);
+                            $insertDeVitalite = $NiveauManager->insertInto($idPersonnage, 'deVitalite', $niveauNiveau, $niveau->_deVitalite);
+                            $insertMana = $NiveauManager->insertInto($idPersonnage, 'mana', $niveauNiveau, $niveau->_mana);
+                            $insertManaNaturel = $NiveauManager->insertInto($idPersonnage, 'manaNaturel', $niveauNiveau, $niveau->_manaNaturel);
+                            $insertDeMana = $NiveauManager->insertInto($idPersonnage, 'deMana', $niveauNiveau, $niveau->_deMana);
+
+
 
                             $result = $bdd->query('SELECT *
                                                         FROM niveau 
@@ -87,35 +89,69 @@ switch ($http_method) {
                                                         ');
                             $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
                             $result->closeCursor();
+
+
+                            $sqlModifierPersonnage = 'UPDATE personnage 
+                                                        SET niveau = niveau + 1, 
+                                                        niveauEnAttente = niveauEnAttente - 1 
+                                                        WHERE idPersonnage = :idPersonnage';
+
+                            $modifierPersonnage = $bdd->prepare($sqlModifierPersonnage, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                            $modifierPersonnage->bindParam(':idPersonnage', $idPersonnage, PDO::PARAM_INT);
+                            $modifierPersonnage->execute();
+
                             $bdd = null;
 
                             http_response_code(201);
-                            deliver_responseRest(201, $personnage->_nom . " gagne niveau.", $fetchedResult);
+                            deliver_responseRest(201, $personnage->_nom . " gagne un niveau.", $fetchedResult);
                         } elseif ((!$progressionPersonnageNiveauFetched['statistiques'] && $niveau->getNbStatistique() > 0)
                             || $niveau->_deVitalite > $personnage->_deVitaliteNaturelle || $niveau->_deMana > $personnage->_deManaNaturel) {
                             http_response_code(406);
                             deliver_responseRest(406, "Vous essayez de tricher mon bon monsieur. Mais je suis meilleur que vous !", '');
                         } else {
 
-                            $vitaliteNaturelle = (($personnage->_constitution - 10) / 2);
+
+                            $vitaliteNaturelle = intval(max(floor(($personnage->_constitution - 10) / 2), 0));
 
                             $idPersonnage = $personnage->_idPersonnage;
                             $niveauNiveau = $niveau->_niveau;
                             $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'intelligence', $niveauNiveau, 0);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'force', $niveauNiveau, 0);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'agilite', $niveauNiveau, 0);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'sagesse', $niveauNiveau, 0);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'constitution', $niveauNiveau, 0);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'vitalite', $niveauNiveau, 0);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'vitaliteNaturelle', $niveauNiveau, 0);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'deVitalite', $niveauNiveau, $niveau->_deVitalite);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'mana', $niveauNiveau, 0);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'manaNaturel', $niveauNiveau, 0);
-                            $insertIntelligence = $NiveauManager->insertInto($idPersonnage, 'deMana', $niveauNiveau, $niveau->_deMana);
+                            $insertForce = $NiveauManager->insertInto($idPersonnage, 'force', $niveauNiveau, 0);
+                            $insertAgilite = $NiveauManager->insertInto($idPersonnage, 'agilite', $niveauNiveau, 0);
+                            $insertSagesse = $NiveauManager->insertInto($idPersonnage, 'sagesse', $niveauNiveau, 0);
+                            $insertConstitution = $NiveauManager->insertInto($idPersonnage, 'constitution', $niveauNiveau, 0);
+                            $insertVitalite = $NiveauManager->insertInto($idPersonnage, 'vitalite', $niveauNiveau, 0);
+                            $insertVitaliteNaturelle = $NiveauManager->insertInto($idPersonnage, 'vitaliteNaturelle', $niveauNiveau, $vitaliteNaturelle);
+                            $insertDeVitalite = $NiveauManager->insertInto($idPersonnage, 'deVitalite', $niveauNiveau, $niveau->_deVitalite);
+                            $insertMana = $NiveauManager->insertInto($idPersonnage, 'mana', $niveauNiveau, 0);
+                            $insertManaNaturel = $NiveauManager->insertInto($idPersonnage, 'manaNaturel', $niveauNiveau, 0);
+                            $insertDeMana = $NiveauManager->insertInto($idPersonnage, 'deMana', $niveauNiveau, $niveau->_deMana);
+
+                            $result = $bdd->query('SELECT *
+                                                        FROM niveau 
+                                                        WHERE idNiveau=' . $bdd->lastInsertId() . '
+                                                        ');
+                            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                            $result->closeCursor();
+
+
+                            $sqlModifierPersonnage = 'UPDATE personnage 
+                                                        SET niveau = niveau + 1, 
+                                                        niveauEnAttente = niveauEnAttente - 1 
+                                                        WHERE idPersonnage = :idPersonnage';
+
+                            $modifierPersonnage = $bdd->prepare($sqlModifierPersonnage, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                            $modifierPersonnage->bindParam(':idPersonnage', $idPersonnage, PDO::PARAM_INT);
+                            $modifierPersonnage->execute();
+
+                            $bdd = null;
+
+                            http_response_code(201);
+                            deliver_responseRest(201, $personnage->_nom . " gagne un niveau.", $fetchedResult);
                         }
                     } else {
-                        http_response_code(400);
-                        deliver_responseRest(400, "Il peut progresser, mais pas de cette manière. Reformulez !", '');
+                        http_response_code(451);
+                        deliver_responseRest(451, "Il peut progresser, mais pas de cette manière. Reformulez !", '');
                     }
                 } else {
                     http_response_code(403);

@@ -169,6 +169,8 @@ class NiveauManager
         $idStatistiqueQuery->bindParam(':libelle', $libelle, PDO::PARAM_STR);
         $idStatistiqueQuery->execute();
 
+        // $idStatistiqueQuery->debugDumpParams();
+
         $idStatistiqueFetched = $idStatistiqueQuery->fetch(PDO::FETCH_ASSOC);
 
         $sqlInsert = 'INSERT INTO `monte` (idPersonnage, idStatistique, niveau, valeur) 
@@ -179,6 +181,8 @@ class NiveauManager
         $commit->bindParam(':niveau', $niveau, PDO::PARAM_INT);
         $commit->bindParam(':valeur', $valeur, PDO::PARAM_INT);
         $commit->execute();
+
+        // $commit->debugDumpParams();
 
         return $commit->fetch(PDO::FETCH_ASSOC);
     }
