@@ -31,6 +31,45 @@ $NiveauManager = new NiveauManager($bdd);
 
 switch ($http_method) {
     /// Cas de la méthode POST
+    case "GET":
+        if (!(empty($_GET['idPersonnage'])) && filter_var($_GET['monte'], FILTER_VALIDATE_BOOLEAN)) {
+
+            $sqlMonterNiveau = 'UPDATE personnage 
+                                SET niveauEnAttente = niveauEnAttente + 1 
+                                WHERE idPersonnage = :idPersonnage';
+
+            $monterNiveauQuery = $bdd->prepare($sqlMonterNiveau, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+            $monterNiveauQuery->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
+            $monterNiveauQuery->execute();
+
+            http_response_code(201);
+            deliver_responseRest(201, "Et 1 niveau pour la table n°" . $_GET['idPersonnage'] . ", 1 !", '');
+
+        } elseif (!(empty($_GET['idPersonnage'])) && !filter_var($_GET['monte'], FILTER_VALIDATE_BOOLEAN)) {
+
+            $personnage = $PersonnageManager->getPersonnage($_GET['idPersonnage']);
+
+            $sqlBaisserNiveau = '';
+            if ($personnage->_niveauEnAttente > 0) {
+                $sqlBaisserNiveau = 'UPDATE personnage 
+                                        SET niveauEnAttente = niveauEnAttente - 1 
+                                        WHERE idPersonnage = :idPersonnage';
+
+            } else {
+                $sqlBaisserNiveau = 'UPDATE personnage 
+                                        SET niveau = niveau - 1 
+                                        WHERE idPersonnage = :idPersonnage';
+            }
+
+            $monteeNiveauQuery = $bdd->prepare($sqlBaisserNiveau, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+            $monteeNiveauQuery->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
+            $monteeNiveauQuery->execute();
+
+            http_response_code(201);
+            deliver_responseRest(201, "Je crois que vous avez fait tomber quelque chose. Tant pis pour vous !", '');
+        }
+        break;
+    /// Cas de la méthode POST
     case "POST":
         if (!(empty($_GET['idPersonnage'])) && !empty($_GET['Niveau'])) {
             try {

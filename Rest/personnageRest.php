@@ -24,13 +24,15 @@ header("Content-Type:application/json");
 
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
+
+$PersonnageManager = new PersonnageManager($bdd);
+
 switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
         if (!empty($_GET['idPersonnage']) && !empty($_GET['withStatistique']) && filter_var($_GET['withStatistique'],FILTER_VALIDATE_BOOLEAN)) {
 
-            $PersonnageManager = new PersonnageManager($bdd);
             $personnage = $PersonnageManager->getPersonnageAvecStatistiques(1);
 
             http_response_code(200);
@@ -39,25 +41,22 @@ switch ($http_method){
 
         } elseif (!empty($_GET['idPersonnage'])) {
 
-            $personnageQuery = $bdd->query('SELECT *
-					FROM personnage 
-                    where idPersonnage ='.$_GET['idPersonnage']);
+            $personnage = $PersonnageManager->getPersonnage($_GET['idPersonnage']);
 
-            $personnage =  $personnageQuery->fetch(PDO::FETCH_ASSOC);
             $matchingData = $personnage;
             http_response_code(200);
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Bien le bonjour, voyageur. Je vous envoie un de mes meilleurs soldats !", $matchingData);
 
         } elseif (!empty($_GET['withStatistique']) && filter_var($_GET['withStatistique'],FILTER_VALIDATE_BOOLEAN)) {
-            $PersonnageManager = new PersonnageManager($bdd);
+
             $personnages = $PersonnageManager->getAllPersonnageAvecStatistiques();
 
             http_response_code(200);
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Et voilà la fine équipe, avec tous leurs attributs !", $personnages);
         } elseif (!empty($_GET['withStatistique']) && !filter_var($_GET['withStatistique'],FILTER_VALIDATE_BOOLEAN)) {
-            $PersonnageManager = new PersonnageManager($bdd);
+
             $personnages = $PersonnageManager->getAllPersonnage();
 
             http_response_code(200);
