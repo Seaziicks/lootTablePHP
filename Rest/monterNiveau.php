@@ -102,7 +102,7 @@ switch ($http_method) {
 
                         if ($progressionPersonnageNiveauFetched['statistiques']
                             && $niveau->getNbStatistique() === $progressionPersonnageNiveauFetched['nombreStatistiques']
-                            && $personnage->_deVitaliteNaturelle >= $niveau->_deVitalite && $personnage->_deManaNaturel >= $niveau->_deMana || $niveau->_niveau === 0) {
+                            && $personnage->_deVitaliteNaturelle >= $niveau->_deVitalite && $personnage->_deManaNaturel >= $niveau->_deMana || $niveau->_niveau === 1) {
 
                             $vitaliteNaturelle =  intval(max(floor(((($personnage->_constitution + $niveau->_constitution) - 10) / 2)), 0));
 
