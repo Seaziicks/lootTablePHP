@@ -80,7 +80,7 @@ switch ($http_method) {
 
                     $niveau = new Niveau((array) json_decode($_GET['Niveau'])->Niveau);
 
-                    if ($niveau->niveau = $personnage->_niveau + 1) {
+                    if ($niveau->_niveau === $personnage->_niveau + 1) {
 
                         $prochainNiveau = $personnage->_niveau + 1;
 
@@ -102,7 +102,7 @@ switch ($http_method) {
 
                         if ($progressionPersonnageNiveauFetched['statistiques']
                             && $niveau->getNbStatistique() === $progressionPersonnageNiveauFetched['nombreStatistiques']
-                            && $personnage->_deVitaliteNaturelle >= $niveau->_deVitalite && $personnage->_deManaNaturel >= $niveau->_deMana) {
+                            && $personnage->_deVitaliteNaturelle >= $niveau->_deVitalite && $personnage->_deManaNaturel >= $niveau->_deMana || $niveau->_niveau === 0) {
 
                             $vitaliteNaturelle =  intval(max(floor(((($personnage->_constitution + $niveau->_constitution) - 10) / 2)), 0));
 
