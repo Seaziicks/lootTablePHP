@@ -29,7 +29,7 @@ switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
-        if (!empty($_GET['idEffetMagiqueDescription'])) {
+        if (isset($_GET['idEffetMagiqueDescription'])) {
             $effetMagiqueDescriptionQuery = $bdd->query('SELECT *
 					FROM effetmagiquedescription 
                     where idEffetMagiqueDescription='.$_GET['idEffetMagiqueDescription']);

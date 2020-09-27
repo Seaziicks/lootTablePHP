@@ -59,7 +59,7 @@ switch ($http_method) {
         }
         break;
     case "PUT":
-        if (!empty($_GET['idFamilleMonstre'])) {
+        if (isset($_GET['idFamilleMonstre'])) {
             try {
                 $famille = json_decode($_GET['Famille']);
                 $sql = "UPDATE famillemonstre 

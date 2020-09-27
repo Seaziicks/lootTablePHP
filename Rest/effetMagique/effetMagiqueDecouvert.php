@@ -29,12 +29,12 @@ switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
-        if (!empty($_GET['idObjet']) && !empty($_GET['idPersonnage']) && !empty($_GET['allDecouverts']) && filter_var($_GET['allDecouverts'], FILTER_VALIDATE_BOOLEAN)) {
+        if (isset($_GET['idObjet']) && isset($_GET['idPersonnage']) && isset($_GET['allDecouverts']) && filter_var($_GET['allDecouverts'], FILTER_VALIDATE_BOOLEAN)) {
             $matchingData = $EffetMagiqueDecouvertManager->getAllEffetMagiqueDecouvert(intval($_GET['idObjet']));
             http_response_code(200);
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "C'est ce que vous avez réussi à découvrir, jusqu'à présent.", $matchingData);
-        } elseif (!empty($_GET['idObjet']) && !empty($_GET['idPersonnage'])) {
+        } elseif (isset($_GET['idObjet']) && isset($_GET['idPersonnage'])) {
             $matchingData = $EffetMagiqueDecouvertManager->getEffetMagiqueDecouvert(intval($_GET['idObjet']), intval($_GET['idPersonnage']));
             http_response_code(200);
             /// Envoi de la réponse au Client

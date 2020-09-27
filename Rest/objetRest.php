@@ -47,7 +47,7 @@ switch ($http_method) {
         }
         break;
     case "PUT":
-        if (!empty($_GET['idObjet']) && !empty($_GET['idMalediction'])) {
+        if (isset($_GET['idObjet']) && isset($_GET['idMalediction'])) {
             $sql = "UPDATE objet 
                 SET idMalediction = :idMalediction
                 WHERE idObjet = :idObjet;";
@@ -66,7 +66,7 @@ switch ($http_method) {
             $bdd = null;
             http_response_code(201);
             deliver_responseRest(201, "objet malediction modified", $fetchedResult);
-        } elseif (!empty($_GET['idObjet']) && !empty($_GET['idMateriaux'])) {
+        } elseif (isset($_GET['idObjet']) && isset($_GET['idMateriaux'])) {
             $sql = "UPDATE objet 
                 SET idMateriaux = :idMateriaux
                 WHERE idObjet = :idObjet;";
@@ -86,7 +86,7 @@ switch ($http_method) {
             http_response_code(201);
             deliver_responseRest(201, "objet materiau modified", $fetchedResult);
         }
-        elseif (!empty($_GET['idObjet'])) {
+        elseif (isset($_GET['idObjet'])) {
             try {
                 $objet = $ObjetManager->updateObjet($_GET['Objet']);
                 http_response_code(201);

@@ -31,7 +31,7 @@ switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
-        if (!empty($_GET['idPersonnage']) && !empty($_GET['withStatistique']) && filter_var($_GET['withStatistique'],FILTER_VALIDATE_BOOLEAN)) {
+        if (isset($_GET['idPersonnage']) && isset($_GET['withStatistique']) && filter_var($_GET['withStatistique'],FILTER_VALIDATE_BOOLEAN)) {
 
             $personnage = $PersonnageManager->getPersonnageAvecStatistiques(1);
 
@@ -39,7 +39,7 @@ switch ($http_method){
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Regardez moi ce monstre, ces muscles, cette intelligence, cette puissance !", $personnage);
 
-        } elseif (!empty($_GET['idPersonnage'])) {
+        } elseif (isset($_GET['idPersonnage'])) {
 
             $personnage = $PersonnageManager->getPersonnage($_GET['idPersonnage']);
 
@@ -48,14 +48,14 @@ switch ($http_method){
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Bien le bonjour, voyageur. Je vous envoie un de mes meilleurs soldats !", $matchingData);
 
-        } elseif (!empty($_GET['withStatistique']) && filter_var($_GET['withStatistique'],FILTER_VALIDATE_BOOLEAN)) {
+        } elseif (isset($_GET['withStatistique']) && filter_var($_GET['withStatistique'],FILTER_VALIDATE_BOOLEAN)) {
 
             $personnages = $PersonnageManager->getAllPersonnageAvecStatistiques();
 
             http_response_code(200);
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Et voilà la fine équipe, avec tous leurs attributs !", $personnages);
-        } elseif (!empty($_GET['withStatistique']) && !filter_var($_GET['withStatistique'],FILTER_VALIDATE_BOOLEAN)) {
+        } elseif (isset($_GET['withStatistique']) && !filter_var($_GET['withStatistique'],FILTER_VALIDATE_BOOLEAN)) {
 
             $personnages = $PersonnageManager->getAllPersonnage();
 
@@ -66,7 +66,7 @@ switch ($http_method){
         break;
 
     case "POST":
-        if (!(empty($_GET['idPersonnage']))) {
+        if (isset($_GET['idPersonnage'])) {
             try {
                 $sql = "UPDATE personnage 
                 SET nom = :nom, 

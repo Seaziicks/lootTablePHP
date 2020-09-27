@@ -80,7 +80,7 @@ switch ($http_method) {
         }
         break;
     case "PUT":
-        if (!empty($_GET['idMateriaux'])) {
+        if (isset($_GET['idMateriaux'])) {
             try {
                 $materiau = $MateriauxManager->updateMateriaux($_GET['Materiaux']);
                 http_response_code(201);

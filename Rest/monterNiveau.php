@@ -45,7 +45,7 @@ switch ($http_method) {
             http_response_code(201);
             deliver_responseRest(201, "Et 1 niveau pour la table n°" . $_GET['idPersonnage'] . ", 1 !", '');
 
-        } elseif (!(empty($_GET['idPersonnage'])) && !filter_var($_GET['monte'], FILTER_VALIDATE_BOOLEAN)) {
+        } elseif (isset($_GET['idPersonnage']) && !filter_var($_GET['monte'], FILTER_VALIDATE_BOOLEAN)) {
 
             $personnage = $PersonnageManager->getPersonnage($_GET['idPersonnage']);
 
@@ -71,7 +71,7 @@ switch ($http_method) {
         break;
     /// Cas de la méthode POST
     case "POST":
-        if (!(empty($_GET['idPersonnage'])) && !empty($_GET['Niveau'])) {
+        if (isset($_GET['idPersonnage']) && isset($_GET['Niveau'])) {
             try {
 
                 $personnage = $PersonnageManager->getPersonnageAvecStatistiques($_GET['idPersonnage']);

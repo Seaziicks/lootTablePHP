@@ -29,7 +29,7 @@ switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
-        if (!empty($_GET['niveau'])) {
+        if (isset($_GET['niveau'])) {
             $sql = 'SELECT *
                 FROM progressionpersonnage
                 WHERE niveau = :niveau';
@@ -69,7 +69,7 @@ switch ($http_method){
             $matchingData = $progressionPersonnage;
             http_response_code(200);
             /// Envoi de la réponse au Client
-            deliver_responseRest(200, "Voilà comment vous êtes sensé vous développer. C'est pas fameux.", $matchingData);
+            deliver_responseRest(200, "Vous avez devant vous le reste de votre vie.", $matchingData);
         }
         break;
 
@@ -119,7 +119,7 @@ switch ($http_method){
         }
         break;
     case "PUT":
-        if (!(empty($_GET['idProgressionPersonnage']))) {
+        if (isset($_GET['idProgressionPersonnage'])) {
             try {
                 $progression = json_decode($_GET['ProgressionPersonnage'])->ProgressionPersonnage;
                 $sql = "UPDATE progressionpersonnage 

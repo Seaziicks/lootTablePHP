@@ -11,7 +11,7 @@ switch ($http_method) {
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
-        if (!empty($_GET['idMonstre'])) {
+        if (isset($_GET['idMonstre'])) {
             try {
 
                 $lootsQuery = $bdd->query('SELECT d.idLoot, l.libelle, d.minRoll, d.maxRoll, d.niveauMonstre, d.multiplier, d.dicePower, l.poids

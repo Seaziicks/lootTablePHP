@@ -11,7 +11,7 @@ switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
-        if (!empty($_GET['idPersonnage']) && (empty($_GET['details']) || !filter_var($_GET['details'],FILTER_VALIDATE_BOOLEAN))) {
+        if (isset($_GET['idPersonnage']) && (empty($_GET['details']) || !filter_var($_GET['details'],FILTER_VALIDATE_BOOLEAN))) {
             $statistiqueQuery = $bdd->query('SELECT *
 					FROM monte 
                     where idPersonnage='.$_GET['idPersonnage']);
@@ -33,7 +33,7 @@ switch ($http_method){
             http_response_code(200);
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Vous désirez consulter votre compte en statistique ?", $matchingData);
-        } elseif (!empty($_GET['idPersonnage']) && !empty($_GET['details']) && filter_var($_GET['details'],FILTER_VALIDATE_BOOLEAN)) {
+        } elseif (isset($_GET['idPersonnage']) && isset($_GET['details']) && filter_var($_GET['details'],FILTER_VALIDATE_BOOLEAN)) {
 
             $statistiquesNameQuery = $bdd->query('SELECT * FROM statistique');
             $statistiquesNames = $statistiquesNameQuery->fetchAll(PDO::FETCH_ASSOC);

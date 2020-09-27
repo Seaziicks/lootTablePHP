@@ -31,7 +31,7 @@ switch ($http_method){
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
-        if (!empty($_GET['idMalediction'])) {
+        if (isset($_GET['idMalediction'])) {
             $maledictionQuery = $bdd->query('SELECT *
 					FROM malediction 
                     where idMalediction='.$_GET['idMalediction']);
@@ -69,7 +69,7 @@ switch ($http_method){
         }
         break;
     case "PUT":
-        if (!(empty($_GET['idMalediction']))) {
+        if (isset($_GET['idMalediction'])) {
             try {
                 $malediction = $MaledictionManager->updateMalediction($_GET['Malediction']);
                 http_response_code(201);
