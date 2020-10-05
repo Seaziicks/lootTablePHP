@@ -35,7 +35,7 @@ switch ($http_method){
                 WHERE idPersonnage = :idPersonnage
                 ORDER BY idCompetenceParente';
 
-            $competencesQuery = $bdd->prepare($sql);
+            $competencesQuery = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
             $competencesQuery->bindParam(':idPersonnage',$_GET['idPersonnage'], PDO::PARAM_INT);
             $competencesQuery->execute();
 
@@ -44,7 +44,10 @@ switch ($http_method){
                 $competenceFetched['idCompetence'] = intval($competenceFetched['idCompetence']);
                 $competenceFetched['idPersonnage'] = intval($competenceFetched['idPersonnage']);
                 $competenceFetched['idCompetenceParente'] = $competenceFetched['idCompetenceParente'] ? intval($competenceFetched['idCompetenceParente']) : null;
+                $competenceFetched['niveau'] = intval($competenceFetched['niveau']);
                 $competenceFetched['optionnelle'] = boolval($competenceFetched['optionnelle']);
+                $competenceFetched['etat'] = $competenceFetched['niveau'] > 0 ? 'selected' : 'locked';
+                $competenceFetched['contenu'] = getCompetenceContenu($bdd, $competenceFetched['idCompetence']);
                 array_push($competencesPersonnage, $competenceFetched);
             }
 
@@ -63,7 +66,7 @@ switch ($http_method){
             for ($i = 0 ; $i < count($competencesPersonnage); $i++) {
                 if (!empty($competencesPersonnage[$i]['idCompetenceParente'])) {
                     for ($j = 0 ; $j < count($preparedData); $j++) {
-                        insertData($preparedData[$j], $competencesPersonnage[$i]);
+                        insertChildren($preparedData[$j], $competencesPersonnage[$i]);
                     }
                 }
             }
@@ -100,13 +103,34 @@ function deliver_responseRest($status, $status_message, $data)
     echo $json_response;
 }
 
-function insertData(&$parent, &$competence) {
+function getCompetenceContenu(PDO $bdd, int $idCompetence) {
+    $sql = 'SELECT * 
+            FROM competencecontenu 
+            WHERE idCompetence = :idCompetence
+            ORDER BY niveauCompetenceRequis';
+
+    $contenuQuery = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+    $contenuQuery->bindParam('idCompetence', $idCompetence, PDO::PARAM_INT);
+    $contenuQuery->execute();
+
+    $contenus = [];
+    while ($contenuFetched = $contenuQuery->fetch(PDO::FETCH_ASSOC)) {
+        $contenuFetched['idCompetenceContenu'] = intval($contenuFetched['idCompetenceContenu']);
+        $contenuFetched['idCompetence'] = intval($contenuFetched['idCompetence']);
+        $contenuFetched['niveauCompetenceRequis'] = $contenuFetched['niveauCompetenceRequis'] ? intval($contenuFetched['niveauCompetenceRequis']) : null;
+        array_push($contenus, $contenuFetched);
+    }
+
+    return $contenus;
+}
+
+function insertChildren(&$parent, &$competence) {
 
     if ($parent['idCompetence'] === $competence['idCompetenceParente']) {
         array_push($parent['children'], $competence);
     } else {
         for ($i = 0 ; $i < count($parent['children']) ; $i++) {
-            insertData($parent['children'][$i], $competence);
+            insertChildren($parent['children'][$i], $competence);
         }
     }
 }
