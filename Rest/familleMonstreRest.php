@@ -66,7 +66,7 @@ switch ($http_method) {
                 SET libelle = :libelle 
                 WHERE idFamilleMonstre = :idFamilleMonstre;";
 
-                $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
                 $commit->bindParam(':idFamilleMonstre',$famille->idFamilleMonstre, PDO::PARAM_INT);
                 $commit->bindParam(':libelle',$famille->libelle, PDO::PARAM_STR);
                 $commit->execute();

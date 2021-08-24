@@ -39,22 +39,29 @@ switch ($http_method) {
     case "POST":
         try {
             $monstre = json_decode($_GET['Monstre']);
-            $sql = "INSERT INTO `monstre` (`idFamilleMonstre`,`libelle`) VALUES (".$monstre->idFamilleMonstre.", :libelle)";
 
-            $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-            $commit->bindParam(':libelle',$monstre->libelle, PDO::PARAM_STR);
-            $commit->execute();
-            $result = $bdd->query('SELECT *
+            if (!has_duplicates_as_name($bdd, $monstre)) {
+                $sql = "INSERT INTO `monstre` (`idFamilleMonstre`,`libelle`) VALUES (" . $monstre->idFamilleMonstre . ", :libelle)";
+
+                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit->bindParam(':libelle', $monstre->libelle, PDO::PARAM_STR);
+                $commit->execute();
+                $result = $bdd->query('SELECT *
 					FROM monstre 
                     where idMonstre=' . $bdd->lastInsertId() . '
                     ');
-            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-            $result->closeCursor();
-            $bdd = null;
+                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                $result->closeCursor();
+                $bdd = null;
 
-            http_response_code(201);
-            deliver_responseRest(201, "monstre added", $fetchedResult);
+                http_response_code(201);
+                deliver_responseRest(201, "monstre added", $fetchedResult);
+            } else {
+                http_response_code(409);
+                deliver_responseRest(409, "A monstre already bear this name.", $sql . "<br>" . $e->getMessage());
+            }
         } catch (PDOException $e) {
+            http_response_code(400);
             deliver_responseRest(400, "monstre add error in SQL", $sql . "<br>" . $e->getMessage());
         }
         break;
@@ -83,6 +90,7 @@ switch ($http_method) {
                 http_response_code(201);
                 deliver_responseRest(201, "monstre modified", $fetchedResult);
             } catch (PDOException $e) {
+                http_response_code(400);
                 deliver_responseRest(400, "monstre modification error in SQL", $sql . "<br>" . $e->getMessage());
             }
             break;
@@ -102,5 +110,24 @@ function deliver_responseRest($status, $status_message, $data)
     echo $json_response;
 }
 
+function has_duplicates_as_name($bdd, $monstre)
+{
+    $result = $bdd->query('SELECT *
+					FROM monstre 
+                    WHERE libelle=' . $monstre->libelle . '
+                    ');
+    $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+    return (bool)$fetchedResult;
+}
 
+function has_duplicates_as_name_and_family($bdd, $monstre)
+{
+    $result = $bdd->query('SELECT *
+					FROM monstre 
+                    WHERE libelle=' . $monstre->libelle . '
+                    AND idFamilleMonstre =' . $monstre->idFamilleMonstre . '
+                    ');
+    $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+    return (bool)$fetchedResult;
+}
 
