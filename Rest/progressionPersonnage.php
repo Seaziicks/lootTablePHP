@@ -155,16 +155,39 @@ switch ($http_method){
     case "DELETE":
         try {
             $progression = json_decode($_GET['ProgressionPersonnage'])->ProgressionPersonnage;
-            $commit = $bdd->prepare('DELETE FROM progressionpersonnage WHERE niveau = :niveau');
-            $commit->bindParam(':niveau',$progression->niveau, PDO::PARAM_INT);
-            $commit->execute();
-            $rowCount = $commit->rowCount();
 
-            if( ! $rowCount ) {
-                deliver_responseRest(400, "progression deletion fail", '');
+            if ($progression->niveau > 1) {
+                $commit = $bdd->prepare('DELETE FROM progressionpersonnage WHERE niveau = :niveau');
+                $commit->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
+                $commit->execute();
+                $rowCount = $commit->rowCount();
+
+                if (!$rowCount) {
+                    deliver_responseRest(400, "progression deletion fail", '');
+                } else {
+                    $check = $bdd->prepare('SELECT * FROM monte WHERE niveau = :niveau');
+                    $check->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
+                    $check->execute();
+                    $rowCountCheck = $commit->rowCount();
+
+                    $commit = $bdd->prepare('DELETE FROM monte WHERE niveau = :niveau');
+                    $commit->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
+                    $commit->execute();
+                    $rowCount = $commit->rowCount();
+
+                    if (!$rowCountCheck || $rowCountCheck != $rowCount) {
+                        http_response_code(202);
+                        deliver_responseRest(202, "progression deleted", '');
+                    } else {
+                        http_response_code(400);
+                        deliver_responseRest(400,
+                            "progression deletion ok, but incoherent state with level still assigned for characters when supposed to be deleted",
+                            '');
+                    }
+                }
             } else {
-                http_response_code(202);
-                deliver_responseRest(202, "progression deleted", '');
+                http_response_code(406);
+                deliver_responseRest(406, "Impossible de supprimer le niveau 1, ou inférieur.", '');
             }
         } catch (PDOException $e) {
             deliver_responseRest(400, "progression deletion error in SQL", $sql . "<br>" . $e->getMessage());
