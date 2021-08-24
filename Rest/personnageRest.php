@@ -33,7 +33,7 @@ switch ($http_method){
         /// Récupération des critères de recherche envoyés par le Client
         if (isset($_GET['idPersonnage']) && isset($_GET['withStatistique']) && filter_var($_GET['withStatistique'],FILTER_VALIDATE_BOOLEAN)) {
 
-            $personnage = $PersonnageManager->getPersonnageAvecStatistiques(1);
+            $personnage = $PersonnageManager->getPersonnageAvecStatistiques($_GET['idPersonnage']);
 
             http_response_code(200);
             /// Envoi de la réponse au Client
