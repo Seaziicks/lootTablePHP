@@ -56,9 +56,29 @@ switch ($http_method) {
                                         WHERE idPersonnage = :idPersonnage';
 
             } else {
-                $sqlBaisserNiveau = 'UPDATE personnage 
+
+                $sqlGetNiveau = 'SELECT niveau FROM personnage WHERE idPersonnage = :idPersonnage';
+                $getNiveauQuery = $bdd->prepare($sqlGetNiveau, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $getNiveauQuery->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
+                $getNiveauQuery->execute();
+                $niveauPersonnage = $getNiveauQuery->fetch(PDO::FETCH_ASSOC)['niveau'];
+
+                if ($niveauPersonnage > 1) {
+
+                    $sqlBaisserNiveau = 'UPDATE personnage 
                                         SET niveau = niveau - 1 
                                         WHERE idPersonnage = :idPersonnage';
+
+                    $sqlEnleverStatistiques = 'DELETE FROM monte WHERE idPersonnage = :idPersonnage AND niveau = :niveauPersonnage';
+                    $enleverStatistiques = $bdd->prepare($sqlEnleverStatistiques, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                    $enleverStatistiques->bindParam(':niveauPersonnage', $niveauPersonnage, PDO::PARAM_INT);
+                    $enleverStatistiques->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
+                    $enleverStatistiques->execute();
+                } else {
+                    http_response_code(406);
+                    deliver_responseRest(406, "Impossible de supprimer le niveau 1, ou inférieur.", '');
+                    break;
+                }
             }
 
             $monteeNiveauQuery = $bdd->prepare($sqlBaisserNiveau, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
