@@ -58,7 +58,7 @@ switch ($http_method) {
                 deliver_responseRest(201, "monstre added", $fetchedResult);
             } else {
                 http_response_code(409);
-                deliver_responseRest(409, "A monstre already bear this name.", $sql . "<br>" . $e->getMessage());
+                deliver_responseRest(409, "A monstre already bear this name.", "");
             }
         } catch (PDOException $e) {
             http_response_code(400);
@@ -69,26 +69,34 @@ switch ($http_method) {
         if (isset($_GET['idMonstre'])) {
             try {
                 $monstre = json_decode($_GET['Monstre']);
-                $sql = "UPDATE monstre 
-                SET idFamilleMonstre = :idFamilleMonstre,
-                libelle = :libelle 
-                WHERE idMonstre = :idMonstre;";
 
-                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $commit->bindParam(':idMonstre',$monstre->idMonstre, PDO::PARAM_INT);
-                $commit->bindParam(':idFamilleMonstre',$monstre->idFamilleMonstre, PDO::PARAM_INT);
-                $commit->bindParam(':libelle',$monstre->libelle, PDO::PARAM_STR);
-                $commit->execute();
+                if (is_same_monster_as_name($bdd, $monstre)
+                    || (!is_same_monster_as_name($bdd, $monstre) && !has_duplicates_as_name($bdd, $monstre)))
+                {
+                    $sql = "UPDATE monstre 
+                            SET idFamilleMonstre = :idFamilleMonstre,
+                            libelle = :libelle 
+                            WHERE idMonstre = :idMonstre;";
 
-                $result = $bdd->query('SELECT *
+                    $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                    $commit->bindParam(':idMonstre', $monstre->idMonstre, PDO::PARAM_INT);
+                    $commit->bindParam(':idFamilleMonstre', $monstre->idFamilleMonstre, PDO::PARAM_INT);
+                    $commit->bindParam(':libelle', $monstre->libelle, PDO::PARAM_STR);
+                    $commit->execute();
+
+                    $result = $bdd->query('SELECT *
 					FROM monstre
                     where idMonstre=' . $monstre->idMonstre . '
                     ');
-                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-                $result->closeCursor();
-                $bdd = null;
-                http_response_code(201);
-                deliver_responseRest(201, "monstre modified", $fetchedResult);
+                    $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                    $result->closeCursor();
+                    $bdd = null;
+                    http_response_code(201);
+                    deliver_responseRest(201, "monstre modified", $fetchedResult);
+                } else {
+                    http_response_code(409);
+                    deliver_responseRest(409, "A monstre already bear this name.", "");
+                }
             } catch (PDOException $e) {
                 http_response_code(400);
                 deliver_responseRest(400, "monstre modification error in SQL", $sql . "<br>" . $e->getMessage());
@@ -110,24 +118,29 @@ function deliver_responseRest($status, $status_message, $data)
     echo $json_response;
 }
 
-function has_duplicates_as_name($bdd, $monstre)
+function has_duplicates_as_name($bdd, $monstre): bool
 {
-    $result = $bdd->query('SELECT *
+    return (bool)count_duplicates_as_name($bdd, $monstre);
+}
+
+function count_duplicates_as_name($bdd, $monstre)
+{
+    $result = $bdd->query('SELECT SELECT COUNT(*)
 					FROM monstre 
                     WHERE libelle=' . $monstre->libelle . '
                     ');
-    $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-    return (bool)$fetchedResult;
+    $fetchedResult = $result->fetchColumn();
+    $result->closeCursor();
+    return $fetchedResult;
 }
 
-function has_duplicates_as_name_and_family($bdd, $monstre)
+function is_same_monster_as_name($bdd, $monstre): bool
 {
     $result = $bdd->query('SELECT *
 					FROM monstre 
-                    WHERE libelle=' . $monstre->libelle . '
-                    AND idFamilleMonstre =' . $monstre->idFamilleMonstre . '
+                    WHERE idMonstre=' . $monstre->idMonstre . '
                     ');
     $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-    return (bool)$fetchedResult;
+    $result->closeCursor();
+    return $fetchedResult['idMonstre'] == $monstre->idMonstre && $fetchedResult['libelle'] == $monstre->libelle;
 }
-
