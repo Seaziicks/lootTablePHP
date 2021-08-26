@@ -111,7 +111,7 @@ switch ($http_method) {
                 WHERE idMonstre = :idMonstre 
                 AND roll = :roll;";
 
-                $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
                 $commit->bindParam(':idMonstre', $params->idMonstre, PDO::PARAM_INT);
                 $commit->bindParam(':roll', $loot->roll, PDO::PARAM_INT);
                 $commit->bindParam(':idLoot', $loot->idLoot, PDO::PARAM_INT);
@@ -150,7 +150,7 @@ switch ($http_method) {
                             WHERE idMonstre = :idMonstre
                             AND roll = :roll;";
 
-                    $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                    $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
                     $commit->bindParam(':idMonstre', $params->idMonstre, PDO::PARAM_INT);
                     $commit->bindParam(':roll', $loot->roll, PDO::PARAM_INT);
                     $commit->bindParam(':idLoot', $loot->idLoot, PDO::PARAM_INT);
@@ -182,6 +182,44 @@ switch ($http_method) {
             }
         } else
             deliver_responseRest(400, "dropChance modification error, missing idMonstre or idLoot", '');
+        break;
+    case "DELETE":
+        if (!(empty($_GET['idMonstre']) || empty($_GET['multipleInput'])) && filter_var($_GET['multipleInput'], FILTER_VALIDATE_BOOLEAN)) {
+            try {
+
+            $params = json_decode($_GET['Loot']);
+            // print_r($params);
+            $sql = "DELETE FROM dropchancebis WHERE idMonstre = " . $params->idMonstre . " AND roll IN (";
+            $loots = $params->Loot;
+            $rolls = '';
+            foreach ($loots as $loot) {
+                $rolls .= $loot->roll;
+                if ($loot != $loots[count($loots) - 1]) {
+                    $rolls .= ", ";
+                }
+            }
+            $sql .= $rolls;
+            $sql .= ");";
+            // print_r($sql);
+
+            $bdd->exec($sql);
+            $result = $bdd->query('SELECT d.roll, l.libelle, d.niveauMonstre, d.multiplier, d.diceNumber, d.dicePower, l.poids
+					FROM dropchancebis as d, loot as l
+                    where idMonstre=' . $params->idMonstre . '
+                    AND d.roll in (' . $rolls . ')
+                    AND d.idLoot = l.idLoot
+                    order by roll');
+            $fetchedResult = $result->fetchAll(PDO::FETCH_ASSOC);
+            $result->closeCursor();
+            $bdd = null;
+
+            http_response_code(201);
+            deliver_responseRest(201, "dropChance deleted", $fetchedResult);
+            } catch (PDOException $e) {
+                deliver_responseRest(400, "dropChance deletion error in SQL", $sql . "<br>" . $e->getMessage());
+            }
+        } else
+            deliver_responseRest(422, "dropChance delete error, missing idMonstre && multipleInput == true", '');
         break;
 }
 /// Envoi de la réponse au Client
