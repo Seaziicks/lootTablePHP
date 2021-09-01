@@ -11,18 +11,20 @@ class NiveauManager
         $this->setDb($db);
     }
 
-    public function niveauExist($niveau)
+    public function niveauExist(int $idPersonnage, int $niveau)
     {
         $sql = 'SELECT *
-                    FROM niveau
-                    WHERE LOWER(niveau) = LOWER(:niveau)';
+                FROM monte
+                WHERE idPersonnage = :idPersonnage
+                AND niveau = :niveau';
 
         $userQuery = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $userQuery->bindParam(':idPersonnage', $idPersonnage, PDO::PARAM_INT);
         $userQuery->bindParam(':niveau', $niveau, PDO::PARAM_INT);
         $userQuery->execute();
         $userFetched = $userQuery->fetch(PDO::FETCH_ASSOC);
 
-        return $userFetched ? true : false;
+        return (bool)$userFetched;
     }
 
     public function getNiveauFromID($idNiveau)
@@ -41,38 +43,57 @@ class NiveauManager
         return new Niveau($niveauFetched);
     }
 
-    public function getNiveauFromNiveauAndPersonnage($niveau, $idPersonnage)
+    public function getNiveauFromNiveauAndPersonnage($niveau, $idPersonnage): Niveau
     {
         $niveau = (int)$niveau;
         $idPersonnage = (int)$idPersonnage;
-        $sql = 'SELECT *
-                FROM niveau
+        $sql = 'SELECT m.idPersonnage, s.idStatistique, s.libelle, m.niveau, m.valeur
+                FROM monte as m, statistique as s
                 WHERE niveau = :niveau
-                AND idPersonnage = :isPersonnage';
+                AND idPersonnage = :isPersonnage
+                AND m.idStatistique = s.idStatistique';
 
         $niveauQuery = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $niveauQuery->bindParam(':niveau',$niveau, PDO::PARAM_INT);
         $niveauQuery->bindParam(':idPersonnage',$idPersonnage, PDO::PARAM_INT);
         $niveauQuery->execute();
 
-        $niveauFetched = $niveauQuery->fetch(PDO::FETCH_ASSOC);
+        // $niveauFetched = $niveauQuery->fetchAll(PDO::FETCH_ASSOC);
 
-        return new Niveau($niveauFetched);
+        $niveauFinal = ['niveau' => $niveau, 'idPersonnage' => $idPersonnage];
+        while ($statistique = $niveauQuery->fetch(PDO::FETCH_ASSOC)) {
+            $niveauFinal[$statistique['libelle']] = $statistique['valeur'];
+        }
+
+        return new Niveau($niveauFinal);
     }
 
     public function getAllNiveau($idPersonnage)
     {
+        /* Une autre méthode serait de faire une première requête pour récupérer les niveaux disponibles.
+         *
+         * */
 
-        $sql = 'SELECT *
-                FROM niveau
-                WHERE idPersonnage = :idPersonnage';
+        $sql = 'SELECT m.idPersonnage, s.idStatistique, s.libelle, m.niveau, m.valeur
+                FROM monte as m, statistique as s
+                WHERE idPersonnage = :isPersonnage
+                AND m.idStatistique = s.idStatistique
+                ORDER BY niveau, s.idStatistique';
         $niveauQuery = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $niveauQuery->bindParam(':idPersonnage',$idPersonnage, PDO::PARAM_INT);
         $niveauQuery->execute();
 
         $allNiveau = [];
-        while($niveauFetched = $niveauQuery->fetch(PDO::FETCH_ASSOC)) {
-            array_push($allNiveau, new Niveau($niveauFetched));
+        $niveauCourant = 1;
+        $statistiquesNiveauCourant = ['niveau' => $niveauCourant, 'idPersonnage' => $idPersonnage];
+
+        while($statistiqueFetched = $niveauQuery->fetch(PDO::FETCH_ASSOC)) {
+            if ($statistiqueFetched['niveau'] != $niveauCourant) {
+                array_push($allNiveau, new Niveau($statistiquesNiveauCourant));
+                $niveauCourant = $statistiqueFetched['niveau'];
+                $statistiquesNiveauCourant = [['niveau' => $niveauCourant, 'idPersonnage' => $idPersonnage]];
+            }
+            $statistiquesNiveauCourant[$statistiqueFetched['libelle']] = $statistiqueFetched['valeur'];
         };
 
         return $allNiveau;
@@ -152,11 +173,14 @@ class NiveauManager
         return new Niveau($fetchedResult);
     }
 
-    public function deleteNiveau($idNiveau)
+    public function deleteNiveau(int $idPersonnage, int $niveau)
     {
-        $commit = $this->_db->prepare('DELETE FROM niveau WHERE idNiveau = :idNiveau');
-        $commit->bindParam(':idNiveau',$idNiveau, PDO::PARAM_INT);
+        $sql = 'DELETE FROM monte WHERE idPersonnage = :idPersonnage AND niveau = :niveau';
+        $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $commit->bindParam(':niveau', $niveau, PDO::PARAM_INT);
+        $commit->bindParam(':idPersonnage', $idPersonnage, PDO::PARAM_INT);
         $commit->execute();
+
         return $commit->rowCount();
     }
 

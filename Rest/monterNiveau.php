@@ -30,7 +30,7 @@ $PersonnageManager = new PersonnageManager($bdd);
 $NiveauManager = new NiveauManager($bdd);
 
 switch ($http_method) {
-    /// Cas de la méthode POST
+    /// Cas de la méthode GET
     case "GET":
         if (!(empty($_GET['idPersonnage'])) && filter_var($_GET['monte'], FILTER_VALIDATE_BOOLEAN)) {
 
@@ -124,6 +124,7 @@ switch ($http_method) {
                             && $niveau->getNbStatistique() === $progressionPersonnageNiveauFetched['nombreStatistiques']
                             && $personnage->_deVitaliteNaturelle >= $niveau->_deVitalite && $personnage->_deManaNaturel >= $niveau->_deMana || $niveau->_niveau === 1) {
 
+                            // On rajoute la vitalité naturelle, qui dépend de la constitution => (Constitution - 10) / 2
                             $vitaliteNaturelle =  intval(max(floor(((($personnage->_constitution + $niveau->_constitution) - 10) / 2)), 0));
 
                             $idPersonnage = $personnage->_idPersonnage;
@@ -169,7 +170,7 @@ switch ($http_method) {
                             deliver_responseRest(406, "Vous essayez de tricher mon bon monsieur. Mais je suis meilleur que vous !", '');
                         } else {
 
-
+                            // On rajoute la vitalité naturelle, qui dépend de la constitution => (Constitution - 10) / 2
                             $vitaliteNaturelle = intval(max(floor(($personnage->_constitution - 10) / 2), 0));
 
                             $idPersonnage = $personnage->_idPersonnage;

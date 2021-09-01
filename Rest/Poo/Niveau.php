@@ -4,7 +4,6 @@
 class Niveau
 {
     public
-        $_idNiveau,
         $_idPersonnage,
         $_niveau,
         $_intelligence = 0,
@@ -22,16 +21,6 @@ class Niveau
     public function __construct(array $donnees)
     {
         $this->hydrate($donnees);
-    }
-
-    public function setIdNiveau($idNiveau)
-    {
-        $idNiveau = (int) $idNiveau;
-
-        if ($idNiveau > 0)
-        {
-            $this->_idNiveau = $idNiveau;
-        }
     }
 
     public function setIdPersonnage($idPersonnage)
@@ -136,7 +125,6 @@ class Niveau
     public function jsonSerialize()
     {
         return [
-            'idNiveau' => $this->_idNiveau,
             'idPersonnage' => $this->_idPersonnage,
             'niveau' => $this->_niveau,
             'intelligence' => $this->_intelligence,
