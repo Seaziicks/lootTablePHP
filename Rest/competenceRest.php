@@ -2,7 +2,6 @@
 declare(strict_types=1);
 spl_autoload_register('chargerClasse');
 session_start();
-header("Content-Type:application/json");
 
 /**
  * @param $classname
@@ -20,7 +19,7 @@ function chargerClasse($classname)
 include('../db.php');
 
 /// Paramétrage de l'entête HTTP (pour la réponse au Client)
-header("Content-Type:application/json");
+header("Content-Type:application/json; charset=UTF-8");
 
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
@@ -83,7 +82,58 @@ switch ($http_method){
         echo "POST";
         break;
     case "PUT":
-        echo "PUT";
+        if (isset($_GET['Competence'])) {
+            $competence = json_decode($_GET['Competence'])->Competence;
+            $sql = "UPDATE competence 
+                SET idPersonnage = :idPersonnage, idCompetenceParente = :idCompetenceParente, titre = :titre, niveau = :niveau,
+                icone = :icone, etat = :etat, optionnelle = :optionnelle
+                WHERE idCompetence = :idCompetence;";
+
+            $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+            $commit->bindParam(':idCompetence', $competence->idCompetence, PDO::PARAM_INT);
+            $commit->bindParam(':idPersonnage', $competence->idPersonnage, PDO::PARAM_INT);
+            $commit->bindParam(':idCompetenceParente', $competence->idCompetenceParente, PDO::PARAM_INT);
+            $commit->bindParam(':titre', $competence->titre, PDO::PARAM_STR);
+            $commit->bindParam(':niveau', $competence->niveau, PDO::PARAM_INT);
+            $commit->bindParam(':icone', $competence->icone, PDO::PARAM_STR);
+            $commit->bindParam(':etat', $competence->etat, PDO::PARAM_STR);
+            $commit->bindParam(':optionnelle', $competence->optionnelle, PDO::PARAM_BOOL);
+            $commit->execute();
+
+            // $commit->debugDumpParams();
+
+            foreach ($competence->contenu as $contenu) {
+                updateCompetenceContenu($bdd, $contenu);
+            }
+            
+            $fetchedResult = getCompetence($bdd, $competence->idCompetence);
+            $bdd = null;
+
+        } elseif (isset($_GET['CompetenceContenu'])) {
+            print_r($_GET['CompetenceContenu']);
+            $competenceContenu = json_decode($_GET['CompetenceContenu'])->CompetenceContenu;
+            print_r($competenceContenu);
+
+            updateCompetenceContenu($bdd, $competenceContenu);
+
+            $sql = 'SELECT *
+                FROM competencecontenu
+                WHERE idCompetenceContenu = :idCompetenceContenu';
+
+            $competenceContenuQuery = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+            $competenceContenuQuery->bindParam(':idCompetenceContenu',$competenceContenu->idCompetenceContenu, PDO::PARAM_INT);
+            $competenceContenuQuery->execute();
+
+            $competenceContenuFetched = $competenceContenuQuery->fetch(PDO::FETCH_ASSOC);
+            $competenceContenuFetched['idCompetenceContenu'] = intval($competenceContenuFetched['idCompetenceContenu']);
+            $competenceContenuFetched['idCompetence'] = intval($competenceContenuFetched['idCompetence']);
+            $competenceContenuFetched['niveauCompetenceRequis'] = $competenceContenuFetched['niveauCompetenceRequis'] ? intval($competenceContenuFetched['idCompetenceParente']) : null;
+
+            $fetchedResult = $competenceContenuFetched;
+            $bdd = null;
+        }
+        http_response_code(201);
+        deliver_responseRest(201, "competence modified", $fetchedResult);
         break;
     case "DELETE":
         echo "DELETE";
@@ -133,4 +183,45 @@ function insertChildren(&$parent, &$competence) {
             insertChildren($parent['children'][$i], $competence);
         }
     }
+}
+
+function updateCompetenceContenu(PDO $bdd, $competenceContenu) {
+    $sql = "UPDATE competencecontenu 
+                SET idCompetence = :idCompetence, niveauCompetenceRequis = :niveauCompetenceRequis, contenu = :contenu
+                WHERE idCompetenceContenu = :idCompetenceContenu;";
+
+    $test = 'Projette un jet de lave qui inflige 1D4 de dégâts + bonusIntelligence.';
+    // print_r($competenceContenu->contenu);
+    $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+    $commit->bindParam(':idCompetence', $competenceContenu->idCompetence, PDO::PARAM_INT);
+    $commit->bindParam(':niveauCompetenceRequis', $competenceContenu->niveauCompetenceRequis, PDO::PARAM_INT);
+    $commit->bindParam(':contenu', $competenceContenu->contenu, PDO::PARAM_STR);
+    $commit->bindParam(':idCompetenceContenu', $competenceContenu->idCompetenceContenu, PDO::PARAM_INT);
+    $commit->execute();
+
+    // $commit->debugDumpParams();
+}
+
+function getCompetence(PDO $bdd, $idCompetence) {
+    $sql = 'SELECT *
+                FROM competence
+                WHERE idCompetence = :idCompetence';
+
+    $competencesQuery = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+    $competencesQuery->bindParam(':idCompetence',$idCompetence, PDO::PARAM_INT);
+    $competencesQuery->execute();
+
+    $competenceFetched = $competencesQuery->fetch(PDO::FETCH_ASSOC);
+    $competenceFetched['idCompetence'] = intval($competenceFetched['idCompetence']);
+    $competenceFetched['idPersonnage'] = intval($competenceFetched['idPersonnage']);
+    $competenceFetched['idCompetenceParente'] = $competenceFetched['idCompetenceParente'] ? intval($competenceFetched['idCompetenceParente']) : null;
+    $competenceFetched['niveau'] = intval($competenceFetched['niveau']);
+    $competenceFetched['optionnelle'] = boolval($competenceFetched['optionnelle']);
+    $competenceFetched['etat'] = $competenceFetched['niveau'] > 0 ? 'selected' : 'locked';
+    $competenceFetched['contenu'] = getCompetenceContenu($bdd, $competenceFetched['idCompetence']);
+
+
+    $competenceFetched['children'] = [];
+
+    return $competenceFetched;
 }
