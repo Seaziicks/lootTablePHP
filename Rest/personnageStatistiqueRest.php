@@ -96,6 +96,7 @@ switch ($http_method){
 					FROM monte 
                     WHERE idPersonnage = " . $_GET['idPersonnage'] . " AND idStatistique = " . $_GET['idStatistique'] . "
                     AND niveau = " . $_GET['niveau']);
+                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
                 $result->closeCursor();
                 $bdd = null;
                 http_response_code(201);
@@ -127,6 +128,7 @@ switch ($http_method){
 					FROM monte 
                     WHERE idPersonnage = " . $_GET['idPersonnage'] . " AND idStatistique = " . $_GET['idStatistique'] . "
                     AND niveau = " . $_GET['niveau']);
+                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
                 $result->closeCursor();
                 $bdd = null;
                 http_response_code(200);
