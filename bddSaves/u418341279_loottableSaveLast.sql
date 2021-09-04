@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  lun. 05 oct. 2020 à 20:33
+-- Généré le :  sam. 04 sep. 2021 à 17:38
 -- Version du serveur :  10.4.10-MariaDB
 -- Version de PHP :  7.3.12
 
@@ -54,7 +54,7 @@ INSERT INTO `competence` (`idCompetence`, `idPersonnage`, `idCompetenceParente`,
 (3, 1, 1, 'Colonne de lave', 0, 'colonne_de_lave.png', 'Charge une colonne de lave à un endroit ciblé. Lors du tour suivant, la colonne de lave jaillira automatiquement, infligeant 3D2 + bonusIntelligence.\r\nSurcharge de 15.', 'unlocked', 0),
 (4, 1, 2, 'Vague de Lave', 0, 'vague_de_lave.png', 'Cette vague inflige 3D6 + bonusIntelligence.\r\nElle s’étale sur 3 cases devant le magmaticien, et avance sur 4 cases.\r\nSurcharge de 30.', 'locked', 0),
 (5, 1, 3, 'Pluie de lave', 0, 'pluie_de_lave.png', 'La pluie inflige sur chaque case 2D3 + bonusIntelligence.\r\nSurcharge de 20.', 'locked', 0),
-(6, 1, NULL, 'Canalisation', 3, 'canalisation.png', 'Permet de réduire la surcharge de 1D20 + bonusIntelligence.\r\nQuand la surcharge atteint son maximum, la magie du magmaticien explose, infligeant 1D8 + bonusIntelligence autour de lui, et il subît 50% de ces dégâts.\r\nIl peut décider de contrôler la zone d\'explosion pour la réduire à un demi-cercle. Cela inflige alors 50% de dégâts de plus aux entités touchées, et au magmaticien.', 'selected', 0);
+(6, 1, NULL, 'Canalisation', 2, 'canalisation.png', 'Permet de réduire la surcharge de 1D20 + bonusIntelligence.\r\nQuand la surcharge atteint son maximum, la magie du magmaticien explose, infligeant 1D8 + bonusIntelligence autour de lui, et il subît 50% de ces dégâts.\r\nIl peut décider de contrôler la zone d\'explosion pour la réduire à un demi-cercle. Cela inflige alors 50% de dégâts de plus aux entités touchées, et au magmaticien.', 'selected', 0);
 
 -- --------------------------------------------------------
 
@@ -77,8 +77,8 @@ CREATE TABLE IF NOT EXISTS `competencecontenu` (
 --
 
 INSERT INTO `competencecontenu` (`idCompetenceContenu`, `idCompetence`, `niveauCompetenceRequis`, `contenu`) VALUES
-(1, 1, NULL, 'Projette un jet de lave qui inflige 1D4 de dégâts + bonusIntelligence.'),
-(2, 1, NULL, 'Surcharge de 15.'),
+(1, 1, NULL, 'Projette un jet de lave qui inflige 1D4 de dégât   bonusIntelligence.'),
+(2, 1, NULL, 'Surcharge de 15.5'),
 (3, 2, NULL, 'Lance un javelot de lave qui inflige 2D6 de dégâts + bonusIntelligence. Fait reculer la cible de 1 case.'),
 (4, 2, NULL, 'Surcharge de 25.'),
 (5, 3, NULL, 'Charge une colonne de lave à un endroit ciblé.'),
@@ -90,7 +90,7 @@ INSERT INTO `competencecontenu` (`idCompetenceContenu`, `idCompetence`, `niveauC
 (11, 5, NULL, 'La pluie inflige sur chaque case 2D3 + bonusIntelligence.'),
 (12, 5, NULL, 'Surcharge de 20.'),
 (13, 6, NULL, 'Permet de réduire la surcharge de 1D20 + bonusIntelligence.'),
-(14, 6, NULL, 'Quand la surcharge atteint son maximum, la magie du magmaticien explose, infligeant 1D8 + bonusIntelligence autour de lui, et il subît 50% de ces dégâts.'),
+(14, 6, NULL, 'Quand la surcharge atteint son maximum, la magie du magmaticien explose, infligeant 1D8   bonusIntelligence autour de lui, et il subît 50% de ces dégâts.'),
 (15, 6, 2, 'Il peut décider de contrôler la zone d\'explosion pour la réduire à un demi-cercle. Cela inflige alors 50% de dégâts de plus aux entités touchées, et au magmaticien.');
 
 -- --------------------------------------------------------
@@ -201,7 +201,14 @@ CREATE TABLE IF NOT EXISTS `effetmagique` (
   PRIMARY KEY (`idEffetMagique`),
   UNIQUE KEY `idEffectMagique` (`idEffetMagique`),
   KEY `FK_effetmagique_idObjet` (`idObjet`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `effetmagique`
+--
+
+INSERT INTO `effetmagique` (`idEffetMagique`, `idObjet`, `title`) VALUES
+(1, 1, 'Allié');
 
 -- --------------------------------------------------------
 
@@ -217,7 +224,15 @@ CREATE TABLE IF NOT EXISTS `effetmagiquedescription` (
   PRIMARY KEY (`idEffetMagiqueDescription`),
   UNIQUE KEY `idObjetDescription` (`idEffetMagiqueDescription`),
   KEY `FK_effetmagiquedescription_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `effetmagiquedescription`
+--
+
+INSERT INTO `effetmagiquedescription` (`idEffetMagiqueDescription`, `idEffetMagique`, `contenu`) VALUES
+(1, 1, 'Un bouclier ayant cette propriété spéciale est décorée d\'anneaux. Ces anneaux semblent se liés avec ceux d\'autres boucliers d\'allié quand ils sont mis côte à côte.'),
+(2, 1, 'Le bonus d\'altération d\'un bouclier d\'allié augmente de  1 pour chaque allié adjacent portant aussi un bouclier d\'allié.');
 
 -- --------------------------------------------------------
 
@@ -233,7 +248,17 @@ CREATE TABLE IF NOT EXISTS `effetmagiqueinfos` (
   PRIMARY KEY (`idEffetMagiqueInfos`),
   UNIQUE KEY `idObjetInfos` (`idEffetMagiqueInfos`),
   KEY `FK_effetmagiqueinfos_idEffetMagique` (`idEffetMagique`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `effetmagiqueinfos`
+--
+
+INSERT INTO `effetmagiqueinfos` (`idEffetMagiqueInfos`, `idEffetMagique`, `contenu`) VALUES
+(1, 1, '<span class=\"abju\">Abjuration</span> faible '),
+(2, 1, ' <span class=\"compobj\">NLS</span> 5 '),
+(3, 1, ' <a href=\"http://www.gemmaline.com/dons/dons-creation-d-armes-et-armures-magiques-22.htm#22\">Création d’armes et armures magiques</a> '),
+(4, 1, ' <span class=\"compobj\">Prix</span> bonus de  1.');
 
 -- --------------------------------------------------------
 
@@ -426,7 +451,14 @@ CREATE TABLE IF NOT EXISTS `materiaux` (
   `effet` text NOT NULL,
   PRIMARY KEY (`idMateriaux`),
   UNIQUE KEY `idMateriaux` (`idMateriaux`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `materiaux`
+--
+
+INSERT INTO `materiaux` (`idMateriaux`, `nom`, `effet`) VALUES
+(1, '<a href=\"http://www.gemmaline.com/materiaux.htm#cameleondoyant\">Caméléondoyant</a>', 'Pèse 500 g de moins, bonus de circonstance de  1 aux tests de Déguisement');
 
 -- --------------------------------------------------------
 
@@ -476,6 +508,34 @@ CREATE TABLE IF NOT EXISTS `monte` (
   KEY `Fk_monte_idStatistique` (`idStatistique`),
   KEY `idPersonnage` (`idPersonnage`,`idStatistique`,`niveau`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `monte`
+--
+
+INSERT INTO `monte` (`idPersonnage`, `idStatistique`, `niveau`, `valeur`) VALUES
+(1, 1, 1, 1),
+(1, 1, 2, 3),
+(1, 2, 1, 0),
+(1, 2, 2, 0),
+(1, 3, 1, 0),
+(1, 3, 2, 0),
+(1, 4, 1, 0),
+(1, 4, 2, 0),
+(1, 5, 1, 0),
+(1, 5, 2, 0),
+(1, 6, 1, 0),
+(1, 6, 2, 0),
+(1, 7, 1, 0),
+(1, 7, 2, 0),
+(1, 8, 1, 0),
+(1, 8, 2, 8),
+(1, 9, 1, 0),
+(1, 9, 2, 0),
+(1, 10, 1, 0),
+(1, 10, 2, 0),
+(1, 11, 1, 0),
+(1, 11, 2, 0);
 
 -- --------------------------------------------------------
 
@@ -540,7 +600,14 @@ CREATE TABLE IF NOT EXISTS `objet` (
   KEY `FK_objet_idMalediction` (`idMalediction`),
   KEY `FK_objet_idMateriaux` (`idMateriaux`),
   KEY `FK_objet_idPersonnage` (`idPersonnage`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `objet`
+--
+
+INSERT INTO `objet` (`idObjet`, `idPersonnage`, `nom`, `fauxNom`, `bonus`, `type`, `prix`, `prixNonHumanoide`, `devise`, `idMalediction`, `categorie`, `idMateriaux`, `taille`, `degats`, `critique`, `facteurPortee`, `armure`, `bonusDexteriteMax`, `malusArmureTests`, `risqueEchecSorts`, `afficherNom`, `afficherEffetMagique`, `afficherMalediction`, `afficherMateriau`, `afficherInfos`) VALUES
+(1, 1, '<a href=\"http://www.gemmaline.com/armure-robe-lourde.htm\">Robe lourde</a> Infime en <a href=\"http://www.gemmaline.com/materiaux.htm#cameleondoyant\">Caméléondoyant</a> Allié', NULL, 1, 'Vêtements', 262, 262, 'po', NULL, 'Vêtements', 1, 'Infime', NULL, NULL, NULL, 1, 10, 0, '0 %', 1, 1, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -566,7 +633,7 @@ CREATE TABLE IF NOT EXISTS `personnage` (
 
 INSERT INTO `personnage` (`idPersonnage`, `nom`, `niveau`, `niveauEnAttente`, `deVitaliteNaturelle`, `deManaNaturel`) VALUES
 (0, 'Aucun personnage', 127, 0, 8, 0),
-(1, '?', 0, 1, 8, 0),
+(1, '?', 2, 0, 8, 0),
 (2, 'Drakcouille', 0, 0, 8, 0),
 (8, 'Rocktar', 0, 0, 8, 0);
 
@@ -586,14 +653,15 @@ CREATE TABLE IF NOT EXISTS `progressionpersonnage` (
   `nombrePointsCompetences` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
   UNIQUE KEY `idProgressionPersonnage` (`idProgressionPersonnage`),
   UNIQUE KEY `niveau` (`niveau`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `progressionpersonnage`
 --
 
 INSERT INTO `progressionpersonnage` (`idProgressionPersonnage`, `niveau`, `statistiques`, `nombreStatistiques`, `pointCompetence`, `nombrePointsCompetences`) VALUES
-(1, 1, 1, 150, 1, 1);
+(1, 1, 1, 150, 1, 1),
+(2, 2, 1, 3, 0, 0);
 
 -- --------------------------------------------------------
 
