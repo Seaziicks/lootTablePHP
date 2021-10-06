@@ -26,6 +26,22 @@ class UserManager
         return $userFetched ? true : false;
     }
 
+    public function hasValideCredentials($username, $password) {
+        $sql = 'SELECT *
+                    FROM user
+                    WHERE LOWER(username) = LOWER(:username)
+                    AND password = :password';
+
+        $username = strtolower($username);
+        $userQuery = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+        $userQuery->bindParam(':username', $username, PDO::PARAM_STR);
+        $userQuery->bindParam(':password', $password, PDO::PARAM_STR);
+        $userQuery->execute();
+        $userFetched = $userQuery->fetch(PDO::FETCH_ASSOC);
+
+        return !!$userFetched;
+    }
+
     public function getUser($userData)
     {
         $user = json_decode($userData);

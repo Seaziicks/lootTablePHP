@@ -54,12 +54,12 @@ class User implements JsonSerializable
 
     public function setIsGameMaster($isGameMaster)
     {
-        $this->_isGameMaster = boolval($isGameMaster);
+        $this->_isGameMaster = boolval($isGameMaster) ? true : false;
     }
 
     public function setIsAdmin($isAdmin)
     {
-        $this->_isAdmin = boolval($isAdmin);
+        $this->_isAdmin = boolval($isAdmin) ? true : false;
     }
 
     public function hydrate(array $donnees)
