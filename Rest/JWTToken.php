@@ -40,6 +40,25 @@ switch ($http_method) {
         if (isset($_GET['Connexion'])) {
             $user = json_decode($_GET['Connexion']);
 
+            $headers = getallheaders();
+            $authorizationHeader = $headers['Authorization'];
+
+            if ($authorizationHeader) {
+                // print_r(getallheaders()['Authorization']);
+                if (! preg_match('/Bearer\s(\S+)/', getallheaders()['Authorization'], $matches)) {
+                    header('HTTP/1.0 400 Bad Request');
+                    echo 'Token not found in request';
+                    exit;
+                }
+
+                $jwt = $matches[1];
+                if (! $jwt) {
+                    // No token was able to be extracted from the authorization header
+                    header('HTTP/1.0 400 Bad Request');
+                    exit;
+                }
+            }
+
             $user = $UserManager->getUser($_GET['Connexion']);
 
             if (!$user) {
