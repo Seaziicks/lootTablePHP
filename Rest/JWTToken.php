@@ -39,7 +39,7 @@ switch ($http_method) {
         /// Récupération des critères de recherche envoyés par le Client
         if (isset($_GET['Connexion'])) {
             $user = json_decode($_GET['Connexion']);
-
+            /*
             $headers = getallheaders();
             $authorizationHeader = $headers['Authorization'];
 
@@ -58,6 +58,7 @@ switch ($http_method) {
                     exit;
                 }
             }
+            */
 
             $user = $UserManager->getUser($_GET['Connexion']);
 
