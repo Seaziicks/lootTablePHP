@@ -1,5 +1,8 @@
 <?php
-
+declare(strict_types=1);
+use Firebase\JWT\JWT;
+require_once('../../../vendor/autoload.php');
+require_once('../AccessRights.php');
 
 class UserManager
 {
@@ -184,8 +187,39 @@ class UserManager
         return $commit->rowCount();
     }
 
+    public static function verifyJWT(string $JWTToken, string $publicKey, string $algorithm) {
+        $decoded = JWT::decode($JWTToken, $publicKey, array("$algorithm"));
+        return $decoded;
+    }
+
+    public static function hasRightToAccess(string $JWTToken, string $publicKey, string $algorithm, AccessRights $accesRights, int $idUser = null): bool {
+        /**
+         * @$hasAccess bool
+         */
+        $hasAccess = false;
+        $decoded = UserManager::verifyJWT($JWTToken, $publicKey, $algorithm);
+        switch ($accesRights) {
+            case AccessRights::SAME_USER:
+                $hasAccess = $idUser == $decoded->idUser || $decoded->isGameMaster || $decoded->isAdmin;
+                break;
+            case AccessRights::GROUP_MEMBERS:
+            case AccessRights::PUBLIC_ACCESS:
+                $hasAccess = true;
+                break;
+            case AccessRights::ADMIN:
+                $hasAccess = $decoded->isAdmin || $decoded->isGameMaster;
+                break;
+            case AccessRights::GAME_MASTER:
+                $hasAccess = $decoded->isGameMaster;
+                break;
+        }
+        return $hasAccess;
+    }
+
     public function setDb(PDO $db)
     {
         $this->_db = $db;
     }
 }
+
+
