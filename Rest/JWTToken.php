@@ -85,8 +85,8 @@ switch ($http_method) {
                     'exp'  => $expire,                           // Expire
                     'idUser' => $idUser,
                     'username' => $username,                     // User name
-                    'isGameMaster' => $isGameMaster ? 'true' : 'false',
-                    'isAdmin' => $isAdmin ? 'true' : 'false'
+                    'isGameMaster' => $isGameMaster,
+                    'isAdmin' => $isAdmin
                 ];
 
                 //print_r($data);
