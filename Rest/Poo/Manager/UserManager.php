@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 use Firebase\JWT\JWT;
-require_once('../../../vendor/autoload.php');
-require_once('../AccessRights.php');
+require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
+require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'AccessRights.php');
 
 class UserManager
 {
@@ -187,7 +187,7 @@ class UserManager
         return $commit->rowCount();
     }
 
-    public static function verifyJWT(string $JWTToken, string $publicKey, string $algorithm) {
+    public static function decodeJWT(string $JWTToken, string $publicKey, string $algorithm) {
         $decoded = JWT::decode($JWTToken, $publicKey, array("$algorithm"));
         return $decoded;
     }
@@ -197,7 +197,7 @@ class UserManager
          * @$hasAccess bool
          */
         $hasAccess = false;
-        $decoded = UserManager::verifyJWT($JWTToken, $publicKey, $algorithm);
+        $decoded = UserManager::decodeJWT($JWTToken, $publicKey, $algorithm);
         switch ($accesRights) {
             case AccessRights::SAME_USER:
                 $hasAccess = $idUser == $decoded->idUser || $decoded->isGameMaster || $decoded->isAdmin;
