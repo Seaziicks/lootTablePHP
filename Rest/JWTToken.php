@@ -73,8 +73,8 @@ switch ($http_method) {
                 $serverName = "localhost";
                 $idUser   = $user->_idUser;                                           // Retrieved from filtered POST data
                 $username   = "$user->_username";                                           // Retrieved from filtered POST data
-                $isGameMaster   = $user->_isGameMaster ? true : false;                                           // Retrieved from filtered POST data
-                $isAdmin   = $user->_isAdmin ? true : false;                                           // Retrieved from filtered POST data
+                $isGameMaster   = $user->_isGameMaster;                                           // Retrieved from filtered POST data
+                $isAdmin   = $user->_isAdmin;                                           // Retrieved from filtered POST data
 
                 //print_r($user);
 
@@ -85,19 +85,20 @@ switch ($http_method) {
                     'exp'  => $expire,                           // Expire
                     'idUser' => $idUser,
                     'username' => $username,                     // User name
-                    'isGameMaster' => $isGameMaster,
-                    'isAdmin' => $isAdmin
+                    'isGameMaster' => $isGameMaster ? 'true' : 'false',
+                    'isAdmin' => $isAdmin ? 'true' : 'false'
                 ];
 
                 //print_r($data);
 
                 // echo JWT::encode($data, $secretKey, 'HS512');
-
+                $algorithm = 'HS512';
                 $matchingData = JWT::encode(
                     $data,
                     $secretKey,
-                    'HS512'
+                    $algorithm
                 );
+
                 http_response_code(200);
                 /// Envoi de la réponse au Client
                 deliver_responseRest(200, "Qui a demandé un token bien chaud, qui ?!", $matchingData);
