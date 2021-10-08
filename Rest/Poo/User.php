@@ -54,12 +54,12 @@ class User implements JsonSerializable
 
     public function setIsGameMaster($isGameMaster)
     {
-        $this->_isGameMaster = boolval($isGameMaster) ? true : false;
+        $this->_isGameMaster = (bool)$isGameMaster;
     }
 
     public function setIsAdmin($isAdmin)
     {
-        $this->_isAdmin = boolval($isAdmin) ? true : false;
+        $this->_isAdmin = (bool)$isAdmin;
     }
 
     public function hydrate(array $donnees)
@@ -85,8 +85,8 @@ class User implements JsonSerializable
             'username' => $this->_username,
             'password' => $this->_password,
             'idPersonnage' => $this->_idPersonnage,
-            'isGameMaster' => $this->_isGameMaster,
-            'isAdmin' => $this->_isAdmin,
+            'isGameMaster' => (bool)$this->_isGameMaster,
+            'isAdmin' => (bool)$this->_isAdmin,
         ];
     }
 }
