@@ -4,6 +4,9 @@ spl_autoload_register('chargerClasse');
 session_start();
 header("Content-Type:application/json");
 
+
+require_once('secret_jwt_token.php');
+
 /**
  * @param $classname
  */
@@ -74,123 +77,139 @@ switch ($http_method){
         break;
 
     case "POST":
-        $progression = json_decode($_GET['ProgressionPersonnage'])->ProgressionPersonnage;
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            $progression = json_decode($_GET['ProgressionPersonnage'])->ProgressionPersonnage;
 
-        $sql = 'SELECT *
+            $sql = 'SELECT *
                 FROM progressionpersonnage
                 WHERE niveau = :niveau';
 
-        $progressionPersonnageNiveauExistQuery = $bdd->prepare($sql);
-        $progressionPersonnageNiveauExistQuery->bindParam(':niveau',$progression->niveau, PDO::PARAM_INT);
-        $progressionPersonnageNiveauExistQuery->execute();
+            $progressionPersonnageNiveauExistQuery = $bdd->prepare($sql);
+            $progressionPersonnageNiveauExistQuery->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
+            $progressionPersonnageNiveauExistQuery->execute();
 
-        if ($progressionPersonnageNiveauExistQuery->fetch()) {
-            http_response_code(409);
-            /// Envoi de la réponse au Client
-            deliver_responseRest(409, "Cette progression est déjà définie.", '');
-        } else {
-            try {
-                $sql = "INSERT INTO `progressionpersonnage` (`niveau`,`statistiques`,`nombreStatistiques`,`pointCompetence`,`nombrePointsCompetences`) 
+            if ($progressionPersonnageNiveauExistQuery->fetch()) {
+                http_response_code(409);
+                /// Envoi de la réponse au Client
+                deliver_responseRest(409, "Cette progression est déjà définie.", '');
+            } else {
+                try {
+                    $sql = "INSERT INTO `progressionpersonnage` (`niveau`,`statistiques`,`nombreStatistiques`,`pointCompetence`,`nombrePointsCompetences`) 
                                         VALUES (:niveau, :statistiques, :nombreStatistiques, :pointCompetence, :nombrePointsCompetences)";
 
-                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $commit->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
-                $commit->bindParam(':statistiques', $progression->statistiques, PDO::PARAM_BOOL);
-                $commit->bindParam(':nombreStatistiques', $progression->nombreStatistiques, PDO::PARAM_INT);
-                $commit->bindParam(':pointCompetence', $progression->pointCompetence, PDO::PARAM_BOOL);
-                $commit->bindParam(':nombrePointsCompetences', $progression->nombrePointsCompetences, PDO::PARAM_INT);
-                $commit->execute();
+                    $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                    $commit->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
+                    $commit->bindParam(':statistiques', $progression->statistiques, PDO::PARAM_BOOL);
+                    $commit->bindParam(':nombreStatistiques', $progression->nombreStatistiques, PDO::PARAM_INT);
+                    $commit->bindParam(':pointCompetence', $progression->pointCompetence, PDO::PARAM_BOOL);
+                    $commit->bindParam(':nombrePointsCompetences', $progression->nombrePointsCompetences, PDO::PARAM_INT);
+                    $commit->execute();
 
-                // $commit->debugDumpParams();
+                    // $commit->debugDumpParams();
 
-                $result = $bdd->query('SELECT *
+                    $result = $bdd->query('SELECT *
 					FROM progressionpersonnage 
                     where idProgressionPersonnage=' . $bdd->lastInsertId() . '
                     ');
-                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-                $result->closeCursor();
-                $bdd = null;
+                    $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                    $result->closeCursor();
+                    $bdd = null;
 
-                http_response_code(201);
-                deliver_responseRest(201, "progression added", $fetchedResult);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "progression add error in SQL", $sql . "<br>" . $e->getMessage());
+                    http_response_code(201);
+                    deliver_responseRest(201, "progression added", $fetchedResult);
+                } catch (PDOException $e) {
+                    http_response_code(500);
+                    deliver_responseRest(500, "progression add error in SQL", $sql . "<br>" . $e->getMessage());
+                }
             }
         }
         break;
     case "PUT":
-        if (isset($_GET['idProgressionPersonnage'])) {
-            try {
-                $progression = json_decode($_GET['ProgressionPersonnage'])->ProgressionPersonnage;
-                $sql = "UPDATE progressionpersonnage 
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            if (isset($_GET['idProgressionPersonnage'])) {
+                try {
+                    $progression = json_decode($_GET['ProgressionPersonnage'])->ProgressionPersonnage;
+                    $sql = "UPDATE progressionpersonnage 
                 SET statistiques = :statistiques,
                 nombreStatistiques = :nombreStatistiques,
                 pointCompetence = :pointCompetence,
                 nombrePointsCompetences = :nombrePointsCompetences
                 WHERE niveau = :niveau";
 
-                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                // $commit->bindParam(':idProgressionPersonnage',$progression->idProgressionPersonnage, PDO::PARAM_INT);
-                $commit->bindParam(':niveau',$progression->niveau, PDO::PARAM_INT);
-                $commit->bindParam(':statistiques',$progression->statistiques, PDO::PARAM_BOOL);
-                $commit->bindParam(':nombreStatistiques',$progression->nombreStatistiques, PDO::PARAM_INT);
-                $commit->bindParam(':pointCompetence',$progression->pointCompetence, PDO::PARAM_BOOL);
-                $commit->bindParam(':nombrePointsCompetences',$progression->nombrePointsCompetences, PDO::PARAM_INT);
-                $commit->execute();
+                    $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                    // $commit->bindParam(':idProgressionPersonnage',$progression->idProgressionPersonnage, PDO::PARAM_INT);
+                    $commit->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
+                    $commit->bindParam(':statistiques', $progression->statistiques, PDO::PARAM_BOOL);
+                    $commit->bindParam(':nombreStatistiques', $progression->nombreStatistiques, PDO::PARAM_INT);
+                    $commit->bindParam(':pointCompetence', $progression->pointCompetence, PDO::PARAM_BOOL);
+                    $commit->bindParam(':nombrePointsCompetences', $progression->nombrePointsCompetences, PDO::PARAM_INT);
+                    $commit->execute();
 
-                $result = $bdd->query('SELECT *
+                    $result = $bdd->query('SELECT *
 					FROM progressionpersonnage
-                    where idProgressionPersonnage='.$progression->idProgressionPersonnage);
-                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-                $result->closeCursor();
-                $bdd = null;
-                http_response_code(201);
-                deliver_responseRest(201, "progression modified", $fetchedResult);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "progression modification error in SQL", $sql . "<br>" . $e->getMessage());
-            }
-        } else
-            deliver_responseRest(400, "progression modification error, missing idProgressionPersonnage", '');
+                    where idProgressionPersonnage=' . $progression->idProgressionPersonnage);
+                    $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                    $result->closeCursor();
+                    $bdd = null;
+                    http_response_code(201);
+                    deliver_responseRest(201, "progression modified", $fetchedResult);
+                } catch (PDOException $e) {
+                    deliver_responseRest(400, "progression modification error in SQL", $sql . "<br>" . $e->getMessage());
+                }
+            } else
+                deliver_responseRest(400, "progression modification error, missing idProgressionPersonnage", '');
+        }
         break;
     case "DELETE":
-        try {
-            $progression = json_decode($_GET['ProgressionPersonnage'])->ProgressionPersonnage;
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            try {
+                $progression = json_decode($_GET['ProgressionPersonnage'])->ProgressionPersonnage;
 
-            if ($progression->niveau > 1) {
-                $commit = $bdd->prepare('DELETE FROM progressionpersonnage WHERE niveau = :niveau');
-                $commit->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
-                $commit->execute();
-                $rowCount = $commit->rowCount();
-
-                if (!$rowCount) {
-                    deliver_responseRest(400, "progression deletion fail", '');
-                } else {
-                    $check = $bdd->prepare('SELECT * FROM monte WHERE niveau = :niveau');
-                    $check->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
-                    $check->execute();
-                    $rowCountCheck = $commit->rowCount();
-
-                    $commit = $bdd->prepare('DELETE FROM monte WHERE niveau = :niveau');
+                if ($progression->niveau > 1) {
+                    $commit = $bdd->prepare('DELETE FROM progressionpersonnage WHERE niveau = :niveau');
                     $commit->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
                     $commit->execute();
                     $rowCount = $commit->rowCount();
 
-                    if (!$rowCountCheck || $rowCountCheck != $rowCount) {
-                        http_response_code(202);
-                        deliver_responseRest(202, "progression deleted", '');
+                    if (!$rowCount) {
+                        deliver_responseRest(400, "progression deletion fail", '');
                     } else {
-                        http_response_code(400);
-                        deliver_responseRest(400,
-                            "progression deletion ok, but incoherent state with level still assigned for characters when supposed to be deleted",
-                            '');
+                        $check = $bdd->prepare('SELECT * FROM monte WHERE niveau = :niveau');
+                        $check->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
+                        $check->execute();
+                        $rowCountCheck = $commit->rowCount();
+
+                        $commit = $bdd->prepare('DELETE FROM monte WHERE niveau = :niveau');
+                        $commit->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
+                        $commit->execute();
+                        $rowCount = $commit->rowCount();
+
+                        if (!$rowCountCheck || $rowCountCheck != $rowCount) {
+                            http_response_code(202);
+                            deliver_responseRest(202, "progression deleted", '');
+                        } else {
+                            http_response_code(400);
+                            deliver_responseRest(400,
+                                "progression deletion ok, but incoherent state with level still assigned for characters when supposed to be deleted",
+                                '');
+                        }
                     }
+                } else {
+                    http_response_code(406);
+                    deliver_responseRest(406, "Impossible de supprimer le niveau 1, ou inférieur.", '');
                 }
-            } else {
-                http_response_code(406);
-                deliver_responseRest(406, "Impossible de supprimer le niveau 1, ou inférieur.", '');
+            } catch (PDOException $e) {
+                deliver_responseRest(400, "progression deletion error in SQL", $sql . "<br>" . $e->getMessage());
             }
-        } catch (PDOException $e) {
-            deliver_responseRest(400, "progression deletion error in SQL", $sql . "<br>" . $e->getMessage());
         }
         break;
 }

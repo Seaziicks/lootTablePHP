@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
-use Firebase\JWT\JWT;
 require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
 require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'AccessRights.php');
+require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'secret_jwt_token.php');
 
 class UserManager
 {
@@ -187,30 +187,25 @@ class UserManager
         return $commit->rowCount();
     }
 
-    public static function decodeJWT(string $JWTToken, string $publicKey, string $algorithm) {
-        $decoded = JWT::decode($JWTToken, $publicKey, array("$algorithm"));
-        return $decoded;
-    }
-
-    public static function hasRightToAccess(string $JWTToken, string $publicKey, string $algorithm, AccessRights $accesRights, int $idUser = null): bool {
+    public static function hasRightToAccess(AccessRights $accesRights, int $idUser = null): bool {
         /**
          * @$hasAccess bool
          */
         $hasAccess = false;
-        $decoded = UserManager::decodeJWT($JWTToken, $publicKey, $algorithm);
+        $decoded = decodeJWT(getJwtFromHeaders());
         switch ($accesRights) {
-            case AccessRights::SAME_USER:
-                $hasAccess = $idUser == $decoded->idUser || $decoded->isGameMaster || $decoded->isAdmin;
-                break;
             case AccessRights::GROUP_MEMBERS:
             case AccessRights::PUBLIC_ACCESS:
                 $hasAccess = true;
                 break;
-            case AccessRights::ADMIN:
-                $hasAccess = $decoded->isAdmin || $decoded->isGameMaster;
+            case AccessRights::SAME_USER:
+                $hasAccess = $idUser == $decoded->idUser || $decoded->isGameMaster || $decoded->isAdmin;
                 break;
             case AccessRights::GAME_MASTER:
-                $hasAccess = $decoded->isGameMaster;
+                $hasAccess = $decoded->isGameMaster || $decoded->isAdmin ;
+                break;
+            case AccessRights::ADMIN:
+                $hasAccess = $decoded->isAdmin;
                 break;
         }
         return $hasAccess;

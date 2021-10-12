@@ -3,8 +3,8 @@ declare(strict_types=1);
 spl_autoload_register('chargerClasse');
 session_start();
 header("Content-Type:application/json");
-use Firebase\JWT\JWT;
-require_once('../vendor/autoload.php');
+
+require_once('secret_jwt_token.php');
 
 /**
  * @param $classname
@@ -29,36 +29,12 @@ $http_method = $_SERVER['REQUEST_METHOD'];
 
 $UserManager = new UserManager($bdd);
 
-$secretKey  = 'bGS6lzFqvvSQ8ALbOxatm7/Vk7mLQyzqaS34Q4oR1ew=';
-
-
-
 switch ($http_method) {
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
         if (isset($_GET['Connexion'])) {
             $user = json_decode($_GET['Connexion']);
-            /*
-            $headers = getallheaders();
-            $authorizationHeader = $headers['Authorization'];
-
-            if ($authorizationHeader) {
-                // print_r(getallheaders()['Authorization']);
-                if (! preg_match('/Bearer\s(\S+)/', getallheaders()['Authorization'], $matches)) {
-                    header('HTTP/1.0 400 Bad Request');
-                    echo 'Token not found in request';
-                    exit;
-                }
-
-                $jwt = $matches[1];
-                if (! $jwt) {
-                    // No token was able to be extracted from the authorization header
-                    header('HTTP/1.0 400 Bad Request');
-                    exit;
-                }
-            }
-            */
 
             $user = $UserManager->getUser($_GET['Connexion']);
 
@@ -91,12 +67,11 @@ switch ($http_method) {
 
                 //print_r($data);
 
-                // echo JWT::encode($data, $secretKey, 'HS512');
-                $algorithm = 'HS512';
+                // echo JWT::encode($data, getJwtSecret(), getJwtAlgorithm());
                 $matchingData = JWT::encode(
                     $data,
-                    $secretKey,
-                    $algorithm
+                    getJwtSecret(),
+                    getJwtAlgorithm()
                 );
 
                 http_response_code(200);
