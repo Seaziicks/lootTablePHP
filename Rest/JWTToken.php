@@ -1,5 +1,8 @@
 <?php
 declare(strict_types=1);
+
+use Firebase\JWT\JWT;
+
 spl_autoload_register('chargerClasse');
 session_start();
 header("Content-Type:application/json");

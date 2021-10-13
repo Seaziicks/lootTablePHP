@@ -187,7 +187,7 @@ class UserManager
         return $commit->rowCount();
     }
 
-    public static function hasRightToAccess(AccessRights $accesRights, int $idUser = null): bool {
+    public static function hasRightToAccess(/*AccessRights*/string $accesRights, int $idUser = null): bool {
         /**
          * @$hasAccess bool
          */
