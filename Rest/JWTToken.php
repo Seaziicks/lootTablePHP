@@ -48,7 +48,8 @@ switch ($http_method) {
             } elseif ($user) {
 
                 $issuedAt   = new DateTimeImmutable();
-                $expire     = $issuedAt->modify('+6 minutes')->getTimestamp();      // Add 60 seconds
+                $expire     = $issuedAt->modify('+2 hours')->getTimestamp();      // Add 60 seconds
+                // $expire     = $issuedAt->modify('+2 seconds')->getTimestamp();      // Add 60 seconds
                 $serverName = "localhost";
                 $idUser   = $user->_idUser;                                           // Retrieved from filtered POST data
                 $username   = "$user->_username";                                           // Retrieved from filtered POST data
