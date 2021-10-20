@@ -44,6 +44,12 @@ function getJwtFromHeaders(): string
 
 function decodeJwt(string $jwt)
 {
-    $decoded = JWT::decode($jwt, getJwtSecret(), array(getJwtAlgorithm()));
+    try {
+        $decoded = JWT::decode($jwt, getJwtSecret(), array(getJwtAlgorithm()));
+    } catch (Firebase\JWT\ExpiredException $e) {
+        http_response_code(401);
+        header('HTTP/1.0 401 Unauthorized - Expired JWT');
+        exit;
+    }
     return $decoded;
 }
