@@ -49,6 +49,7 @@ switch ($http_method) {
 
                 $issuedAt   = new DateTimeImmutable();
                 $expire     = $issuedAt->modify('+2 hours')->getTimestamp();      // Add 60 seconds
+                // $expire     = $issuedAt->modify('+4 minutes')->getTimestamp();      // Add 60 seconds
                 // $expire     = $issuedAt->modify('+2 seconds')->getTimestamp();      // Add 60 seconds
                 $serverName = "localhost";
                 $idUser   = $user->_idUser;                                           // Retrieved from filtered POST data
@@ -83,6 +84,9 @@ switch ($http_method) {
                 deliver_responseRest(200, "Qui a demandé un token bien chaud, qui ?!", $matchingData);
             }
         } elseif(isset($_GET['leftPersonnage']) && filter_var($_GET['leftPersonnage'], FILTER_VALIDATE_BOOLEAN)) {
+            /*
+             * Permet de renvoyer la liste des personnages qui ne sont pas attribues a un user.
+             */
             $sql = 'SELECT * 
                     FROM personnage 
                     WHERE idPersonnage NOT IN (
@@ -114,6 +118,9 @@ switch ($http_method) {
                 deliver_responseRest(200, "Votre nom ne me dis rien ... Voulez-vous nous rejoindre ?", '');
             }
         } elseif(isset($_GET['nomPersonnage']) && isset($_GET['checkAvailable']) && filter_var($_GET['checkAvailable'], FILTER_VALIDATE_BOOLEAN)) {
+            /*
+             * Permet de savoir si un nom de personnage est deja utilise ou non.
+             */
             $PersonnageManager = new PersonnageManager($bdd);
 
             $personnageExist = $PersonnageManager->personnageExist($_GET['nomPersonnage']);
