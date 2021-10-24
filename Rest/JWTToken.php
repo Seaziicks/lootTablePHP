@@ -39,7 +39,7 @@ switch ($http_method) {
         if (isset($_GET['Connexion'])) {
             $user = json_decode($_GET['Connexion']);
 
-            $user = $UserManager->getUser($_GET['Connexion']);
+            $user = $UserManager->getUserAvecPersonnage($_GET['Connexion']);
 
             if (!$user) {
                 http_response_code(403);
@@ -48,14 +48,16 @@ switch ($http_method) {
             } elseif ($user) {
 
                 $issuedAt   = new DateTimeImmutable();
-                $expire     = $issuedAt->modify('+2 hours')->getTimestamp();      // Add 60 seconds
-                // $expire     = $issuedAt->modify('+4 minutes')->getTimestamp();      // Add 60 seconds
-                // $expire     = $issuedAt->modify('+2 seconds')->getTimestamp();      // Add 60 seconds
+                $expire     = $issuedAt->modify('+2 hours')->getTimestamp();      // Expire dans 2h
+                // $expire     = $issuedAt->modify('+4 minutes')->getTimestamp();      // Expire dans 4 minutes
+                // $expire     = $issuedAt->modify('+2 seconds')->getTimestamp();      // Expire dans 2 secondes
                 $serverName = "localhost";
                 $idUser   = $user->_idUser;                                           // Retrieved from filtered POST data
                 $username   = "$user->_username";                                           // Retrieved from filtered POST data
                 $isGameMaster   = $user->_isGameMaster;                                           // Retrieved from filtered POST data
                 $isAdmin   = $user->_isAdmin;                                           // Retrieved from filtered POST data
+                $idPersonnage = $user->_idPersonnage;
+                $personnage = $user->personnage;
 
                 //print_r($user);
 
@@ -67,7 +69,9 @@ switch ($http_method) {
                     'idUser' => $idUser,
                     'username' => $username,                     // User name
                     'isGameMaster' => $isGameMaster,
-                    'isAdmin' => $isAdmin
+                    'isAdmin' => $isAdmin,
+                    'idPersonnage' => $idPersonnage,
+                    'personnage' => $personnage
                 ];
 
                 //print_r($data);
