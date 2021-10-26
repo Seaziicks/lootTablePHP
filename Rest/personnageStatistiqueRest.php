@@ -102,66 +102,76 @@ switch ($http_method){
         break;
 
     case "POST":
-        if (!(empty($_GET['idPersonnage']) || empty($_GET['idStatistique']) || empty($_GET['niveau']))) {
-            /**
-             * Ajout d'une ligne de statistique, lors de la montée de niveau
-             */
-            try {
-                $sql = "INSERT INTO monte (idPersonnage, idStatistique, niveau, valeur)
+        if (!UserManager::hasRightToAccess(AccessRights::SAME_USER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            if (!(empty($_GET['idPersonnage']) || empty($_GET['idStatistique']) || empty($_GET['niveau']))) {
+                /**
+                 * Ajout d'une ligne de statistique, lors de la montée de niveau
+                 */
+                try {
+                    $sql = "INSERT INTO monte (idPersonnage, idStatistique, niveau, valeur)
                 VALUES (" . $_GET['idPersonnage'] . ", " . $_GET['idStatistique'] . ",
                  " . $_GET['niveau'] . ", " . $_GET['valeur'] . ")";
 
 
-                $bdd->exec($sql);
-                $result = $bdd->query("SELECT *
+                    $bdd->exec($sql);
+                    $result = $bdd->query("SELECT *
 					FROM monte 
                     WHERE idPersonnage = " . $_GET['idPersonnage'] . " AND idStatistique = " . $_GET['idStatistique'] . "
                     AND niveau = " . $_GET['niveau']);
-                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-                $result->closeCursor();
-                $bdd = null;
-                http_response_code(201);
-                deliver_responseRest(201, "monte added", $fetchedResult);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "monte add error in SQL", $sql . "<br>" . $e->getMessage());
+                    $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                    $result->closeCursor();
+                    $bdd = null;
+                    http_response_code(201);
+                    deliver_responseRest(201, "monte added", $fetchedResult);
+                } catch (PDOException $e) {
+                    deliver_responseRest(400, "monte add error in SQL", $sql . "<br>" . $e->getMessage());
+                }
             }
+            deliver_responseRest(400, "monte add error, missing idPersonnag or idStatistique or niveau", $sql . "<br>" . $e->getMessage());
         }
-        deliver_responseRest(400, "monte add error, missing idPersonnag or idStatistique or niveau", $sql . "<br>" . $e->getMessage());
         break;
 
     case "PUT":
-        if (!(empty($_GET['idPersonnage']) || empty($_GET['idStatistique']) || empty($_GET['niveau']))) {
-            /**
-             * Modification d'une ligne de statistique.
-             */
-            try {
-                $sql = "UPDATE monte 
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            if (!(empty($_GET['idPersonnage']) || empty($_GET['idStatistique']) || empty($_GET['niveau']))) {
+                /**
+                 * Modification d'une ligne de statistique.
+                 */
+                try {
+                    $sql = "UPDATE monte 
                 SET valeur = :valeur 
                 WHERE idPersonnage = :idPersonnage 
                 AND idStatistique = :idStatistique 
                 AND niveau = :niveau";
 
-                $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $commit->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
-                $commit->bindParam(':idStatistique', $_GET['idStatistique'], PDO::PARAM_INT);
-                $commit->bindParam(':niveau', $_GET['niveau'], PDO::PARAM_INT);
-                $commit->bindParam(':valeur', $_GET['valeur'], PDO::PARAM_INT);
-                $commit->execute();
+                    $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                    $commit->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
+                    $commit->bindParam(':idStatistique', $_GET['idStatistique'], PDO::PARAM_INT);
+                    $commit->bindParam(':niveau', $_GET['niveau'], PDO::PARAM_INT);
+                    $commit->bindParam(':valeur', $_GET['valeur'], PDO::PARAM_INT);
+                    $commit->execute();
 
-                $result = $bdd->query("SELECT *
+                    $result = $bdd->query("SELECT *
 					FROM monte 
                     WHERE idPersonnage = " . $_GET['idPersonnage'] . " AND idStatistique = " . $_GET['idStatistique'] . "
                     AND niveau = " . $_GET['niveau']);
-                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-                $result->closeCursor();
-                $bdd = null;
-                http_response_code(200);
-                deliver_responseRest(200, "monte modified", $fetchedResult);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "monte modification error in SQL", $sql . "<br>" . $e->getMessage());
+                    $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                    $result->closeCursor();
+                    $bdd = null;
+                    http_response_code(200);
+                    deliver_responseRest(200, "monte modified", $fetchedResult);
+                } catch (PDOException $e) {
+                    deliver_responseRest(400, "monte modification error in SQL", $sql . "<br>" . $e->getMessage());
+                }
             }
+            deliver_responseRest(400, "monte modification error, missing idPersonnag or idStatistique or niveau", $sql . "<br>" . $e->getMessage());
         }
-        deliver_responseRest(400, "monte modification error, missing idPersonnag or idStatistique or niveau", $sql . "<br>" . $e->getMessage());
         break;
 }
 /// Envoi de la réponse au Client
