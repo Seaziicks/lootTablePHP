@@ -12,36 +12,54 @@ switch ($http_method){
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
         if (isset($_GET['idPersonnage']) && (empty($_GET['details']) || !filter_var($_GET['details'],FILTER_VALIDATE_BOOLEAN))) {
-            $statistiqueQuery = $bdd->query('SELECT *
-					FROM monte 
-                    where idPersonnage='.$_GET['idPersonnage']);
-
-            // Prepare le tableau de statistique, en mettant toutes les valeurs à 0.
+            /**
+             * Permet de récupérer les statistiques agglomérées pour un personnage.
+             */
+            $statistiqueQuery = $bdd->query('SELECT s.libelle, m.niveau, m.valeur
+            FROM monte as m, statistique as s
+            WHERE idPersonnage='.$_GET['idPersonnage'].'
+            AND m.idStatistique = s.idStatistique
+            ORDER BY m.idStatistique');
             $statistiquesNameQuery = $bdd->query('SELECT * FROM statistique');
             $statistiquesNames = $statistiquesNameQuery->fetchAll(PDO::FETCH_ASSOC);
             // $statistiquesTest[array_search($statistiqueFetched['idStatistique'], array_column($statistiquesTest, 'idStatistique'))]
             $statistiques = [];
+            // Prepare le tableau de statistique, en mettant toutes les valeurs à 0.
             foreach($statistiquesNames as $statistiqueName) {
                 $statistiques[$statistiqueName['libelle']] = 0;
             }
             while($statistiqueFetched = $statistiqueQuery->fetch(PDO::FETCH_ASSOC)) {
+                $statistiques[$statistiqueFetched['libelle']] += $statistiqueFetched['valeur'];
+            }
+            /**
+             * Ancienne manière de faire, quand je faisais une requête SQL non raffinnée. Complexe, mais complètement con.
+
+            $statistiqueQuery = $bdd->query('SELECT *
+            FROM monte
+            where idPersonnage='.$_GET['idPersonnage']);
+
+            while($statistiqueFetched = $statistiqueQuery->fetch(PDO::FETCH_ASSOC)) {
                 $currentStatistiqueName = $statistiquesNames[array_search($statistiqueFetched['idStatistique'], array_column($statistiquesNames, 'idStatistique'))]['libelle'];
                 $statistiques[$currentStatistiqueName] += $statistiqueFetched['valeur'];
             }
+            */
 
             $matchingData = $statistiques;
             http_response_code(200);
             /// Envoi de la réponse au Client
             deliver_responseRest(200, "Vous désirez consulter votre compte en statistique ?", $matchingData);
         } elseif (isset($_GET['idPersonnage']) && isset($_GET['details']) && filter_var($_GET['details'],FILTER_VALIDATE_BOOLEAN)) {
-
+            /**
+             * Permet de récupérer les statistiques niveau par niveau, pour voir les points investis à chaque niveau.
+             */
             $statistiquesNameQuery = $bdd->query('SELECT * FROM statistique');
             $statistiquesNames = $statistiquesNameQuery->fetchAll(PDO::FETCH_ASSOC);
 
-            $statistiqueQuery = $bdd->query('SELECT *
-					FROM monte 
-                    WHERE idPersonnage='.$_GET['idPersonnage'].'
-                    ORDER BY niveau DESC');
+            $statistiqueQuery = $bdd->query('SELECT s.libelle, m.niveau, m.valeur
+					FROM monte as m, statistique as s
+                    WHERE idPersonnage = '.$_GET['idPersonnage'].'
+                    AND m.idStatistique = s.idStatistique
+                    ORDER BY niveau DESC, m.idStatistique');
 
             $statistiques = [];
             $statistique = [];
@@ -58,8 +76,8 @@ switch ($http_method){
                         $statistique[$statistiqueName['libelle']] = 0;
                     }
                 }
-                $currentStatistiqueName = $statistiquesNames[array_search($statistiqueFetched['idStatistique'], array_column($statistiquesNames, 'idStatistique'))]['libelle'];
-                $statistique[$currentStatistiqueName] = intval($statistiqueFetched['valeur']);
+                // $currentStatistiqueName = $statistiquesNames[array_search($statistiqueFetched['idStatistique'], array_column($statistiquesNames, 'idStatistique'))]['libelle'];
+                $statistique[$statistiqueFetched['libelle']] = intval($statistiqueFetched['valeur']);
             }
             if (!array_search($statistique, $statistiques))
                 array_push($statistiques, $statistique);
@@ -85,6 +103,9 @@ switch ($http_method){
 
     case "POST":
         if (!(empty($_GET['idPersonnage']) || empty($_GET['idStatistique']) || empty($_GET['niveau']))) {
+            /**
+             * Ajout d'une ligne de statistique, lors de la montée de niveau
+             */
             try {
                 $sql = "INSERT INTO monte (idPersonnage, idStatistique, niveau, valeur)
                 VALUES (" . $_GET['idPersonnage'] . ", " . $_GET['idStatistique'] . ",
@@ -110,6 +131,9 @@ switch ($http_method){
 
     case "PUT":
         if (!(empty($_GET['idPersonnage']) || empty($_GET['idStatistique']) || empty($_GET['niveau']))) {
+            /**
+             * Modification d'une ligne de statistique.
+             */
             try {
                 $sql = "UPDATE monte 
                 SET valeur = :valeur 
