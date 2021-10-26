@@ -48,9 +48,9 @@ switch ($http_method) {
             } elseif ($user) {
 
                 $issuedAt   = new DateTimeImmutable();
-                $expire     = $issuedAt->modify('+2 hours')->getTimestamp();      // Expire dans 2h
+                // $expire     = $issuedAt->modify('+2 hours')->getTimestamp();      // Expire dans 2h
                 // $expire     = $issuedAt->modify('+4 minutes')->getTimestamp();      // Expire dans 4 minutes
-                // $expire     = $issuedAt->modify('+2 seconds')->getTimestamp();      // Expire dans 2 secondes
+                $expire     = $issuedAt->modify('+10 seconds')->getTimestamp();      // Expire dans 10 secondes
                 $serverName = "localhost";
                 $idUser   = $user->_idUser;                                           // Retrieved from filtered POST data
                 $username   = "$user->_username";                                           // Retrieved from filtered POST data

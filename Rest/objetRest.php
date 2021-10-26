@@ -37,62 +37,71 @@ switch ($http_method) {
         break;
 
     case "POST":
-        try {
-            $objet = $ObjetManager->addObjet($_GET['Objet']);
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            try {
+                $objet = $ObjetManager->addObjet($_GET['Objet']);
 
-            http_response_code(201);
-            deliver_responseRest(201, "objet added", $objet);
-        } catch (PDOException $e) {
-            deliver_responseRest(400, "objet add error in SQL", $sql . "<br>" . $e->getMessage());
+                http_response_code(201);
+                deliver_responseRest(201, "objet added", $objet);
+            } catch (PDOException $e) {
+                deliver_responseRest(400, "objet add error in SQL", $sql . "<br>" . $e->getMessage());
+            }
         }
         break;
     case "PUT":
-        if (isset($_GET['idObjet']) && isset($_GET['idMalediction'])) {
-            $sql = "UPDATE objet 
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            if (isset($_GET['idObjet']) && isset($_GET['idMalediction'])) {
+                $sql = "UPDATE objet 
                 SET idMalediction = :idMalediction
                 WHERE idObjet = :idObjet;";
 
-            $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-            $commit->bindParam(':idObjet',$_GET['idObjet'], PDO::PARAM_INT);
-            $commit->bindParam(':idMalediction',$_GET['idMalediction'], PDO::PARAM_INT);
-            $commit->execute();
+                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit->bindParam(':idObjet', $_GET['idObjet'], PDO::PARAM_INT);
+                $commit->bindParam(':idMalediction', $_GET['idMalediction'], PDO::PARAM_INT);
+                $commit->execute();
 
-            $result = $bdd->query('SELECT *
+                $result = $bdd->query('SELECT *
 					FROM objet
                     where idObjet=' . $_GET['idObjet'] . '
                     ');
-            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-            $result->closeCursor();
-            $bdd = null;
-            http_response_code(201);
-            deliver_responseRest(201, "objet malediction modified", $fetchedResult);
-        } elseif (isset($_GET['idObjet']) && isset($_GET['idMateriaux'])) {
-            $sql = "UPDATE objet 
+                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                $result->closeCursor();
+                $bdd = null;
+                http_response_code(201);
+                deliver_responseRest(201, "objet malediction modified", $fetchedResult);
+            } elseif (isset($_GET['idObjet']) && isset($_GET['idMateriaux'])) {
+                $sql = "UPDATE objet 
                 SET idMateriaux = :idMateriaux
                 WHERE idObjet = :idObjet;";
 
-            $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-            $commit->bindParam(':idObjet',$_GET['idObjet'], PDO::PARAM_INT);
-            $commit->bindParam(':idMalediction',$_GET['idMalediction'], PDO::PARAM_INT);
-            $commit->execute();
+                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit->bindParam(':idObjet', $_GET['idObjet'], PDO::PARAM_INT);
+                $commit->bindParam(':idMalediction', $_GET['idMalediction'], PDO::PARAM_INT);
+                $commit->execute();
 
-            $result = $bdd->query('SELECT *
+                $result = $bdd->query('SELECT *
 					FROM objet
                     where idObjet=' . $_GET['idObjet'] . '
                     ');
-            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-            $result->closeCursor();
-            $bdd = null;
-            http_response_code(201);
-            deliver_responseRest(201, "objet materiau modified", $fetchedResult);
-        }
-        elseif (isset($_GET['idObjet'])) {
-            try {
-                $objet = $ObjetManager->updateObjet($_GET['Objet']);
+                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                $result->closeCursor();
+                $bdd = null;
                 http_response_code(201);
-                deliver_responseRest(201, "$objet modified", $objet);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "$objet modification error in SQL", $sql . "<br>" . $e->getMessage());
+                deliver_responseRest(201, "objet materiau modified", $fetchedResult);
+            } elseif (isset($_GET['idObjet'])) {
+                try {
+                    $objet = $ObjetManager->updateObjet($_GET['Objet']);
+                    http_response_code(201);
+                    deliver_responseRest(201, "objet modified", $objet);
+                } catch (PDOException $e) {
+                    deliver_responseRest(400, "objet modification error in SQL", $sql . "<br>" . $e->getMessage());
+                }
             }
         }
         break;

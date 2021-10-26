@@ -45,54 +45,69 @@ switch ($http_method){
         break;
 
     case "POST":
-        try {
-            $malediction = json_decode($_GET['Malediction']);
-            $sql = "INSERT INTO `malediction` (`nom`,`description`) 
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            try {
+                $malediction = json_decode($_GET['Malediction']);
+                $sql = "INSERT INTO `malediction` (`nom`,`description`) 
                                         VALUES (:nom, :description)";
 
-            $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-            $commit->bindParam(':nom',$malediction->nom, PDO::PARAM_STR);
-            $commit->bindParam(':description',$malediction->description, PDO::PARAM_STR);
-            $commit->execute();
-            $result = $bdd->query('SELECT *
+                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit->bindParam(':nom', $malediction->nom, PDO::PARAM_STR);
+                $commit->bindParam(':description', $malediction->description, PDO::PARAM_STR);
+                $commit->execute();
+                $result = $bdd->query('SELECT *
 					FROM malediction 
                     where idMalediction=' . $bdd->lastInsertId() . '
                     ');
-            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-            $result->closeCursor();
-            $bdd = null;
+                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                $result->closeCursor();
+                $bdd = null;
 
-            http_response_code(201);
-            deliver_responseRest(201, "malediction added", $fetchedResult);
-        } catch (PDOException $e) {
-            deliver_responseRest(400, "malediction add error in SQL", $sql . "<br>" . $e->getMessage());
+                http_response_code(201);
+                deliver_responseRest(201, "malediction added", $fetchedResult);
+            } catch (PDOException $e) {
+                deliver_responseRest(400, "malediction add error in SQL", $sql . "<br>" . $e->getMessage());
+            }
         }
         break;
     case "PUT":
-        if (isset($_GET['idMalediction'])) {
-            try {
-                $malediction = $MaledictionManager->updateMalediction($_GET['Malediction']);
-                http_response_code(201);
-                deliver_responseRest(201, "malediction modified", $malediction);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "malediction modification error in SQL", $sql . "<br>" . $e->getMessage());
-            }
-        } else
-            deliver_responseRest(400, "malediction modification error, missing idMalediction", '');
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            if (isset($_GET['idMalediction'])) {
+                try {
+                    $malediction = $MaledictionManager->updateMalediction($_GET['Malediction']);
+                    http_response_code(201);
+                    deliver_responseRest(201, "malediction modified", $malediction);
+                } catch (PDOException $e) {
+                    deliver_responseRest(400, "malediction modification error in SQL", $sql . "<br>" . $e->getMessage());
+                }
+            } else
+                deliver_responseRest(400, "malediction modification error, missing idMalediction", '');
+        }
         break;
     case "DELETE":
-        try {
-            $malediction = json_decode($_GET['Malediction'])->Malediction;
-            $rowCount = $MaledictionManager->deleteMalediction($malediction->idMalediction);
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            try {
+                $malediction = json_decode($_GET['Malediction'])->Malediction;
+                $rowCount = $MaledictionManager->deleteMalediction($malediction->idMalediction);
 
-            if( ! $rowCount ) {
-                deliver_responseRest(400, "malediction deletion fail", '');
-            } else {
-                http_response_code(202);
-                deliver_responseRest(202, "malediction deleted", '');
+                if (!$rowCount) {
+                    deliver_responseRest(400, "malediction deletion fail", '');
+                } else {
+                    http_response_code(202);
+                    deliver_responseRest(202, "malediction deleted", '');
+                }
+            } catch (PDOException $e) {
+                deliver_responseRest(400, "malediction deletion error in SQL", $sql . "<br>" . $e->getMessage());
             }
-        } catch (PDOException $e) {
-            deliver_responseRest(400, "malediction deletion error in SQL", $sql . "<br>" . $e->getMessage());
         }
         break;
 }

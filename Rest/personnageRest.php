@@ -66,32 +66,37 @@ switch ($http_method){
         break;
 
     case "POST":
-        if (isset($_GET['idPersonnage'])) {
-            try {
-                $sql = "UPDATE personnage 
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            if (isset($_GET['idPersonnage'])) {
+                try {
+                    $sql = "UPDATE personnage 
                 SET nom = :nom, 
                 niveau = :niveau
                 WHERE idPersonnage = :idPersonnage";
 
-                $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $commit->bindParam(':idPersonnage', intval($_GET['idPersonnage']), PDO::PARAM_INT);
-                $commit->bindParam(':nom', $_GET['nom'], PDO::PARAM_STR);
-                $commit->bindParam(':niveau', intval($_GET['niveau']), PDO::PARAM_INT);
-                $commit->execute();
+                    $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                    $commit->bindParam(':idPersonnage', intval($_GET['idPersonnage']), PDO::PARAM_INT);
+                    $commit->bindParam(':nom', $_GET['nom'], PDO::PARAM_STR);
+                    $commit->bindParam(':niveau', intval($_GET['niveau']), PDO::PARAM_INT);
+                    $commit->execute();
 
-                $result = $bdd->query('SELECT *
+                    $result = $bdd->query('SELECT *
 					FROM personnage
-                    where idPersonnage='.$_GET['idPersonnage']);
-                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-                $result->closeCursor();
-                $bdd = null;
-                http_response_code(201);
-                deliver_responseRest(201, "personnage modified", $fetchedResult);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "personnage modification error in SQL", $sql . "<br>" . $e->getMessage());
+                    where idPersonnage=' . $_GET['idPersonnage']);
+                    $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                    $result->closeCursor();
+                    $bdd = null;
+                    http_response_code(201);
+                    deliver_responseRest(201, "personnage modified", $fetchedResult);
+                } catch (PDOException $e) {
+                    deliver_responseRest(400, "personnage modification error in SQL", $sql . "<br>" . $e->getMessage());
+                }
+            } else {
+                deliver_responseRest(400, "personnage modification error, missing idPersonnage", '');
             }
-        } else {
-            deliver_responseRest(400, "personnage modification error, missing idPersonnage", '');
         }
         break;
 }

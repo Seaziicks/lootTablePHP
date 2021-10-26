@@ -57,53 +57,68 @@ switch ($http_method) {
         break;
 
     case "POST":
-        try {
-            $materiau = json_decode($_GET['Materiaux']);
-            $sql = "INSERT INTO `materiaux` (`nom`,`effet`) VALUES (:nom, :effet)";
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            try {
+                $materiau = json_decode($_GET['Materiaux']);
+                $sql = "INSERT INTO `materiaux` (`nom`,`effet`) VALUES (:nom, :effet)";
 
-            $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-            $commit->bindParam(':nom',$materiau->nom, PDO::PARAM_STR);
-            $commit->bindParam(':effet',$materiau->effet, PDO::PARAM_STR);
-            $commit->execute();
-            $result = $bdd->query('SELECT *
+                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $commit->bindParam(':nom', $materiau->nom, PDO::PARAM_STR);
+                $commit->bindParam(':effet', $materiau->effet, PDO::PARAM_STR);
+                $commit->execute();
+                $result = $bdd->query('SELECT *
 					FROM materiaux 
                     where idMateriaux=' . $bdd->lastInsertId() . '
                     ');
-            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-            $result->closeCursor();
-            $bdd = null;
+                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                $result->closeCursor();
+                $bdd = null;
 
-            http_response_code(201);
-            deliver_responseRest(201, "materiau added", $fetchedResult);
-        } catch (PDOException $e) {
-            deliver_responseRest(400, "materiau add error in SQL", $sql . "<br>" . $e->getMessage());
+                http_response_code(201);
+                deliver_responseRest(201, "materiau added", $fetchedResult);
+            } catch (PDOException $e) {
+                deliver_responseRest(400, "materiau add error in SQL", $sql . "<br>" . $e->getMessage());
+            }
         }
         break;
     case "PUT":
-        if (isset($_GET['idMateriaux'])) {
-            try {
-                $materiau = $MateriauxManager->updateMateriaux($_GET['Materiaux']);
-                http_response_code(201);
-                deliver_responseRest(201, "materiau modified", $materiau);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "materiau modification error in SQL", $sql . "<br>" . $e->getMessage());
-            }
-        } else
-            deliver_responseRest(400, "materiau modification error, missing idMateriaux", '');
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            if (isset($_GET['idMateriaux'])) {
+                try {
+                    $materiau = $MateriauxManager->updateMateriaux($_GET['Materiaux']);
+                    http_response_code(201);
+                    deliver_responseRest(201, "materiau modified", $materiau);
+                } catch (PDOException $e) {
+                    deliver_responseRest(400, "materiau modification error in SQL", $sql . "<br>" . $e->getMessage());
+                }
+            } else
+                deliver_responseRest(400, "materiau modification error, missing idMateriaux", '');
+        }
         break;
     case "DELETE":
-        try {
-            $materiau = json_decode($_GET['Materiaux'])->Materiaux;
-            $rowCount = $MateriauxManager->deleteMateriaux($materiau->idMateriaux);
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            try {
+                $materiau = json_decode($_GET['Materiaux'])->Materiaux;
+                $rowCount = $MateriauxManager->deleteMateriaux($materiau->idMateriaux);
 
-            if( ! $rowCount ) {
-                deliver_responseRest(400, "materiau deletion fail", '');
-            } else {
-                http_response_code(202);
-                deliver_responseRest(202, "materiau deleted", '');
+                if (!$rowCount) {
+                    deliver_responseRest(400, "materiau deletion fail", '');
+                } else {
+                    http_response_code(202);
+                    deliver_responseRest(202, "materiau deleted", '');
+                }
+            } catch (PDOException $e) {
+                deliver_responseRest(400, "materiau deletion error in SQL", $sql . "<br>" . $e->getMessage());
             }
-        } catch (PDOException $e) {
-            deliver_responseRest(400, "materiau deletion error in SQL", $sql . "<br>" . $e->getMessage());
         }
         break;
 }

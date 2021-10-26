@@ -43,128 +43,49 @@ switch ($http_method) {
         break;
 
     case "POST":
-        if (!(empty($_GET['idMonstre']) || empty($_GET['idLoot']))) {
-            try {
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            if (!(empty($_GET['idMonstre']) || empty($_GET['idLoot']))) {
+                try {
 
-                $params = json_decode($_GET['Loot']);
-                $loot = $params->Loot[0];
-                $sql = "INSERT INTO `dropchancebis` (`idMonstre`, `roll`, `idLoot`, `niveauMonstre`, `multiplier`, `diceNumber`, `dicePower`) 
+                    $params = json_decode($_GET['Loot']);
+                    $loot = $params->Loot[0];
+                    $sql = "INSERT INTO `dropchancebis` (`idMonstre`, `roll`, `idLoot`, `niveauMonstre`, `multiplier`, `diceNumber`, `dicePower`) 
                         VALUES (" . $params->idMonstre . ", " . $loot->roll . ", " . $loot->idLoot . ", NULL, " . $loot->multiplier . ", " . $loot->diceNumber . ", " . $loot->dicePower . ")";
 
-                $bdd->exec($sql);
-                $result = $bdd->query('SELECT d.roll, l.libelle, d.niveauMonstre, d.multiplier, d.diceNumber, d.dicePower, l.poids
+                    $bdd->exec($sql);
+                    $result = $bdd->query('SELECT d.roll, l.libelle, d.niveauMonstre, d.multiplier, d.diceNumber, d.dicePower, l.poids
 					FROM dropchancebis as d, loot as l
                     where idMonstre=' . $params->idMonstre . '
                     order by roll');
-                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-                $result->closeCursor();
-                $bdd = null;
-                http_response_code(201);
-                deliver_responseRest(201, "dropChance added", $fetchedResult);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "dropChance add error in SQL", $sql . "<br>" . $e->getMessage());
-            }
-        } elseif (!(empty($_GET['idMonstre']) || empty($_GET['multipleInput'])) && filter_var($_GET['multipleInput'], FILTER_VALIDATE_BOOLEAN)) {
-
-            $params = json_decode($_GET['Loot']);
-            $sql = "INSERT INTO `dropchancebis` (`idMonstre`, `roll`, `idLoot`, `niveauMonstre`, `multiplier`, `diceNumber`, `dicePower`) VALUES ";
-            $loots = $params->Loot;
-            $rolls = '';
-            foreach ($loots as $loot) {
-                $sql .= "(" . $params->idMonstre . ", " . $loot->roll . ", " . $loot->idLoot . ", NULL, " . $loot->multiplier . ", " . $loot->diceNumber . ", " . $loot->dicePower . ")";
-                $rolls .= $loot->roll;
-                if ($loot != $loots[count($loots) - 1]) {
-                    $sql .= ", ";
-                    $rolls .= ", ";
+                    $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                    $result->closeCursor();
+                    $bdd = null;
+                    http_response_code(201);
+                    deliver_responseRest(201, "dropChance added", $fetchedResult);
+                } catch (PDOException $e) {
+                    deliver_responseRest(400, "dropChance add error in SQL", $sql . "<br>" . $e->getMessage());
                 }
-            }
-            $sql .= ";";
-            // print_r($sql);
-
-            $bdd->exec($sql);
-            $result = $bdd->query('SELECT d.roll, l.libelle, d.niveauMonstre, d.multiplier, d.diceNumber, d.dicePower, l.poids
-					FROM dropchancebis as d, loot as l
-                    where idMonstre=' . $params->idMonstre . '
-                    AND d.roll in (' . $rolls . ')
-                    AND d.idLoot = l.idLoot
-                    order by roll');
-            $fetchedResult = $result->fetchAll(PDO::FETCH_ASSOC);
-            $result->closeCursor();
-            $bdd = null;
-
-            http_response_code(201);
-            deliver_responseRest(201, "dropChance added", $fetchedResult);
-
-        } else
-            deliver_responseRest(400, "dropChance add error, missing idMonstre or idLoot, or missing idMonstre && multipleInput == true", '');
-        break;
-    case "PUT":
-        if (!(empty($_GET['idMonstre']) || empty($_GET['idLoot']))) {
-            try {
+            } elseif (!(empty($_GET['idMonstre']) || empty($_GET['multipleInput'])) && filter_var($_GET['multipleInput'], FILTER_VALIDATE_BOOLEAN)) {
 
                 $params = json_decode($_GET['Loot']);
-                $loot = $params->Loot;
-                $sql = "UPDATE dropchancebis 
-                SET idLoot = :idLoot,
-                niveauMonstre = NULL, multiplier = :multiplier,
-                diceNumber = :diceNumber, dicePower = :dicePower 
-                WHERE idMonstre = :idMonstre 
-                AND roll = :roll;";
-
-                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $commit->bindParam(':idMonstre', $params->idMonstre, PDO::PARAM_INT);
-                $commit->bindParam(':roll', $loot->roll, PDO::PARAM_INT);
-                $commit->bindParam(':idLoot', $loot->idLoot, PDO::PARAM_INT);
-                $commit->bindParam(':multiplier', $loot->multiplier, PDO::PARAM_INT);
-                $commit->bindParam(':diceNumber', $loot->diceNumber, PDO::PARAM_INT);
-                $commit->bindParam(':dicePower', $loot->dicePower, PDO::PARAM_INT);
-                $commit->execute();
-
-
-                $result = $bdd->query('SELECT d.roll, l.libelle, d.niveauMonstre, d.multiplier, d.diceNumber, d.dicePower, l.poids
-					FROM dropchancebis as d, loot as l
-                    where idMonstre=' . $params->idMonstre . '
-                    AND d.roll = ' . $loot->roll . '
-                    AND d.idLoot = l.idLoot
-                    order by roll');
-                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-                $result->closeCursor();
-                $bdd = null;
-                http_response_code(201);
-                deliver_responseRest(201, "dropChance modified", $fetchedResult);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "dropChance modification error in SQL", $sql . "<br>" . $e->getMessage());
-            }
-        } elseif (!(empty($_GET['idMonstre']) || empty($_GET['multipleInput'])) && filter_var($_GET['multipleInput'], FILTER_VALIDATE_BOOLEAN)) {
-            try {
-                $params = json_decode($_GET['Loot']);
+                $sql = "INSERT INTO `dropchancebis` (`idMonstre`, `roll`, `idLoot`, `niveauMonstre`, `multiplier`, `diceNumber`, `dicePower`) VALUES ";
                 $loots = $params->Loot;
-
                 $rolls = '';
                 foreach ($loots as $loot) {
-                    $loot->idLoot = $loot->idLoot ? $loot->idLoot : 'NULL';
-                    $sql = "UPDATE dropchancebis 
-                            SET idLoot = :idLoot,
-                            niveauMonstre = NULL, multiplier = :multiplier,
-                            diceNumber = :diceNumber, dicePower = :dicePower 
-                            WHERE idMonstre = :idMonstre
-                            AND roll = :roll;";
-
-                    $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                    $commit->bindParam(':idMonstre', $params->idMonstre, PDO::PARAM_INT);
-                    $commit->bindParam(':roll', $loot->roll, PDO::PARAM_INT);
-                    $commit->bindParam(':idLoot', $loot->idLoot, PDO::PARAM_INT);
-                    $commit->bindParam(':multiplier', $loot->multiplier, PDO::PARAM_INT);
-                    $commit->bindParam(':diceNumber', $loot->diceNumber, PDO::PARAM_INT);
-                    $commit->bindParam(':dicePower', $loot->dicePower, PDO::PARAM_INT);
-                    $commit->execute();
-
+                    $sql .= "(" . $params->idMonstre . ", " . $loot->roll . ", " . $loot->idLoot . ", NULL, " . $loot->multiplier . ", " . $loot->diceNumber . ", " . $loot->dicePower . ")";
                     $rolls .= $loot->roll;
                     if ($loot != $loots[count($loots) - 1]) {
+                        $sql .= ", ";
                         $rolls .= ", ";
                     }
                 }
+                $sql .= ";";
+                // print_r($sql);
 
+                $bdd->exec($sql);
                 $result = $bdd->query('SELECT d.roll, l.libelle, d.niveauMonstre, d.multiplier, d.diceNumber, d.dicePower, l.poids
 					FROM dropchancebis as d, loot as l
                     where idMonstre=' . $params->idMonstre . '
@@ -176,50 +97,144 @@ switch ($http_method) {
                 $bdd = null;
 
                 http_response_code(201);
-                deliver_responseRest(201, "dropChance modified", $fetchedResult);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "dropChance modification error in SQL", $sql . "<br>" . $e->getMessage());
-            }
-        } else
-            deliver_responseRest(400, "dropChance modification error, missing idMonstre or idLoot", '');
+                deliver_responseRest(201, "dropChance added", $fetchedResult);
+
+            } else
+                deliver_responseRest(400, "dropChance add error, missing idMonstre or idLoot, or missing idMonstre && multipleInput == true", '');
+        }
         break;
-    case "DELETE":
-        if (!(empty($_GET['idMonstre']) || empty($_GET['multipleInput'])) && filter_var($_GET['multipleInput'], FILTER_VALIDATE_BOOLEAN)) {
-            try {
+    case "PUT":
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            if (!(empty($_GET['idMonstre']) || empty($_GET['idLoot']))) {
+                try {
 
-            $params = json_decode($_GET['Loot']);
-            // print_r($params);
-            $sql = "DELETE FROM dropchancebis WHERE idMonstre = " . $params->idMonstre . " AND roll IN (";
-            $loots = $params->Loot;
-            $rolls = '';
-            foreach ($loots as $loot) {
-                $rolls .= $loot->roll;
-                if ($loot != $loots[count($loots) - 1]) {
-                    $rolls .= ", ";
+                    $params = json_decode($_GET['Loot']);
+                    $loot = $params->Loot;
+                    $sql = "UPDATE dropchancebis 
+                SET idLoot = :idLoot,
+                niveauMonstre = NULL, multiplier = :multiplier,
+                diceNumber = :diceNumber, dicePower = :dicePower 
+                WHERE idMonstre = :idMonstre 
+                AND roll = :roll;";
+
+                    $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                    $commit->bindParam(':idMonstre', $params->idMonstre, PDO::PARAM_INT);
+                    $commit->bindParam(':roll', $loot->roll, PDO::PARAM_INT);
+                    $commit->bindParam(':idLoot', $loot->idLoot, PDO::PARAM_INT);
+                    $commit->bindParam(':multiplier', $loot->multiplier, PDO::PARAM_INT);
+                    $commit->bindParam(':diceNumber', $loot->diceNumber, PDO::PARAM_INT);
+                    $commit->bindParam(':dicePower', $loot->dicePower, PDO::PARAM_INT);
+                    $commit->execute();
+
+
+                    $result = $bdd->query('SELECT d.roll, l.libelle, d.niveauMonstre, d.multiplier, d.diceNumber, d.dicePower, l.poids
+					FROM dropchancebis as d, loot as l
+                    where idMonstre=' . $params->idMonstre . '
+                    AND d.roll = ' . $loot->roll . '
+                    AND d.idLoot = l.idLoot
+                    order by roll');
+                    $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                    $result->closeCursor();
+                    $bdd = null;
+                    http_response_code(201);
+                    deliver_responseRest(201, "dropChance modified", $fetchedResult);
+                } catch (PDOException $e) {
+                    deliver_responseRest(400, "dropChance modification error in SQL", $sql . "<br>" . $e->getMessage());
                 }
-            }
-            $sql .= $rolls;
-            $sql .= ");";
-            // print_r($sql);
+            } elseif (!(empty($_GET['idMonstre']) || empty($_GET['multipleInput'])) && filter_var($_GET['multipleInput'], FILTER_VALIDATE_BOOLEAN)) {
+                try {
+                    $params = json_decode($_GET['Loot']);
+                    $loots = $params->Loot;
 
-            $bdd->exec($sql);
-            $result = $bdd->query('SELECT d.roll, l.libelle, d.niveauMonstre, d.multiplier, d.diceNumber, d.dicePower, l.poids
+                    $rolls = '';
+                    foreach ($loots as $loot) {
+                        $loot->idLoot = $loot->idLoot ? $loot->idLoot : 'NULL';
+                        $sql = "UPDATE dropchancebis 
+                            SET idLoot = :idLoot,
+                            niveauMonstre = NULL, multiplier = :multiplier,
+                            diceNumber = :diceNumber, dicePower = :dicePower 
+                            WHERE idMonstre = :idMonstre
+                            AND roll = :roll;";
+
+                        $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                        $commit->bindParam(':idMonstre', $params->idMonstre, PDO::PARAM_INT);
+                        $commit->bindParam(':roll', $loot->roll, PDO::PARAM_INT);
+                        $commit->bindParam(':idLoot', $loot->idLoot, PDO::PARAM_INT);
+                        $commit->bindParam(':multiplier', $loot->multiplier, PDO::PARAM_INT);
+                        $commit->bindParam(':diceNumber', $loot->diceNumber, PDO::PARAM_INT);
+                        $commit->bindParam(':dicePower', $loot->dicePower, PDO::PARAM_INT);
+                        $commit->execute();
+
+                        $rolls .= $loot->roll;
+                        if ($loot != $loots[count($loots) - 1]) {
+                            $rolls .= ", ";
+                        }
+                    }
+
+                    $result = $bdd->query('SELECT d.roll, l.libelle, d.niveauMonstre, d.multiplier, d.diceNumber, d.dicePower, l.poids
 					FROM dropchancebis as d, loot as l
                     where idMonstre=' . $params->idMonstre . '
                     AND d.roll in (' . $rolls . ')
                     AND d.idLoot = l.idLoot
                     order by roll');
-            $fetchedResult = $result->fetchAll(PDO::FETCH_ASSOC);
-            $result->closeCursor();
-            $bdd = null;
+                    $fetchedResult = $result->fetchAll(PDO::FETCH_ASSOC);
+                    $result->closeCursor();
+                    $bdd = null;
 
-            http_response_code(201);
-            deliver_responseRest(201, "dropChance deleted", $fetchedResult);
-            } catch (PDOException $e) {
-                deliver_responseRest(400, "dropChance deletion error in SQL", $sql . "<br>" . $e->getMessage());
-            }
-        } else
-            deliver_responseRest(422, "dropChance delete error, missing idMonstre && multipleInput == true", '');
+                    http_response_code(201);
+                    deliver_responseRest(201, "dropChance modified", $fetchedResult);
+                } catch (PDOException $e) {
+                    deliver_responseRest(400, "dropChance modification error in SQL", $sql . "<br>" . $e->getMessage());
+                }
+            } else
+                deliver_responseRest(400, "dropChance modification error, missing idMonstre or idLoot", '');
+        }
+        break;
+    case "DELETE":
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            if (!(empty($_GET['idMonstre']) || empty($_GET['multipleInput'])) && filter_var($_GET['multipleInput'], FILTER_VALIDATE_BOOLEAN)) {
+                try {
+
+                    $params = json_decode($_GET['Loot']);
+                    // print_r($params);
+                    $sql = "DELETE FROM dropchancebis WHERE idMonstre = " . $params->idMonstre . " AND roll IN (";
+                    $loots = $params->Loot;
+                    $rolls = '';
+                    foreach ($loots as $loot) {
+                        $rolls .= $loot->roll;
+                        if ($loot != $loots[count($loots) - 1]) {
+                            $rolls .= ", ";
+                        }
+                    }
+                    $sql .= $rolls;
+                    $sql .= ");";
+                    // print_r($sql);
+
+                    $bdd->exec($sql);
+                    $result = $bdd->query('SELECT d.roll, l.libelle, d.niveauMonstre, d.multiplier, d.diceNumber, d.dicePower, l.poids
+					FROM dropchancebis as d, loot as l
+                    where idMonstre=' . $params->idMonstre . '
+                    AND d.roll in (' . $rolls . ')
+                    AND d.idLoot = l.idLoot
+                    order by roll');
+                    $fetchedResult = $result->fetchAll(PDO::FETCH_ASSOC);
+                    $result->closeCursor();
+                    $bdd = null;
+
+                    http_response_code(201);
+                    deliver_responseRest(201, "dropChance deleted", $fetchedResult);
+                } catch (PDOException $e) {
+                    deliver_responseRest(400, "dropChance deletion error in SQL", $sql . "<br>" . $e->getMessage());
+                }
+            } else
+                deliver_responseRest(422, "dropChance delete error, missing idMonstre && multipleInput == true", '');
+        }
         break;
 }
 /// Envoi de la réponse au Client

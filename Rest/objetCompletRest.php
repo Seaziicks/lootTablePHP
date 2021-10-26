@@ -102,37 +102,52 @@ switch ($http_method) {
         break;
 
     case "POST":
-        try {
-            $objet = $ObjetManager->addCompleteObjet($_GET['Objet']);
-            http_response_code(201);
-            deliver_responseRest(201, "objet added", $objet);
-        } catch (PDOException $e) {
-            deliver_responseRest(400, "objet add error in SQL", $sql . "<br>" . $e->getMessage());
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            try {
+                $objet = $ObjetManager->addCompleteObjet($_GET['Objet']);
+                http_response_code(201);
+                deliver_responseRest(201, "objet added", $objet);
+            } catch (PDOException $e) {
+                deliver_responseRest(400, "objet add error in SQL", $sql . "<br>" . $e->getMessage());
+            }
         }
         break;
     case "PUT":
-        try {
-            $objet = $ObjetManager->updateObjet($_GET['Objet']);
-            http_response_code(201);
-            deliver_responseRest(201, "objet modified", $objet);
-        } catch (PDOException $e) {
-            deliver_responseRest(400, "objet modification error in SQL", $sql . "<br>" . $e->getMessage());
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            try {
+                $objet = $ObjetManager->updateObjet($_GET['Objet']);
+                http_response_code(201);
+                deliver_responseRest(201, "objet modified", $objet);
+            } catch (PDOException $e) {
+                deliver_responseRest(400, "objet modification error in SQL", $sql . "<br>" . $e->getMessage());
+            }
         }
         break;
     case "DELETE":
-        try {
-            $objet = json_decode($_GET['Objet'])->Objet;
-            // print_r($objet);
-            $rowCount = $ObjetManager->deleteObjet($objet->idObjet);
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            try {
+                $objet = json_decode($_GET['Objet'])->Objet;
+                // print_r($objet);
+                $rowCount = $ObjetManager->deleteObjet($objet->idObjet);
 
-            if( ! $rowCount ) {
-                deliver_responseRest(400, "objet deletion fail", '');
-            } else {
-                http_response_code(202);
-                deliver_responseRest(202, "objet deleted", '');
+                if (!$rowCount) {
+                    deliver_responseRest(400, "objet deletion fail", '');
+                } else {
+                    http_response_code(202);
+                    deliver_responseRest(202, "objet deleted", '');
+                }
+            } catch (PDOException $e) {
+                deliver_responseRest(400, "objet deletion error in SQL", $sql . "<br>" . $e->getMessage());
             }
-        } catch (PDOException $e) {
-            deliver_responseRest(400, "objet deletion error in SQL", $sql . "<br>" . $e->getMessage());
         }
         break;
 }

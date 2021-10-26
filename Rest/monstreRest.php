@@ -37,72 +37,82 @@ switch ($http_method) {
         break;
 
     case "POST":
-        try {
-            $monstre = json_decode($_GET['Monstre']);
-
-            if (!has_duplicates_as_name($bdd, $monstre)) {
-                $sql = "INSERT INTO `monstre` (`idFamilleMonstre`,`libelle`) VALUES (" . $monstre->idFamilleMonstre . ", :libelle)";
-
-                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $commit->bindParam(':libelle', $monstre->libelle, PDO::PARAM_STR);
-                $commit->execute();
-                $result = $bdd->query('SELECT *
-					FROM monstre 
-                    where idMonstre=' . $bdd->lastInsertId() . '
-                    ');
-                $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-                $result->closeCursor();
-                $bdd = null;
-
-                http_response_code(201);
-                deliver_responseRest(201, "monstre added", $fetchedResult);
-            } else {
-                http_response_code(409);
-                deliver_responseRest(409, "A monstre already bear this name.", "");
-            }
-        } catch (PDOException $e) {
-            http_response_code(400);
-            deliver_responseRest(400, "monstre add error in SQL", $sql . "<br>" . $e->getMessage());
-        }
-        break;
-    case "PUT":
-        if (isset($_GET['idMonstre'])) {
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
             try {
                 $monstre = json_decode($_GET['Monstre']);
 
-                if (is_same_monster_as_name($bdd, $monstre)
-                    || (!is_same_monster_as_name($bdd, $monstre) && !has_duplicates_as_name($bdd, $monstre)))
-                {
-                    $sql = "UPDATE monstre 
-                            SET idFamilleMonstre = :idFamilleMonstre,
-                            libelle = :libelle 
-                            WHERE idMonstre = :idMonstre;";
+                if (!has_duplicates_as_name($bdd, $monstre)) {
+                    $sql = "INSERT INTO `monstre` (`idFamilleMonstre`,`libelle`) VALUES (" . $monstre->idFamilleMonstre . ", :libelle)";
 
                     $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                    $commit->bindParam(':idMonstre', $monstre->idMonstre, PDO::PARAM_INT);
-                    $commit->bindParam(':idFamilleMonstre', $monstre->idFamilleMonstre, PDO::PARAM_INT);
                     $commit->bindParam(':libelle', $monstre->libelle, PDO::PARAM_STR);
                     $commit->execute();
-
                     $result = $bdd->query('SELECT *
-					FROM monstre
-                    where idMonstre=' . $monstre->idMonstre . '
+					FROM monstre 
+                    where idMonstre=' . $bdd->lastInsertId() . '
                     ');
                     $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
                     $result->closeCursor();
                     $bdd = null;
+
                     http_response_code(201);
-                    deliver_responseRest(201, "monstre modified", $fetchedResult);
+                    deliver_responseRest(201, "monstre added", $fetchedResult);
                 } else {
                     http_response_code(409);
                     deliver_responseRest(409, "A monstre already bear this name.", "");
                 }
             } catch (PDOException $e) {
                 http_response_code(400);
-                deliver_responseRest(400, "monstre modification error in SQL", $sql . "<br>" . $e->getMessage());
+                deliver_responseRest(400, "monstre add error in SQL", $sql . "<br>" . $e->getMessage());
             }
-            break;
         }
+        break;
+    case "PUT":
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            if (isset($_GET['idMonstre'])) {
+                try {
+                    $monstre = json_decode($_GET['Monstre']);
+
+                    if (is_same_monster_as_name($bdd, $monstre)
+                        || (!is_same_monster_as_name($bdd, $monstre) && !has_duplicates_as_name($bdd, $monstre))) {
+                        $sql = "UPDATE monstre 
+                            SET idFamilleMonstre = :idFamilleMonstre,
+                            libelle = :libelle 
+                            WHERE idMonstre = :idMonstre;";
+
+                        $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                        $commit->bindParam(':idMonstre', $monstre->idMonstre, PDO::PARAM_INT);
+                        $commit->bindParam(':idFamilleMonstre', $monstre->idFamilleMonstre, PDO::PARAM_INT);
+                        $commit->bindParam(':libelle', $monstre->libelle, PDO::PARAM_STR);
+                        $commit->execute();
+
+                        $result = $bdd->query('SELECT *
+					FROM monstre
+                    where idMonstre=' . $monstre->idMonstre . '
+                    ');
+                        $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                        $result->closeCursor();
+                        $bdd = null;
+                        http_response_code(201);
+                        deliver_responseRest(201, "monstre modified", $fetchedResult);
+                    } else {
+                        http_response_code(409);
+                        deliver_responseRest(409, "A monstre already bear this name.", "");
+                    }
+                } catch (PDOException $e) {
+                    http_response_code(400);
+                    deliver_responseRest(400, "monstre modification error in SQL", $sql . "<br>" . $e->getMessage());
+                }
+            }
+        }
+        break;
+
 }
 /// Envoi de la réponse au Client
 function deliver_responseRest($status, $status_message, $data)

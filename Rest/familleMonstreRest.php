@@ -39,52 +39,62 @@ switch ($http_method) {
         break;
 
     case "POST":
-        try {
-            $famille = json_decode($_GET['Famille']);
-            $sql = "INSERT INTO `famillemonstre` (`libelle`) VALUES ('" . $famille->libelle . "')";
-
-            $bdd->exec($sql);
-            $result = $bdd->query('SELECT *
-					FROM famillemonstre 
-                    where idFamilleMonstre=' . $bdd->lastInsertId() . '
-                    ');
-            $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
-            $result->closeCursor();
-            $bdd = null;
-
-            http_response_code(201);
-            deliver_responseRest(201, "familleMonstre added", $fetchedResult);
-        } catch (PDOException $e) {
-            deliver_responseRest(400, "familleMonstre add error in SQL", $sql . "<br>" . $e->getMessage());
-        }
-        break;
-    case "PUT":
-        if (isset($_GET['idFamilleMonstre'])) {
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
             try {
                 $famille = json_decode($_GET['Famille']);
-                $sql = "UPDATE famillemonstre 
-                SET libelle = :libelle 
-                WHERE idFamilleMonstre = :idFamilleMonstre;";
+                $sql = "INSERT INTO `famillemonstre` (`libelle`) VALUES ('" . $famille->libelle . "')";
 
-                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $commit->bindParam(':idFamilleMonstre',$famille->idFamilleMonstre, PDO::PARAM_INT);
-                $commit->bindParam(':libelle',$famille->libelle, PDO::PARAM_STR);
-                $commit->execute();
-
+                $bdd->exec($sql);
                 $result = $bdd->query('SELECT *
-					FROM famillemonstre
-                    where idFamilleMonstre=' . $famille->idFamilleMonstre . '
+					FROM famillemonstre 
+                    where idFamilleMonstre=' . $bdd->lastInsertId() . '
                     ');
                 $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
                 $result->closeCursor();
                 $bdd = null;
+
                 http_response_code(201);
-                deliver_responseRest(201, "familleMonstre modified", $fetchedResult);
+                deliver_responseRest(201, "familleMonstre added", $fetchedResult);
             } catch (PDOException $e) {
-                deliver_responseRest(400, "familleMonstre modification error in SQL", $sql . "<br>" . $e->getMessage());
+                deliver_responseRest(400, "familleMonstre add error in SQL", $sql . "<br>" . $e->getMessage());
             }
-            break;
         }
+        break;
+    case "PUT":
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            if (isset($_GET['idFamilleMonstre'])) {
+                try {
+                    $famille = json_decode($_GET['Famille']);
+                    $sql = "UPDATE famillemonstre 
+                SET libelle = :libelle 
+                WHERE idFamilleMonstre = :idFamilleMonstre;";
+
+                    $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                    $commit->bindParam(':idFamilleMonstre', $famille->idFamilleMonstre, PDO::PARAM_INT);
+                    $commit->bindParam(':libelle', $famille->libelle, PDO::PARAM_STR);
+                    $commit->execute();
+
+                    $result = $bdd->query('SELECT *
+					FROM famillemonstre
+                    where idFamilleMonstre=' . $famille->idFamilleMonstre . '
+                    ');
+                    $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
+                    $result->closeCursor();
+                    $bdd = null;
+                    http_response_code(201);
+                    deliver_responseRest(201, "familleMonstre modified", $fetchedResult);
+                } catch (PDOException $e) {
+                    deliver_responseRest(400, "familleMonstre modification error in SQL", $sql . "<br>" . $e->getMessage());
+                }
+            }
+        }
+        break;
 }
 /// Envoi de la réponse au Client
 function deliver_responseRest($status, $status_message, $data)
