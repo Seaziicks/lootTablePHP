@@ -15,10 +15,20 @@ function getJwtSecret()
     return $secretKey;
 }
 
+/**
+ * @return string
+ */
 function getJwtFromHeaders(): string
 {
     $headers = getallheaders();
-    $authorizationHeader = $headers['Authorization'];
+    $authorizationHeader = array();
+    if (array_key_exists('Authorization', $headers))
+        $authorizationHeader = $headers['Authorization'];
+    else {
+        header('HTTP/1.0 401 - Missing Authorization header');
+        echo 'Missing Authorization header';
+        exit;
+    }
 
     if ($authorizationHeader) {
         // print_r(getallheaders()['Authorization']);
@@ -49,6 +59,18 @@ function decodeJwt(string $jwt)
     } catch (Firebase\JWT\ExpiredException $e) {
         http_response_code(401);
         header('HTTP/1.0 401 Unauthorized - Expired JWT');
+        echo 'Expired JWT';
+        exit;
+    } catch (Firebase\JWT\SignatureInvalidException $e) {
+        http_response_code(401);
+        header('HTTP/1.0 401 Unauthorized - Jwt non valide');
+        echo 'Jwt non valide';
+        exit;
+    } catch (Exception $e) {
+        http_response_code(401);
+        header('HTTP/1.0 401 Unauthorized - Une exception a été levée');
+        echo "Erreur - Une exception a été levée :\n";
+        echo $e;
         exit;
     }
     return $decoded;
