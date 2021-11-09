@@ -33,7 +33,7 @@ class EffetMagique implements JsonSerializable
         }
     }
 
-	public function settitle($title)
+	public function setTitle($title)
     {
         if (is_string($title))
         {

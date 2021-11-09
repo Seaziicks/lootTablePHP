@@ -73,9 +73,9 @@ switch ($http_method){
             if (isset($_GET['idPersonnage'])) {
                 try {
                     $sql = "UPDATE personnage 
-                SET nom = :nom, 
-                niveau = :niveau
-                WHERE idPersonnage = :idPersonnage";
+                            SET nom = :nom, 
+                            niveau = :niveau
+                            WHERE idPersonnage = :idPersonnage";
 
                     $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
                     $commit->bindParam(':idPersonnage', intval($_GET['idPersonnage']), PDO::PARAM_INT);
@@ -84,8 +84,8 @@ switch ($http_method){
                     $commit->execute();
 
                     $result = $bdd->query('SELECT *
-					FROM personnage
-                    where idPersonnage=' . $_GET['idPersonnage']);
+                                                    FROM personnage
+                                                    WHERE idPersonnage=' . $_GET['idPersonnage']);
                     $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
                     $result->closeCursor();
                     $bdd = null;
