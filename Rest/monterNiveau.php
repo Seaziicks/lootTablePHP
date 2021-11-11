@@ -32,61 +32,66 @@ $NiveauManager = new NiveauManager($bdd);
 switch ($http_method) {
     /// Cas de la méthode GET
     case "GET":
-        if (!(empty($_GET['idPersonnage'])) && filter_var($_GET['monte'], FILTER_VALIDATE_BOOLEAN)) {
+        if (!UserManager::hasRightToAccess(AccessRights::GAME_MASTER)) {
+            http_response_code(403);
+            deliver_responseRest(403, "Accès non authorisé, vous n'avez pas les droits.", '');
+        } else {
+            if (!(empty($_GET['idPersonnage'])) && filter_var($_GET['monte'], FILTER_VALIDATE_BOOLEAN)) {
 
-            $sqlMonterNiveau = 'UPDATE personnage 
+                $sqlMonterNiveau = 'UPDATE personnage 
                                 SET niveauEnAttente = niveauEnAttente + 1 
                                 WHERE idPersonnage = :idPersonnage';
 
-            $monterNiveauQuery = $bdd->prepare($sqlMonterNiveau, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-            $monterNiveauQuery->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
-            $monterNiveauQuery->execute();
+                $monterNiveauQuery = $bdd->prepare($sqlMonterNiveau, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $monterNiveauQuery->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
+                $monterNiveauQuery->execute();
 
-            http_response_code(201);
-            deliver_responseRest(201, "Et 1 niveau pour la table n°" . $_GET['idPersonnage'] . ", 1 !", '');
+                http_response_code(201);
+                deliver_responseRest(201, "Et 1 niveau pour la table n°" . $_GET['idPersonnage'] . ", 1 !", '');
 
-        } elseif (isset($_GET['idPersonnage']) && !filter_var($_GET['monte'], FILTER_VALIDATE_BOOLEAN)) {
+            } elseif (isset($_GET['idPersonnage']) && !filter_var($_GET['monte'], FILTER_VALIDATE_BOOLEAN)) {
 
-            $personnage = $PersonnageManager->getPersonnage($_GET['idPersonnage']);
+                $personnage = $PersonnageManager->getPersonnage($_GET['idPersonnage']);
 
-            $sqlBaisserNiveau = '';
-            if ($personnage->_niveauEnAttente > 0) {
-                $sqlBaisserNiveau = 'UPDATE personnage 
+                $sqlBaisserNiveau = '';
+                if ($personnage->_niveauEnAttente > 0) {
+                    $sqlBaisserNiveau = 'UPDATE personnage 
                                         SET niveauEnAttente = niveauEnAttente - 1 
                                         WHERE idPersonnage = :idPersonnage';
 
-            } else {
+                } else {
 
-                $sqlGetNiveau = 'SELECT niveau FROM personnage WHERE idPersonnage = :idPersonnage';
-                $getNiveauQuery = $bdd->prepare($sqlGetNiveau, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $getNiveauQuery->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
-                $getNiveauQuery->execute();
-                $niveauPersonnage = $getNiveauQuery->fetch(PDO::FETCH_ASSOC)['niveau'];
+                    $sqlGetNiveau = 'SELECT niveau FROM personnage WHERE idPersonnage = :idPersonnage';
+                    $getNiveauQuery = $bdd->prepare($sqlGetNiveau, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                    $getNiveauQuery->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
+                    $getNiveauQuery->execute();
+                    $niveauPersonnage = $getNiveauQuery->fetch(PDO::FETCH_ASSOC)['niveau'];
 
-                if ($niveauPersonnage > 1) {
+                    if ($niveauPersonnage > 1) {
 
-                    $sqlBaisserNiveau = 'UPDATE personnage 
+                        $sqlBaisserNiveau = 'UPDATE personnage 
                                         SET niveau = niveau - 1 
                                         WHERE idPersonnage = :idPersonnage';
 
-                    $sqlEnleverStatistiques = 'DELETE FROM monte WHERE idPersonnage = :idPersonnage AND niveau = :niveauPersonnage';
-                    $enleverStatistiques = $bdd->prepare($sqlEnleverStatistiques, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                    $enleverStatistiques->bindParam(':niveauPersonnage', $niveauPersonnage, PDO::PARAM_INT);
-                    $enleverStatistiques->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
-                    $enleverStatistiques->execute();
-                } else {
-                    http_response_code(406);
-                    deliver_responseRest(406, "Impossible de supprimer le niveau 1, ou inférieur.", '');
-                    break;
+                        $sqlEnleverStatistiques = 'DELETE FROM monte WHERE idPersonnage = :idPersonnage AND niveau = :niveauPersonnage';
+                        $enleverStatistiques = $bdd->prepare($sqlEnleverStatistiques, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                        $enleverStatistiques->bindParam(':niveauPersonnage', $niveauPersonnage, PDO::PARAM_INT);
+                        $enleverStatistiques->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
+                        $enleverStatistiques->execute();
+                    } else {
+                        http_response_code(406);
+                        deliver_responseRest(406, "Impossible de supprimer le niveau 1, ou inférieur.", '');
+                        break;
+                    }
                 }
+
+                $monteeNiveauQuery = $bdd->prepare($sqlBaisserNiveau, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                $monteeNiveauQuery->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
+                $monteeNiveauQuery->execute();
+
+                http_response_code(201);
+                deliver_responseRest(201, "Je crois que vous avez fait tomber quelque chose. Tant pis pour vous !", '');
             }
-
-            $monteeNiveauQuery = $bdd->prepare($sqlBaisserNiveau, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-            $monteeNiveauQuery->bindParam(':idPersonnage', $_GET['idPersonnage'], PDO::PARAM_INT);
-            $monteeNiveauQuery->execute();
-
-            http_response_code(201);
-            deliver_responseRest(201, "Je crois que vous avez fait tomber quelque chose. Tant pis pour vous !", '');
         }
         break;
     /// Cas de la méthode POST
