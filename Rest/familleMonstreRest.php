@@ -49,9 +49,9 @@ switch ($http_method) {
 
                 $bdd->exec($sql);
                 $result = $bdd->query('SELECT *
-					FROM famillemonstre 
-                    where idFamilleMonstre=' . $bdd->lastInsertId() . '
-                    ');
+                                                FROM famillemonstre 
+                                                WHERE idFamilleMonstre=' . $bdd->lastInsertId() . '
+                                    ');
                 $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
                 $result->closeCursor();
                 $bdd = null;
@@ -72,8 +72,8 @@ switch ($http_method) {
                 try {
                     $famille = json_decode($_GET['Famille']);
                     $sql = "UPDATE famillemonstre 
-                SET libelle = :libelle 
-                WHERE idFamilleMonstre = :idFamilleMonstre;";
+                            SET libelle = :libelle 
+                            WHERE idFamilleMonstre = :idFamilleMonstre;";
 
                     $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
                     $commit->bindParam(':idFamilleMonstre', $famille->idFamilleMonstre, PDO::PARAM_INT);
@@ -81,9 +81,9 @@ switch ($http_method) {
                     $commit->execute();
 
                     $result = $bdd->query('SELECT *
-					FROM famillemonstre
-                    where idFamilleMonstre=' . $famille->idFamilleMonstre . '
-                    ');
+                                                    FROM famillemonstre
+                                                    WHERE idFamilleMonstre=' . $famille->idFamilleMonstre . '
+                                        ');
                     $fetchedResult = $result->fetch(PDO::FETCH_ASSOC);
                     $result->closeCursor();
                     $bdd = null;
