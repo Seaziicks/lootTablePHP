@@ -66,12 +66,13 @@ class UserManager
     public function getUserAvecPersonnage($userData)
     {
         $user = $this->getUser($userData);
+//        var_dump($user);
 
         if ($user) {
             if ($user->_idPersonnage) {
                 $PersonnageManager = new PersonnageManager($this->_db);
                 $personnage = $PersonnageManager->getPersonnage($user->_idPersonnage);
-                $user = json_decode(json_encode($user));
+//                $user = json_decode(json_encode($user));
                 $user->personnage = $personnage;
 
             } else {
