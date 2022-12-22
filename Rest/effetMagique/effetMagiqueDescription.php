@@ -44,26 +44,38 @@ switch ($http_method){
 
     case "POST":
         try {
-            $effetMagiqueDescriptions = json_decode($_GET['EffetMagiqueDescriptions']);
-            $effetMagiqueDescriptions = json_decode($_GET['EffetMagiqueDescriptions'])->Descriptions;
+            $effetMagiqueDescription = json_decode($_GET['EffetMagiqueDescription'])->EffetMagiqueDescription;
+//            $effetMagiqueDescriptions = json_decode($_GET['EffetMagiqueDescription'])->Descriptions;
 
-            $idDescriptions = '';
-            foreach ($effetMagiqueDescriptions as $description) {
+            $idDescription = '';
+//            foreach ($effetMagiqueDescriptions as $description) {
+//                $sql = "INSERT INTO `effetmagiquedescription` (`idEffetMagique`,`contenu`)
+//                                        VALUES (:idEffetMagique, :contenu)";
+//                print_r()
+//
+//                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+//                $commit->bindParam(':idEffetMagique', $effetMagiqueDescriptions->idEffetMagique, PDO::PARAM_INT);
+//                $commit->bindParam(':contenu', $description->contenu, PDO::PARAM_STR);
+//                $commit->execute();
+//                $idDescriptions .= $bdd->lastInsertId();
+//                if ($description != $effetMagiqueDescriptions[count($effetMagiqueDescriptions) - 1]) {
+//                    $idDescriptions .= ", ";
+//                }
+//            }
                 $sql = "INSERT INTO `effetmagiquedescription` (`idEffetMagique`,`contenu`) 
                                         VALUES (:idEffetMagique, :contenu)";
 
                 $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $commit->bindParam(':idEffetMagique', $effetMagiqueDescriptions->idEffetMagique, PDO::PARAM_INT);
-                $commit->bindParam(':contenu', $description, PDO::PARAM_STR);
+                $commit->bindParam(':idEffetMagique', $effetMagiqueDescription->idEffetMagique, PDO::PARAM_INT);
+                $commit->bindParam(':contenu', $effetMagiqueDescription->contenu, PDO::PARAM_STR);
                 $commit->execute();
-                $idDescriptions .= $bdd->lastInsertId();
-                if ($description != $effetMagiqueDescriptions[count($effetMagiqueDescriptions) - 1]) {
-                    $idDescriptions .= ", ";
-                }
-            }
+                $idDescription = $bdd->lastInsertId();
+//                if ($description != $effetMagiqueDescriptions[count($effetMagiqueDescriptions) - 1]) {
+//                    $idDescriptions .= ", ";
+//                }
             $result = $bdd->query('SELECT *
 					FROM effetmagiquedescription 
-                    where idEffetMagiqueDescription in (' . $idDescriptions . ')
+                    where idEffetMagiqueDescription in (' . $idDescription . ')
                     ');
             $fetchedResult = $result->fetchAll(PDO::FETCH_ASSOC);
             $result->closeCursor();
