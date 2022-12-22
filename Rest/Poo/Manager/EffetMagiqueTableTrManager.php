@@ -40,13 +40,13 @@ class EffetMagiqueTableTrManager
         return $allEffetMagiqueTableTr;
     }
 
-    public function addEffetMagiqueTableTr($EffetMagiqueTableTrData, $idEffetMagiqueTable)
+    public function addEffetMagiqueTableTr($EffetMagiqueTableTrData, $idEffetMagiqueTable): EffetMagiqueTableTr
     {
         $EffetMagiqueTableTr = json_decode($EffetMagiqueTableTrData);
         $sql = "INSERT INTO `effetmagiquetabletr` (`idEffetMagiqueTable`) 
                     VALUES (:idEffetMagiqueTable)";
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-        $commit->bindParam(':idEffetMagiqueTableTr',$idEffetMagiqueTable, PDO::PARAM_INT);
+        $commit->bindParam(':idEffetMagiqueTable',$idEffetMagiqueTable, PDO::PARAM_INT);
         $commit->execute();
         $tableTrIndex = $this->_db->lastInsertId();
 
