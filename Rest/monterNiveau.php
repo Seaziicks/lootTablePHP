@@ -198,8 +198,7 @@ switch ($http_method) {
                                  */
                                 http_response_code(406);
                                 deliver_responseRest(406, "Vous essayez de tricher mon bon monsieur. Mais je suis meilleur que vous !", '');
-                            } else if ((!$progressionPersonnageNiveauFetched['statistiques'] && $niveau->getNbStatistique() == 0)
-                                || $niveau->_deVitalite > $personnage->_deVitaliteNaturelle || $niveau->_deMana > $personnage->_deManaNaturel) {
+                            } else if ((!$progressionPersonnageNiveauFetched['statistiques'] && $niveau->getNbStatistique() == 0)) {
                                 /**
                                  * Si le personnage n'a pas essaye de tricher, alors on augmente simplement la vitalite et le mana.
                                  */
