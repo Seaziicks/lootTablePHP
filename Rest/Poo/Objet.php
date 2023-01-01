@@ -24,6 +24,8 @@ class Objet implements JsonSerializable
         $_bonusDexteriteMax,
         $_malusArmureTests,
         $_risqueEchecSorts,
+        $_solidite,
+        $_resistance,
         $_afficherNom,
         $_afficherEffetMagique,
         $_afficherMalediction,
@@ -197,7 +199,18 @@ class Objet implements JsonSerializable
             $this->_risqueEchecSorts = $risqueEchecSorts;
         }
     }
-
+    public function setSolidite($solidite)
+    {
+        if ($solidite) {
+            $this->_solidite = (int)$solidite;
+        }
+    }
+    public function setResistance($resistance)
+    {
+        if ($resistance) {
+            $this->_resistance = (int)$resistance;
+        }
+    }
     public function setAfficherNom($afficherNom)
     {
         $this->_afficherNom = boolval($afficherNom);
@@ -262,6 +275,8 @@ class Objet implements JsonSerializable
             'bonusDesteriteMax' => $this->_bonusDexteriteMax,
             'malusArmureTests' => $this->_malusArmureTests,
             'risqueEchecSorts' => $this->_risqueEchecSorts,
+            'solidite' => $this->_solidite,
+            'resistance' => $this->_resistance,
             'afficherNom' => $this->_afficherNom,
             'afficherEffetMagique' => $this->_afficherEffetMagique,
             'afficherMalediction' => $this->_afficherMalediction,

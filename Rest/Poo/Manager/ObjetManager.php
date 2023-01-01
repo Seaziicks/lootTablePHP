@@ -41,10 +41,10 @@ class ObjetManager
         $objet = json_decode($objetData);
 
         $sql = "INSERT INTO `objet` (`idPersonnage`,`nom`, `fauxNom`, `bonus`,`type`,`prix`,`prixNonHumanoide`,`devise`,`idMalediction`,`categorie`,`idMateriaux`,
-                                        `taille`,`degats`,`critique`,`facteurPortee`,`armure`,`bonusDexteriteMax`,`malusArmureTests`,`risqueEchecSorts`,
+                                        `taille`,`degats`,`critique`,`facteurPortee`,`armure`,`bonusDexteriteMax`,`malusArmureTests`,`risqueEchecSorts`, `solidite`, `resistance`,
                                         `afficherNom`, `afficherEffetMagique`, `afficherMalediction`, `afficherMateriau`, `afficherInfos`) 
                                         VALUES (:idPersonnage, :nom, :fauxNom, :bonus, :type, :prix, :prixNonHumanoide, :devise, :idMalediction, :categorie, :idMateriaux,
-                                                :taille, :degats, :critique, :facteurPortee, :armure, :bonusDexteriteMax, :malusArmureTests, :risqueEchecSorts,
+                                                :taille, :degats, :critique, :facteurPortee, :armure, :bonusDexteriteMax, :malusArmureTests, :risqueEchecSorts, :solidite, :resistance,
                                                 :afficherNom, :afficherEffetMagique, :afficherMalediction, :afficherMateriau, :afficherInfos)";
 
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
@@ -67,6 +67,8 @@ class ObjetManager
         $commit->bindParam(':bonusDexteriteMax',$objet->bonusDexteriteMax, PDO::PARAM_INT);
         $commit->bindParam(':malusArmureTests',$objet->malusArmureTests, PDO::PARAM_INT);
         $commit->bindParam(':risqueEchecSorts',$objet->risqueEchecSorts, PDO::PARAM_STR);
+        $commit->bindParam(':solidite',$objet->solidite, PDO::PARAM_INT);
+        $commit->bindParam(':resistance',$objet->resistance, PDO::PARAM_INT);
         $commit->bindParam(':afficherNom',$objet->afficherNom, PDO::PARAM_BOOL);
         $commit->bindParam(':afficherEffetMagique',$objet->afficherEffetMagique, PDO::PARAM_BOOL);
         $commit->bindParam(':afficherMalediction',$objet->afficherMalediction, PDO::PARAM_BOOL);
@@ -94,7 +96,7 @@ class ObjetManager
                 SET idPersonnage = :idPersonnage, nom = :nom, fauxNom = :fauxNom, bonus = :bonus, type = :type, prix = :prix,
                 prixNonHumanoide = :prixNonHumanoide, devise = :devise, categorie = :categorie,
                 taille = :taille, degats = :degats, critique = :critique, facteurPortee = :facteurPortee,
-                armure = :armure, bonusDexteriteMax = :bonusDexteriteMax, malusArmureTests = :malusArmureTests, risqueEchecSorts = :risqueEchecSorts,
+                armure = :armure, bonusDexteriteMax = :bonusDexteriteMax, malusArmureTests = :malusArmureTests, risqueEchecSorts = :risqueEchecSorts, solidite = :solidite, resistance = :resistance,
                 afficherNom = :afficherNom, afficherEffetMagique = :afficherEffetMagique, afficherMalediction = :afficherMalediction,
                 afficherMateriau = :afficherMateriau, afficherInfos = :afficherInfos
                 WHERE idObjet = :idObjet;";
@@ -120,6 +122,8 @@ class ObjetManager
         $commit->bindParam(':bonusDexteriteMax',$objet->bonusDexteriteMax, PDO::PARAM_INT);
         $commit->bindParam(':malusArmureTests',$objet->malusArmureTests, PDO::PARAM_INT);
         $commit->bindParam(':risqueEchecSorts',$objet->risqueEchecSorts, PDO::PARAM_STR);
+        $commit->bindParam(':solidite',$objet->solidite, PDO::PARAM_INT);
+        $commit->bindParam(':resistance',$objet->resistance, PDO::PARAM_INT);
         $commit->bindParam(':afficherNom',$objet->afficherNom, PDO::PARAM_BOOL);
         $commit->bindParam(':afficherEffetMagique',$objet->afficherEffetMagique, PDO::PARAM_BOOL);
         $commit->bindParam(':afficherMalediction',$objet->afficherMalediction, PDO::PARAM_BOOL);

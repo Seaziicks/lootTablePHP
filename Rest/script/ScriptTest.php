@@ -24,7 +24,9 @@ $array_expression = [
     'armure' => 5,
     'bonusDexteriteMax' => 5,
     'malusArmureTests' => 5,
-    'risqueEchecSorts' => 1
+    'risqueEchecSorts' => 1,
+    'solidite' => 5,
+    'resistance' => 10
 ];
 
 ?>
