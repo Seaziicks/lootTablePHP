@@ -93,12 +93,13 @@ class PersonnageManager
     public function addPersonnage($personnageData)
     {
         $personnage = json_decode($personnageData);
-        $sql = "INSERT INTO `personnage` (`nom`,`niveau`) 
-                                        VALUES (:nom, :niveau)";
+        $sql = "INSERT INTO `personnage` (`nom`,`niveau`, niveauEnAttente) 
+                                        VALUES (:nom, :niveau, :niveauEnAttente)";
 
         $commit = $this->_db->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $commit->bindParam(':nom',$personnage->nom, PDO::PARAM_STR);
         $commit->bindParam(':niveau',$personnage->niveau, PDO::PARAM_INT);
+        $commit->bindParam(':niveauEnAttente',$personnage->niveauEnAttente, PDO::PARAM_INT);
         $commit->execute();
         $result = $this->_db->query('SELECT *
 					FROM personnage 

@@ -16,6 +16,7 @@ function chargerClasse($classname)
     elseif (is_file('../Poo/Classes/' . $classname . '.php'))
         require '../Poo/Classes/' . $classname . '.php';
 }
+
 /// Librairies éventuelles (pour la connexion à la BDD, etc.)
 include('../../db.php');
 
@@ -25,16 +26,16 @@ header("Content-Type:application/json");
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
 $EffetMagiqueDescriptionManager = new EffetMagiqueDescriptionManager($bdd);
-switch ($http_method){
+switch ($http_method) {
     /// Cas de la méthode GET
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
         if (isset($_GET['idEffetMagiqueDescription'])) {
             $effetMagiqueDescriptionQuery = $bdd->query('SELECT *
 					FROM effetmagiquedescription 
-                    where idEffetMagiqueDescription='.$_GET['idEffetMagiqueDescription']);
+                    where idEffetMagiqueDescription=' . $_GET['idEffetMagiqueDescription']);
 
-            $effetMagiqueDescription =  $effetMagiqueDescriptionQuery->fetch(PDO::FETCH_ASSOC);
+            $effetMagiqueDescription = $effetMagiqueDescriptionQuery->fetch(PDO::FETCH_ASSOC);
             $matchingData = $effetMagiqueDescription;
             http_response_code(200);
             /// Envoi de la réponse au Client
@@ -62,14 +63,14 @@ switch ($http_method){
 //                    $idDescriptions .= ", ";
 //                }
 //            }
-                $sql = "INSERT INTO `effetmagiquedescription` (`idEffetMagique`,`contenu`) 
+            $sql = "INSERT INTO `effetmagiquedescription` (`idEffetMagique`,`contenu`) 
                                         VALUES (:idEffetMagique, :contenu)";
 
-                $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $commit->bindParam(':idEffetMagique', $effetMagiqueDescription->idEffetMagique, PDO::PARAM_INT);
-                $commit->bindParam(':contenu', $effetMagiqueDescription->contenu, PDO::PARAM_STR);
-                $commit->execute();
-                $idDescription = $bdd->lastInsertId();
+            $commit = $bdd->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+            $commit->bindParam(':idEffetMagique', $effetMagiqueDescription->idEffetMagique, PDO::PARAM_INT);
+            $commit->bindParam(':contenu', $effetMagiqueDescription->contenu, PDO::PARAM_STR);
+            $commit->execute();
+            $idDescription = $bdd->lastInsertId();
 //                if ($description != $effetMagiqueDescriptions[count($effetMagiqueDescriptions) - 1]) {
 //                    $idDescriptions .= ", ";
 //                }
@@ -104,7 +105,7 @@ switch ($http_method){
             $effetMagiqueDescription = json_decode($_GET['EffetMagiqueDescription'])->EffetMagiqueDescription;
             $rowCount = $EffetMagiqueDescriptionManager->deleteEffetMagiqueDescription($effetMagiqueDescription);
 
-            if( ! $rowCount ) {
+            if (!$rowCount) {
                 deliver_responseRest(400, "effetMagiqueDescription deletion fail", '');
             } else {
                 http_response_code(202);
