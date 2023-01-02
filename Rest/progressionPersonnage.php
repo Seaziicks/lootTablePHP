@@ -186,14 +186,14 @@ switch ($http_method){
                         $check = $bdd->prepare('SELECT * FROM monte WHERE niveau = :niveau');
                         $check->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
                         $check->execute();
-                        $rowCountCheck = $commit->rowCount();
+                        $rowCountCheck = $check->rowCount();
 
                         $commit = $bdd->prepare('DELETE FROM monte WHERE niveau = :niveau');
                         $commit->bindParam(':niveau', $progression->niveau, PDO::PARAM_INT);
                         $commit->execute();
                         $rowCount = $commit->rowCount();
 
-                        if (!$rowCountCheck || $rowCountCheck != $rowCount) {
+                        if (!$rowCountCheck || $rowCountCheck == $rowCount) {
                             http_response_code(202);
                             deliver_responseRest(202, "progression deleted", '');
                         } else {

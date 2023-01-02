@@ -149,7 +149,8 @@ switch ($http_method) {
                              */
                             if ($progressionPersonnageNiveauFetched['statistiques']
                                 && $niveau->getNbStatistique() === $progressionPersonnageNiveauFetched['nombreStatistiques']
-                                && $personnage->_deVitaliteNaturelle >= $niveau->_deVitalite && $personnage->_deManaNaturel >= $niveau->_deMana || $niveau->_niveau === 1) {
+                                && $personnage->_deVitaliteNaturelle >= $niveau->_deVitalite && $personnage->_deManaNaturel >= $niveau->_deMana
+                                || $niveau->_niveau === 1) {
 
                                 // On rajoute la vitalité naturelle, qui dépend de la constitution => (Constitution - 10) / 2
                                 $vitaliteNaturelle = intval(max(floor(((($personnage->_constitution + $niveau->_constitution) - 10) / 2)), 0));
